@@ -1,2 +1,5 @@
 # Private schedule file
 schedule.md
+
+# Exclude virtual environment files
+Pipfile
