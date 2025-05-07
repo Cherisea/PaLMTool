@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'trajectory.apps.TrajectoryConfig',     # Add main trajectory app
 ]
 
 MIDDLEWARE = [
