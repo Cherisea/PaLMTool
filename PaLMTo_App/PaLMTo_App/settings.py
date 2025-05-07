@@ -55,7 +55,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'tool_ui/build'  # React templates
+            BASE_DIR / 'frontend/build'  # React templates
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -125,5 +125,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # React static files
 STATICFILES_DIRS = [
-    BASE_DIR / 'tool_ui/build/static', 
+    BASE_DIR / 'frontend/build/static', 
 ]
