@@ -4,3 +4,6 @@ schedule.md
 # Exclude virtual environment files
 Pipfile
 Pipfile.lock
+
+# MacOS files
+.DS_Store
