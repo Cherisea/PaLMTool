@@ -124,6 +124,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # React static files
-STATICFILES_DIRs = [
-    BASE_DIR / 'tool_ui/build/static'
+STATICFILES_DIRS = [
+    BASE_DIR / 'tool_ui/build/static', 
 ]
