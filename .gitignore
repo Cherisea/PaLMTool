@@ -10,3 +10,6 @@ Pipfile.lock
 
 # Runtime cache file
 __pycache__/
+
+# Django default sqlite database file
+*.sqlite3
