@@ -7,3 +7,6 @@ Pipfile.lock
 
 # MacOS files
 .DS_Store
+
+# Runtime cache file
+__pycache__/
