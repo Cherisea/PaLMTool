@@ -7,7 +7,7 @@ class UploadedTrajectoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'uploaded_at', 'original_file')
     search_fields = ('original_file',)
     # Listed in descending order
-    ordering = ('-uploaded_at')
+    ordering = ('-uploaded_at',)
 
 @admin.register(GeneratedTrajectory)
 class GeneratedTrajectoryAdmin(admin.ModelAdmin):
