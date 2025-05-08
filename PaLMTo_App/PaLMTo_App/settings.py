@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'trajectory.apps.TrajectoryConfig',     # Add main trajectory app
+    'rest_framework',   # REST API 
+    'corsheaders',  # Cross origin resource sharing headers
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',    # Middleware for CORS
 ]
 
 ROOT_URLCONF = 'PaLMTo_App.urls'
