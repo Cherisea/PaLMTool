@@ -5,7 +5,7 @@
 import csv
 import io
 from rest_framework import serializers
-from .models import UploadedTrajectory, GeneratedTrajectory
+from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
 
 class UploadedTrajectorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,9 +36,18 @@ class UploadedTrajectorySerializer(serializers.ModelSerializer):
         
         return file
 
-class GeneratedTrajectorySerializer(serializers.ModelSerializer):
+class GenerationConfigSerializer(serializers.ModelSerializer):
     uploaded = UploadedTrajectorySerializer(read_only=True)
 
     class Meta:
+        model = GenerationConfig
+        fields='__all__'
+
+class GeneratedTrajectorySerializer(serializers.ModelSerializer):
+    uploaded = UploadedTrajectorySerializer(read_only=True)
+    config = GenerationConfigSerializer(read_only=True)
+
+    class Meta:
         model = GeneratedTrajectory
-        fields = ['id', 'uploaded', 'generated_file', 'generation_method', 'created_at']
+        fields = ['id', 'uploaded', 'config', 'generated_file', 'created_at']
+
