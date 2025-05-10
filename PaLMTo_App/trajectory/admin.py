@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UploadedTrajectory, GeneratedTrajectory
+from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
 
 # Register your models here.
 @admin.register(UploadedTrajectory)
@@ -9,10 +9,18 @@ class UploadedTrajectoryAdmin(admin.ModelAdmin):
     # Listed in descending order
     ordering = ('-uploaded_at',)
 
+@admin.register(GenerationConfig)
+class ConfigAdmin(admin.ModelAdmin):
+    list_display = ('id', 'uploaded', 'cell_size', 'num_trajectories', 
+                    'created_at', 'trajector_length', 'generation_method')
+    list_filter = ('created_at', 'generation_method', )
+    search_fields = ('cell_size', 'num_trajectories', 'trajector_length', )
+    ordering = ('-created_at', )
+
 @admin.register(GeneratedTrajectory)
 class GeneratedTrajectoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'uploaded', 'generation_method', 'generated_file', 'created_at')
-    list_filter = ('generation_method', 'created_at')
+    list_display = ('id', 'uploaded', 'config', 'generated_file', 'created_at')
+    list_filter = ('created_at', )
     search_fields = ('generated_file', )
     ordering = ('-created_at', )
 
