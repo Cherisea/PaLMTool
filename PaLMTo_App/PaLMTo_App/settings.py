@@ -136,3 +136,6 @@ STATICFILES_DIRS = [
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
 ]
+
+# GeoJSON files directory
+GEOJSON_DIR = BASE_DIR / 'trajectory' / 'geojson'
