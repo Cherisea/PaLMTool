@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import UploadedTrajectorySerializer, GeneratedTrajectorySerializer
-from .models import UploadedTrajectory
+from .models import UploadedTrajectory, GeneratedTrajectory
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
@@ -43,4 +43,10 @@ class GenerateTrajectoryView(APIView):
         except:
             return Response({'error': 'Uploaed trajectory not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        
+        #=============== TODO: Generate Trajectories and Return Response================
+
+class ListGeneratedTrajectory(APIView):
+    def get(self, request, uploaded_id):
+        trajectories = GeneratedTrajectory.objects.filter(uploade_id=uploaded_id)
+        serializer = GeneratedTrajectorySerializer(trajectories, many=True)
+        return serializer.data
