@@ -15,7 +15,7 @@ class UploadedTrajectory(models.Model):
 
 # Table for user-configed options
 class GenerationConfig(models.Model):
-    uploaded = models.ForeignKey(UploadedTrajectory, on_delete=models.CASCADE, related_name='generation_configs', null=True, blank=True)
+    # uploaded = models.ForeignKey(UploadedTrajectory, on_delete=models.CASCADE, related_name='generation_configs', null=True, blank=True)
     cell_size = models.IntegerField(help_text="Grid cell size in meters")
     num_trajectories = models.PositiveIntegerField(help_text="Number of trajectories to generate")
     trajector_length = models.PositiveIntegerField(
@@ -29,7 +29,7 @@ class GenerationConfig(models.Model):
     ])
 
     def __str__(self):
-        return f"Config for Upload {self.uploaded.id} ({self.generation_method})"
+        return f"Config for Upload ({self.generation_method})"
 
 
 # Table for generated trajectories
