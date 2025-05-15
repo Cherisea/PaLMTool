@@ -11,7 +11,7 @@ class UploadedTrajectoryAdmin(admin.ModelAdmin):
 
 @admin.register(GenerationConfig)
 class ConfigAdmin(admin.ModelAdmin):
-    list_display = ('id', 'uploaded', 'cell_size', 'num_trajectories', 
+    list_display = ('id', 'cell_size', 'num_trajectories', 
                     'created_at', 'trajector_length', 'generation_method')
     list_filter = ('created_at', 'generation_method', )
     search_fields = ('cell_size', 'num_trajectories', 'trajector_length', )
