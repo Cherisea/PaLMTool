@@ -38,7 +38,7 @@ class UploadedTrajectorySerializer(serializers.ModelSerializer):
 
 class GenerationConfigSerializer(serializers.ModelSerializer):
     # uploaded = UploadedTrajectorySerializer(read_only=True)
-    uploaded = serializers.PrimaryKeyRelatedField(queryset=UploadedTrajectory.objects.all())
+    # uploaded = serializers.PrimaryKeyRelatedField(queryset=UploadedTrajectory.objects.all())
 
     class Meta:
         model = GenerationConfig
