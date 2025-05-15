@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import UploadedTrajectorySerializer, GeneratedTrajectorySerializer
+from .serializers import UploadedTrajectorySerializer, GeneratedTrajectorySerializer, GenerationConfigSerializer
 from .models import UploadedTrajectory, GeneratedTrajectory
 from rest_framework.response import Response
 from rest_framework import status
@@ -45,8 +45,25 @@ class GenerateTrajectoryView(APIView):
         
         #=============== TODO: Generate Trajectories and Return Response================
 
-class ListGeneratedTrajectory(APIView):
-    def get(self, request, uploaded_id):
+class ListGeneratedTrajectoryView(APIView):
+    # Extract URL path params for GET request
+    def get(self, request, *args, **kwargs):
+        uploaded_id = kwargs.get('uploaded_id')
+
+        if uploaded_id is None:
+            return Response(
+                {"error": "uploaded_id is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         trajectories = GeneratedTrajectory.objects.filter(uploade_id=uploaded_id)
         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
-        return serializer.data
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GenerationConfigView(APIView):
+    def post(self, request):
+        serializer = GenerationConfigSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
