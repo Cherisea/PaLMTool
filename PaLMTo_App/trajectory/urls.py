@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import main
+from .views import GenerationConfigView
 
 
 urlpatterns = [
-    path('', main)
+    path('config/set', GenerationConfigView.as_view(), name='config-set')
 ]
 
