@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+form > div {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 0.5rem;
+}
