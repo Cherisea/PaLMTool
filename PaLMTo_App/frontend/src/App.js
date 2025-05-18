@@ -1,8 +1,17 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import React, { useState } from "react"
 import './App.css';
 import {MapContainer, TileLayer, Marker, useMapEvents} from "react-leaflet"
 import L from "leaflet"
+import "leaflet/dist/leaflet.css";
+
+// Fix default icon issue with Leaflet in React
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:"https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+});
 
 function LocationPicker({ onSelect }) {
   useMapEvents({
@@ -73,32 +82,35 @@ function App() {
   };
 
   return (
-    <div className="App" style={{ padding: "2rem" }}>
-      <h2>Upload Trajectory&Select Location</h2>
+    <div className="App">
+      
+      <div className="form-container">
+      <h2>PaLMTo Trajectory Generation</h2>
       <form onSubmit={handleSubmit} encType='multipart/form-data'>
-          <div>
+          <div className="form-group">
             <label>Cell Size</label>
             <input name="cell_size" value={formData.cell_size} onChange={handleChange} required />
           </div>
-          <div>
+          <div className="form-group">
             <label>Number of Trajectories</label>
             <input name="number_of_trajectories" value={formData.number_of_trajectories} onChange={handleChange} required />
           </div>
-          <div>
+          <div className="form-group">
             <label>Trajectory Length</label>
             <input name="trajectory_length" value={formData.trajectory_length} onChange={handleChange} required />
           </div>
-          <div>
+          <div className="form-group">
             <label>Generation Method</label>
             <input name="generation_method" value={formData.generation_method} onChange={handleChange} required />
           </div>
-          <div>
+          <div className="form-group">
             <label>File Upload</label>
             <input type="file" name="file" onChange={handleChange} required />
           </div>
 
-          <div style={{ margin: "1rem 0" }}>
-              <label>Location</label>
+
+          <label>Location: </label>
+          <div className="map-wrapper">
               <MapContainer center={[51.505, -0.09]} zoom={13} style={{ height: "300px", width: "100%" }}>
                 <TileLayer
                   attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -106,14 +118,13 @@ function App() {
                 />
 
                 <LocationPicker onSelect={handleLocationSelect} />
-                {formData.location && (
-                  <Marker position={formData.location} />
-                )}
+                {formData.location && (<Marker position={formData.location} />)}
             </MapContainer>
           </div>
 
           <button type='submit'>Generate</button>
       </form>
+    </div>
     </div>
   );
 
