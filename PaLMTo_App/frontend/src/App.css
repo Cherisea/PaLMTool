@@ -1,5 +1,21 @@
 .App {
-  text-align: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  background-color: #f0f2f5;
+  background-image: url('../public/background.jpg');
+}
+
+.layout {
+  display: flex;
+  width: 90vw;
+  height: 80vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .App-logo {
@@ -37,34 +53,79 @@
   }
 }
 
-.App {
-  display: flex;
-  justify-content: center;
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-box {
+  width: 35%;
   padding: 2rem;
-  font-family: sans-serif;
+  background-color: #ffffff;
+  border-right: 1px solid #eee;
+  box-sizing: border-box;
 }
 
-.form-container {
-  max-width: 600px;
-  width: 100%;
-  padding: 1.5rem;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.form-box h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-form > div {
+.form-group {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
 }
 
-label {
-  display: block;
+.form-group label {
+  display: flex;
+  align-items: center; 
+  font-weight: 600;
   margin-bottom: 0.5rem;
-  font-weight: bold;
+}
+
+.info-icon {
+  color: #888;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 3px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.info-icon:hover {
+  color: #007bff; /* Change color on hover */
+  transform: scale(1.1); /* Slightly enlarge the icon on hover */
 }
 
 input[type="text"],
-input[type="file"],
+input[type="number"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+select {
+  padding: 0.5rem;
+  /* font-size: 1rem; */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.dropzone {
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #222;
+  background-color: #ECFAE5;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.dropzone:hover {
+  border-color: #333;
+}
 
 button {
   padding: 0.6rem 1.2rem;
@@ -80,26 +141,32 @@ button:hover {
   background-color: #45a049;
 }
 
-.map-wrapper {
-  margin-top: 1rem;
-  border: 1px solid #ccc;
+.map-box {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+.map-container {
+  flex: 1;
+  height: 100%;
   border-radius: 8px;
   overflow: hidden;
 }
 
-.form-group {
-  display: flex;
-  align-items: center; /* Aligns items vertically centered */
-  margin-bottom: 2rem; /* Space between each group */
+.map-box h3 {
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  background: white;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
-.form-group label {
-  flex: 1; /* Takes up 1 part of the available space */
-  margin-right: 1rem; /* Space between label and input */
-}
 
-.form-group input {
-  flex: 1; 
-  max-width: 200px;
-}
 
