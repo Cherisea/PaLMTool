@@ -1,8 +1,8 @@
 // import logo from './logo.svg';
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useDropzone } from "react-dropzone" 
 import './App.css';
-import {MapContainer, TileLayer, Marker, useMapEvents} from "react-leaflet"
+import {MapContainer, TileLayer, Marker, useMapEvents, useMap} from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css";
 import { FiInfo } from "react-icons/fi";
@@ -15,6 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
 });
 
+// Function for selecting a location on map
 function LocationPicker({ onSelect }) {
   useMapEvents({
     click(e) {
@@ -26,15 +27,57 @@ function LocationPicker({ onSelect }) {
   return null;
 }
 
+// Function for updating map center
+function MapUpdater({ center }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView(center);
+  }, [center, map]);
+
+  return null;
+}
+
 function App() {
   const [formData, setFormData] = useState({
     cell_size: 50,
     number_of_trajectories: 1000,
     trajectory_length: 0,
     generation_method: "",
-    location: null,
+    locationName: "",  // For city name
+    locationCoordinates: null,  // For map marker
     file: null,
   })
+
+  const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
+
+  const searchLocation = async (cityName) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`
+      );
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        const newCenter = [parseFloat(lat), parseFloat(lon)];
+        setMapCenter(newCenter);
+        setFormData(prev => ({
+          ...prev,
+          locationCoordinates: { lat: parseFloat(lat), lng: parseFloat(lon) }
+        }));
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchLocation(formData.locationName);
+    }
+  };
 
   // Handler for text and standard file input
   const handleChange = (e) => {
@@ -67,7 +110,7 @@ function App() {
   const handleLocationSelect = (latlng) => {
     setFormData((prev) => ({
       ...prev,
-      location: latlng,
+      locationCoordinates: latlng,
     }));
   };
 
@@ -81,10 +124,11 @@ function App() {
     payload.append("trajectory_length", formData.trajectory_length);
     payload.append("generation_method", formData.generation_method);
     payload.append("file", formData.file);
+    payload.append("location", formData.locationName);
 
-    if (formData.location) {
-      payload.append("latitude", formData.location.lat);
-      payload.append("longitude", formData.location.lng);
+    if (formData.locationCoordinates) {
+      payload.append("latitude", formData.locationCoordinates.lat);
+      payload.append("longitude", formData.locationCoordinates.lng);
     }
 
     fetch("http://localhost:8000/trajectory", {
@@ -150,7 +194,14 @@ function App() {
                   Location
                   <FiInfo title="Name of city with which new trajectories are to be superimposed" className="info-icon"/>
                 </label>
-                <input name="location" type="text" value={formData.location} onChange={handleChange} required />
+                <input 
+                  name="locationName" 
+                  type="text" 
+                  value={formData.locationName} 
+                  onChange={handleChange}
+                  onKeyDown={handleKeyPress}
+                  required 
+                />
               </div>
 
               <div className="form-group">
@@ -185,14 +236,18 @@ function App() {
         </div>
 
         <div className="map-box">
-              <MapContainer center={[51.505, -0.09]} zoom={13} style={{ height: "600px", width: "100%" }}>
+              <MapContainer center={mapCenter} zoom={13} style={{ height: "600px", width: "100%" }}>
                 <TileLayer
                   attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
+                <MapUpdater center={mapCenter}/>
+
                 <LocationPicker onSelect={handleLocationSelect} />
-                {formData.location && (<Marker position={formData.location} />)}
+                {formData.locationCoordinates && (
+                  <Marker position={formData.locationCoordinates} />
+                )}
               </MapContainer>
         </div>
     </div>
