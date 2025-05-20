@@ -18,41 +18,6 @@
   overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 h2 {
   text-align: center;
   margin-bottom: 2rem;
@@ -151,14 +116,34 @@ button:hover {
   padding: 2rem 1rem 1rem 1rem; /* top right bottom left */
   box-sizing: border-box;
   background-color: #f9f9f9;
-  /* margin-top: 2rem;  Add small top margin to balance with bottom */
+  height: 100%;  /* Take full height of parent */
 }
 
 .map-container {
-  flex: 1;
-  height: 100%;
-  border-radius: 8px;
-  overflow: hidden;
+  flex: 1;  /* Take remaining space */
+  min-height: 600px;  /* Minimum height */
+  margin-bottom: 1rem;  /* Space between map and button */
+}
+
+.save-button {
+  margin: 0 auto;  /* Center horizontally */
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 20%;
+}
+
+.save-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #45a049;
 }
 
 

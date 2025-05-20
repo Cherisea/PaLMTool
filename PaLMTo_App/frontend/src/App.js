@@ -91,6 +91,15 @@ function App() {
     }));
   };
 
+  const handleSave = () => {
+    if (formData.locationCoordinates) {
+      // You can add your save logic here
+      console.log("Saving location:", formData.locationCoordinates);
+      // For example, you might want to update the location name based on coordinates
+      // or save the coordinates to a database
+    }
+  };
+
   const handleSubmit = (e) => {
     // Deactivate default form handling in browser
     e.preventDefault();
@@ -138,6 +147,7 @@ function App() {
           mapCenter={mapCenter}
           locationCoordinates={formData.locationCoordinates}
           onLocationSelect={handleLocationSelect}
+          onSave={handleSave}
         />
       </div>
     </div>
@@ -145,27 +155,3 @@ function App() {
 }
 
 export default App;
-
-/* 
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-  }; 
-*/
