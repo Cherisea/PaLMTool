@@ -49,6 +49,11 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
+.required-mark {
+  color: #ff0000;
+  margin: 0 2px;
+}
+
 .info-icon {
   color: #888;
   cursor: pointer;
@@ -63,11 +68,15 @@ h2 {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+select {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  height: 2rem;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 input:disabled {
@@ -79,13 +88,6 @@ input:disabled {
 .disabled-input {
   background-color: #f5f5f5;
   color: #666;
-}
-
-select {
-  padding: 0.5rem;
-  /* font-size: 1rem; */
-  border: 1px solid #ccc;
-  border-radius: 6px;
 }
 
 .dropzone {

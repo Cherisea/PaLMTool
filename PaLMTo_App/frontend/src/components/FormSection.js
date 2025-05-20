@@ -15,8 +15,9 @@ function FormSection({
       <h2>PaLMTo Trajectory Generation</h2>
       <form onSubmit={handleSubmit} encType='multipart/form-data'>
         <div className="form-group">
-          <label>
-            Cell Size 
+          <label className="required">
+            Cell Size
+            <span className="required-mark">*</span>
             <FiInfo title="Size of each grid cell in meters representing a geological location over which trajectories are to be generated" className="info-icon"/>
           </label>
           <input 
@@ -31,8 +32,9 @@ function FormSection({
         </div>
 
         <div className="form-group">
-          <label>
+          <label className="required">
             Number of Trajectories
+            <span className="required-mark">*</span>
             <FiInfo title="Quantity of new trajectories to be generated" className="info-icon"/>
           </label>
           <input 
@@ -65,8 +67,9 @@ function FormSection({
         </div>
 
         <div className="form-group">
-          <label>
+          <label className="required">
             Location
+            <span className="required-mark">*</span>
             <FiInfo title="Name of city with which new trajectories are to be superimposed" className="info-icon"/>
           </label>
           <input 
@@ -80,8 +83,9 @@ function FormSection({
         </div>
 
         <div className="form-group">
-          <label>
+          <label className="required">
             Generation Method
+            <span className="required-mark">*</span>
             <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
           </label>
           <select 
@@ -97,8 +101,9 @@ function FormSection({
         </div>
 
         <div className="form-group">
-          <label>
+          <label className="required">
             Sample Trajectory
+            <span className="required-mark">*</span>
             <FiInfo title="Sample trajectory on which synthetic trajectories are based" className="info-icon"/>
           </label>
           <div {...getRootProps({ className: "dropzone" })}>
