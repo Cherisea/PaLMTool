@@ -19,7 +19,7 @@ function App() {
   const [formData, setFormData] = useState({
     cell_size: 50,
     number_of_trajectories: 1000,
-    trajectory_length: 0,
+    trajectory_length: 100,
     generation_method: "",
     locationName: "",  // For city name
     locationCoordinates: null,  // For map marker

@@ -56,7 +56,11 @@ function FormSection({
             type="number" 
             value={formData.trajectory_length} 
             onChange={handleChange} 
-            required 
+            step="100"
+            min="100"
+            disabled={formData.generation_method === "point_to_point"}
+            className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
+            required={formData.generation_method !== "point_to_point"}
           />
         </div>
 
