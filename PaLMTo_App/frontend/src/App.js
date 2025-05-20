@@ -1,11 +1,11 @@
 // import logo from './logo.svg';
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { useDropzone } from "react-dropzone" 
 import './App.css';
-import {MapContainer, TileLayer, Marker, useMapEvents, useMap} from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css";
-import { FiInfo } from "react-icons/fi";
+import FormSection from './components/FormSection';
+import MapSection from './components/MapSection';
 
 // Fix default icon issue with Leaflet in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,29 +14,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
 });
-
-// Function for selecting a location on map
-function LocationPicker({ onSelect }) {
-  useMapEvents({
-    click(e) {
-      onSelect(e.latlng);
-    },
-  });
-
-  // No UI components are rendered
-  return null;
-}
-
-// Function for updating map center
-function MapUpdater({ center }) {
-  const map = useMap();
-
-  useEffect(() => {
-    map.setView(center);
-  }, [center, map]);
-
-  return null;
-}
 
 function App() {
   const [formData, setFormData] = useState({
@@ -146,114 +123,25 @@ function App() {
   return (
     <div className="App">
       <div className="layout">
-        <div className="form-box">
-          <h2>PaLMTo Trajectory Generation</h2>
-          <form onSubmit={handleSubmit} encType='multipart/form-data'>
-              <div className="form-group">
-                <label>
-                  Cell Size 
-                  <FiInfo title="Size of each grid cell in meters representing a geological location over which trajectories are to be generated" className="info-icon"/>
-                </label>
-                <input 
-                  name="cell_size" 
-                  type="number" 
-                  value={formData.cell_size} 
-                  onChange={handleChange} 
-                  step="50"
-                  min="50"
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Number of Trajectories
-                  <FiInfo title="Quantity of new trajectories to be generated" className="info-icon"/>
-                </label>
-                <input 
-                    name="number_of_trajectories" 
-                    type="number" 
-                    value={formData.number_of_trajectories} 
-                    onChange={handleChange}
-                    step="1000"
-                    min="1000"
-                    required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Trajectory Length <em>(optional)</em>
-                  <FiInfo title="Number of points in a generated trajectory. Not applicable for point-to-point trajectory generation" className="info-icon"/>
-                </label>
-                <input name="trajectory_length" type="number" value={formData.trajectory_length} onChange={handleChange} required />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Location
-                  <FiInfo title="Name of city with which new trajectories are to be superimposed" className="info-icon"/>
-                </label>
-                <input 
-                  name="locationName" 
-                  type="text" 
-                  value={formData.locationName} 
-                  onChange={handleChange}
-                  onKeyDown={handleKeyPress}
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Generation Method
-                  <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
-                </label>
-                <select name="generation_method" value={formData.generation_method} onChange={handleChange} required>
-                  <option value="">Select a Method</option>
-                  <option value="length_constrained">Length Constrained</option>
-                  <option value="point_to_point">Point to Point</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Sample Trajectory
-                  <FiInfo title="Sample trajectory on which synthetic trajectories are based" className="info-icon"/>
-                </label>
-                <div {...getRootProps({ className: "dropzone" })}>
-                  <input {...getInputProps()} />
-                  {
-                    isDragActive ? (<p>Drop the file here ...</p>) : formData.file ? 
-                    (<p>{formData.file.name}</p>) : 
-                    (<p>Drag & drop a file here, or click to select one</p>)
-                  }
-                </div>
-              </div>
-
-              <button type='submit'>Generate</button>
-            </form>
-        </div>
-
-        <div className="map-box">
-              <MapContainer center={mapCenter} zoom={13} style={{ height: "600px", width: "100%" }}>
-                <TileLayer
-                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <MapUpdater center={mapCenter}/>
-
-                <LocationPicker onSelect={handleLocationSelect} />
-                {formData.locationCoordinates && (
-                  <Marker position={formData.locationCoordinates} />
-                )}
-              </MapContainer>
-        </div>
+        <FormSection
+          formData={formData}
+          handleChange={handleChange}
+          handleKeyPress={handleKeyPress}
+          handleFileDrop={handleFileDrop}
+          handleSubmit={handleSubmit}
+          getRootProps={getRootProps}
+          getInputProps={getInputProps}
+          isDragActive={isDragActive}
+        />
+        
+        <MapSection
+          mapCenter={mapCenter}
+          locationCoordinates={formData.locationCoordinates}
+          onLocationSelect={handleLocationSelect}
+        />
+      </div>
     </div>
-  </div>
   );
-
 }
 
 export default App;
