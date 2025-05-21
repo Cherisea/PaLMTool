@@ -38,9 +38,9 @@ function FormSection({
             <FiInfo title="Quantity of new trajectories to be generated" className="info-icon"/>
           </label>
           <input 
-            name="number_of_trajectories" 
+            name="num_trajectories" 
             type="number" 
-            value={formData.number_of_trajectories} 
+            value={formData.num_trajectories} 
             onChange={handleChange}
             step="1000"
             min="1000"
@@ -66,7 +66,7 @@ function FormSection({
           />
         </div>
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label className="required">
             Location
             <span className="required-mark">*</span>
@@ -80,7 +80,7 @@ function FormSection({
             onKeyDown={handleKeyPress}
             required 
           />
-        </div>
+        </div> */}
 
         <div className="form-group">
           <label className="required">

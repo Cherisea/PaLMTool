@@ -1,5 +1,6 @@
 // import logo from './logo.svg';
 import React, { useState } from "react"
+import axios from "axios";
 import { useDropzone } from "react-dropzone" 
 import './App.css';
 import L from "leaflet"
@@ -18,7 +19,7 @@ L.Icon.Default.mergeOptions({
 function App() {
   const [formData, setFormData] = useState({
     cell_size: 50,
-    number_of_trajectories: 1000,
+    num_trajectories: 1000,
     trajectory_length: 100,
     generation_method: "",
     locationName: "",  // For city name
@@ -48,6 +49,14 @@ function App() {
       console.error("Error searching location:", error);
     }
   };
+
+  // Create an axios instance for communicating with backend API
+  const api = axios.create({
+    baseURL: '/trajectory/config/set',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -93,41 +102,42 @@ function App() {
 
   const handleSave = () => {
     if (formData.locationCoordinates) {
-      // You can add your save logic here
+      // TODO: You can add your save logic here
       console.log("Saving location:", formData.locationCoordinates);
       // For example, you might want to update the location name based on coordinates
       // or save the coordinates to a database
     }
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     // Deactivate default form handling in browser
     e.preventDefault();
 
     const payload = new FormData();
     payload.append("cell_size", formData.cell_size);
-    payload.append("number_of_trajectories", formData.number_of_trajectories);
-    payload.append("trajectory_length", formData.trajectory_length);
+    payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
-    payload.append("file", formData.file);
-    payload.append("location", formData.locationName);
+    // payload.append("file", formData.file);
+    // payload.append("location", formData.locationName);
 
-    if (formData.locationCoordinates) {
-      payload.append("latitude", formData.locationCoordinates.lat);
-      payload.append("longitude", formData.locationCoordinates.lng);
+    // if (formData.locationCoordinates) {
+    //   payload.append("latitude", formData.locationCoordinates.lat);
+    //   payload.append("longitude", formData.locationCoordinates.lng);
+    // }
+    if (formData.generation_method != "point_to_point" && formData.trajectory_length) {
+      payload.append("trajectory_length", formData.trajectory_length);
     }
 
-    fetch("http://localhost:8000/trajectory", {
-      method: "POST",
-      body: payload,
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      alert("Upload successful!");
-      console.log(data);
-    })
-    .catch((err) => console.error("Upload failed",err));
-  };
+    try {
+      const response = await api.post('', payload);
+      alert("Configuration of trajectory generation set properly!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Configuration not set:", error.response?.data || error.message);
+      alert("Setting configuration failed. Please try again.")
+    };
+  }
 
   return (
     <div className="App">
