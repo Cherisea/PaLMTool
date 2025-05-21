@@ -18,7 +18,7 @@ class GenerationConfig(models.Model):
     # uploaded = models.ForeignKey(UploadedTrajectory, on_delete=models.CASCADE, related_name='generation_configs', null=True, blank=True)
     cell_size = models.IntegerField(help_text="Grid cell size in meters")
     num_trajectories = models.PositiveIntegerField(help_text="Number of trajectories to generate")
-    trajector_length = models.PositiveIntegerField(
+    trajectory_length = models.PositiveIntegerField(
         blank=True, null=True,
         help_text="Length of each trajectory, if applicable."
     )
