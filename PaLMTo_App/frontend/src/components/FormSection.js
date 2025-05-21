@@ -117,7 +117,6 @@ function FormSection({
             }
           </div>
         </div>
-
         <button type='submit'>Generate</button>
       </form>
     </div>
