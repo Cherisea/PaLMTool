@@ -16,19 +16,27 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
 });
 
+// Main React component 
 function App() {
+
+  // Declare state variables for form submission
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Declare state variables for form
   const [formData, setFormData] = useState({
     cell_size: 50,
     num_trajectories: 1000,
     trajectory_length: 100,
     generation_method: "",
     locationName: "",  // For city name
-    locationCoordinates: null,  // For map marker
+    locationCoordinates: null,  
     file: null,
   })
 
+  // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
 
+  // Declare a variable to compute location coordiates by name
   const searchLocation = async (cityName) => {
     try {
       const response = await fetch(
@@ -58,6 +66,7 @@ function App() {
     }
   });
 
+  // Create a variable to process 'enter' in location field
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -65,12 +74,12 @@ function App() {
     }
   };
 
-  // Handler for text and standard file input
+  // Handler for text and standard file upload
   const handleChange = (e) => {
     // Extract properties of event with object destructuring
     const {name, value, files} = e.target;
 
-    // Invoke function with values from an arrow function
+    // Update form
     setFormData((prev) => ({
         ...prev,
         [name]: files? files[0]: value,
@@ -93,6 +102,7 @@ function App() {
     accept: {"application/json": [".json"], "text/csv": [".csv"]},
   });
 
+  // Handler for updating cooridinates by dropping a marker on map
   const handleLocationSelect = (latlng) => {
     setFormData((prev) => ({
       ...prev,
@@ -100,20 +110,18 @@ function App() {
     }));
   };
 
+  // TODO: Handler for saving generated trajectories to local machine
   const handleSave = () => {
     if (formData.locationCoordinates) {
-      // TODO: You can add your save logic here
-      console.log("Saving location:", formData.locationCoordinates);
-      // For example, you might want to update the location name based on coordinates
-      // or save the coordinates to a database
+      console.warn("handleSave function not implemented yet.");
     }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    // Deactivate default form handling in browser
     e.preventDefault();
 
+    // Construct request payload
     const payload = new FormData();
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
@@ -133,6 +141,7 @@ function App() {
       const response = await api.post('', payload);
       alert("Configuration of trajectory generation set properly!");
       console.log(response.data);
+      setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
       alert("Setting configuration failed. Please try again.")
@@ -159,6 +168,10 @@ function App() {
           onLocationSelect={handleLocationSelect}
           onSave={handleSave}
         />
+
+        <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
+          Save Trajectories
+        </button>
       </div>
     </div>
   );
