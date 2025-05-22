@@ -127,12 +127,7 @@ function App() {
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
     // payload.append("file", formData.file);
-    // payload.append("location", formData.locationName);
 
-    // if (formData.locationCoordinates) {
-    //   payload.append("latitude", formData.locationCoordinates.lat);
-    //   payload.append("longitude", formData.locationCoordinates.lng);
-    // }
     if (formData.generation_method != "point_to_point" && formData.trajectory_length) {
       payload.append("trajectory_length", formData.trajectory_length);
     }
