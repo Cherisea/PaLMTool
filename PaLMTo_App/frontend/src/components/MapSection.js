@@ -16,13 +16,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, onSave }
           {locationCoordinates && (<Marker position={locationCoordinates} />)}
         </MapContainer>
       </div>
-      <button 
-        className="save-button" 
-        onClick={onSave}
-        disabled={!locationCoordinates}
-      >
-        Save Trajectories
-      </button>
     </div>
   );
 }
