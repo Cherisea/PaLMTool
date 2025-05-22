@@ -67,10 +67,9 @@ function FormSection({
         </div>
 
         <div className="form-group">
-          <label className="required">
-            Location
-            <span className="required-mark">*</span>
-            <FiInfo title="Name of city with which new trajectories are to be superimposed" className="info-icon"/>
+          <label >
+            Location <em>(optional)</em>
+            <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
           </label>
           <input 
             name="locationName" 
@@ -78,7 +77,6 @@ function FormSection({
             value={formData.locationName} 
             onChange={handleChange}
             onKeyDown={handleKeyPress}
-            required 
           />
         </div>
 
