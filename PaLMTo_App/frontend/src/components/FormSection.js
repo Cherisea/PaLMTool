@@ -66,7 +66,7 @@ function FormSection({
           />
         </div>
 
-        {/* <div className="form-group">
+        <div className="form-group">
           <label className="required">
             Location
             <span className="required-mark">*</span>
@@ -80,7 +80,7 @@ function FormSection({
             onKeyDown={handleKeyPress}
             required 
           />
-        </div> */}
+        </div>
 
         <div className="form-group">
           <label className="required">
