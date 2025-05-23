@@ -5,6 +5,7 @@ from .models import UploadedTrajectory, GeneratedTrajectory
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+import os
 
 class UploadTrajectoryView(APIView):
     # Specify parser of HMTL forms and file uploads for Django REST Framework
@@ -24,9 +25,9 @@ class UploadTrajectoryView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Use default demo file
         else:
-            # demo_filepath = os.path.join(settings.BASE_DIR, 'static', 'demo.csv')
+            demo_filepath = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
             # Create database record directly when no validation is needed
-            uploaded = UploadedTrajectory.objects.create(original_file=None)
+            uploaded = UploadedTrajectory.objects.create(original_file=demo_filepath)
             return Response({'id': uploaded.id, 'note': 'Demo mode'}, status=status.HTTP_201_CREATED)
 
 class GenerateTrajectoryView(APIView):
