@@ -139,3 +139,6 @@ CORS_ORIGIN_WHITELIST = [
 
 # GeoJSON files directory
 GEOJSON_DIR = BASE_DIR / 'trajectory' / 'geojson'
+
+# Server filepath for storing user-uploaded files
+MEDIA_ROOT = BASE_DIR / 'media'
