@@ -12,7 +12,7 @@ class GenerationConfigSerializer(serializers.ModelSerializer):
         model = GenerationConfig
         fields='__all__'
 
-    def validate(self, file):
+    def validate_file(self, file):
         """
             Check if uploaded file is a csv file with three columns:
             ['trip_id', 'timestamp', 'geometry']
@@ -21,7 +21,7 @@ class GenerationConfigSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("File must be a .csv")
         
         try:
-            content = file.read.decode('utf-8')
+            content = file.read().decode('utf-8')
             file.seek(0)
 
             # Convert string to a file object and pass it to reader
