@@ -66,7 +66,7 @@ function FormSection({
           />
         </div>
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label >
             Location <em>(optional)</em>
             <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
@@ -78,7 +78,7 @@ function FormSection({
             onChange={handleChange}
             onKeyDown={handleKeyPress}
           />
-        </div>
+        </div> */}
 
         <div className="form-group">
           <label className="required">
@@ -100,9 +100,8 @@ function FormSection({
 
         <div className="form-group">
           <label className="required">
-            Sample Trajectory
-            <span className="required-mark">*</span>
-            <FiInfo title="Sample trajectory on which synthetic trajectories are based" className="info-icon"/>
+            Sample Trajectory <em>(optional)</em>
+            <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
           </label>
           <div {...getRootProps({ className: "dropzone" })}>
             <input {...getInputProps()} />
@@ -114,6 +113,7 @@ function FormSection({
                   (<p>Drag & drop a file here, or click to select one</p>)
             }
           </div>
+          <p className="note"><i>Note: Use demo trajectory by leaving this field blank.</i></p>
         </div>
         <button type='submit'>Generate</button>
       </form>
