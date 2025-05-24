@@ -5,7 +5,7 @@
 import csv
 import io
 from rest_framework import serializers
-from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
+from .models import GeneratedTrajectory, GenerationConfig
 
 class GenerationConfigSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
+from .models import GeneratedTrajectory, GenerationConfig
 
 @admin.register(GenerationConfig)
 class ConfigAdmin(admin.ModelAdmin):
