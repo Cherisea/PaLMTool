@@ -60,7 +60,7 @@ function App() {
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
-    baseURL: '/trajectory/config/set',
+    baseURL: '/trajectory/generate',
     headers: {
       'Content-Type': 'multipart/form-data'
     }
