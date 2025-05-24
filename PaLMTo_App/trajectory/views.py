@@ -1,34 +1,29 @@
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import UploadedTrajectorySerializer, GeneratedTrajectorySerializer, GenerationConfigSerializer
+from .serializers import GeneratedTrajectorySerializer, GenerationConfigSerializer
 from .models import UploadedTrajectory, GeneratedTrajectory
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 import os
 
-class UploadTrajectoryView(APIView):
-    # Specify parser of HMTL forms and file uploads for Django REST Framework
+class GenerationConfigView(APIView):
+     # Specify parser of HMTL forms and file uploads for Django REST Framework
     parser_classes = [MultiPartParser, FormParser]
 
-    # Define custom post method
     def post(self, request):
-        # Try to retrieve file from request
-        file = request.FILES.get('original_file')
+        file = request.FILES.get('file')
 
-        # Create a new instance 
-        if file:
-            serializer = UploadedTrajectorySerializer(data={'original_file': file})
-            if serializer.is_valid():
-                uploaded = serializer.save()
-                return Response({'id': uploaded.id}, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # Use default demo file
-        else:
+        # Append default file to request if it's missing
+        if not file:
             demo_filepath = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
-            # Create database record directly when no validation is needed
-            uploaded = UploadedTrajectory.objects.create(original_file=demo_filepath)
-            return Response({'id': uploaded.id, 'note': 'Demo mode'}, status=status.HTTP_201_CREATED)
+            request.data['file'] = demo_filepath
+
+        serializer = GenerationConfigSerializer(data=request.data)
+        if serializer.is_valid():
+            uploaded = serializer.save()
+            return Response({'id': uploaded.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class GenerateTrajectoryView(APIView):
     def post(self, request):
@@ -60,11 +55,3 @@ class ListGeneratedTrajectoryView(APIView):
         trajectories = GeneratedTrajectory.objects.filter(uploade_id=uploaded_id)
         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class GenerationConfigView(APIView):
-    def post(self, request):
-        serializer = GenerationConfigSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
