@@ -3,6 +3,6 @@ from .views import GenerationConfigView
 
 
 urlpatterns = [
-    path('config/set', GenerationConfigView.as_view(), name='config-set')
+    path('generate/', GenerationConfigView.as_view(), name='generate')
 ]
 
