@@ -6,20 +6,28 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 import os
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class GenerationConfigView(APIView):
      # Specify parser of HMTL forms and file uploads for Django REST Framework
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        file = request.FILES.get('file')
+        # Create a mutable copy of QueryDict object
+        data = request.data.copy()
+        file = data.get('file')
 
         # Append default file to request if it's missing
         if not file:
             demo_filepath = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
-            request.data['file'] = demo_filepath
+            # Read file content
+            with open(demo_filepath, "rb") as f:
+                file_content = f.read()
+                data['file'] = SimpleUploadedFile(
+                    'demo.csv', file_content, 'text/csv'
+                )
 
-        serializer = GenerationConfigSerializer(data=request.data)
+        serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
             return Response({'id': uploaded.id}, status=status.HTTP_201_CREATED)
