@@ -142,3 +142,6 @@ GEOJSON_DIR = BASE_DIR / 'trajectory' / 'geojson'
 
 # Server filepath for storing user-uploaded files
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Size limit of uploaded files set at 100MB. Default to 2.5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
