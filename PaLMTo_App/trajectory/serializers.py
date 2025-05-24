@@ -7,10 +7,10 @@ import io
 from rest_framework import serializers
 from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
 
-class UploadedTrajectorySerializer(serializers.ModelSerializer):
+class GenerationConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UploadedTrajectory
-        fields = ['id', 'uploaded_at', 'original_file']
+        model = GenerationConfig
+        fields='__all__'
 
     def validate(self, file):
         """
@@ -36,16 +36,7 @@ class UploadedTrajectorySerializer(serializers.ModelSerializer):
         
         return file
 
-class GenerationConfigSerializer(serializers.ModelSerializer):
-    # uploaded = UploadedTrajectorySerializer(read_only=True)
-    # uploaded = serializers.PrimaryKeyRelatedField(queryset=UploadedTrajectory.objects.all())
-
-    class Meta:
-        model = GenerationConfig
-        fields='__all__'
-
 class GeneratedTrajectorySerializer(serializers.ModelSerializer):
-    uploaded = UploadedTrajectorySerializer(read_only=True)
     config = GenerationConfigSerializer(read_only=True)
 
     class Meta:
