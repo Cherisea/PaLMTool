@@ -60,7 +60,7 @@ function App() {
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
-    baseURL: '/trajectory/generate',
+    baseURL: '/trajectory/generate/',
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -89,9 +89,17 @@ function App() {
 
   // Handler for drop zone files
   const handleFileDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    const maxSize = 100 * 1024 * 1024;
+    
+    if (file.size > maxSize) {
+      alert('File is too large. Maximum size is 10 MB.');
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      file: acceptedFiles[0],
+      file: file,
     }));
   };
 
@@ -126,9 +134,9 @@ function App() {
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
-    // payload.append("file", formData.file);
+    payload.append("file", formData.file);
 
-    if (formData.generation_method != "point_to_point" && formData.trajectory_length) {
+    if (formData.generation_method !== "point_to_point" && formData.trajectory_length) {
       payload.append("trajectory_length", formData.trajectory_length);
     }
 
