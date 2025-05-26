@@ -113,7 +113,11 @@ function FormSection({
                   (<p>Drag & drop a file here, or click to select one</p>)
             }
           </div>
-          <p className="note"><i>Note: Use demo trajectory by leaving this field blank.</i></p>
+          <p className="note">
+            <i>
+              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory</a> by leaving this field blank.
+            </i>
+          </p>
         </div>
         <button type='submit'>Generate</button>
       </form>
