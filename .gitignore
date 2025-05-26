@@ -20,3 +20,6 @@ __pycache__/
 
 # Exclude directory containing user-uploaded files
 **/media/uploads
+
+# Ignore .env file
+**/.env
