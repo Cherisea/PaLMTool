@@ -7,6 +7,7 @@ from rest_framework import status
 from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import FileResponse
 
 class GenerationConfigView(APIView):
      # Specify parser of HMTL forms and file uploads for Django REST Framework
@@ -63,3 +64,14 @@ class ListGeneratedTrajectoryView(APIView):
         trajectories = GeneratedTrajectory.objects.filter(uploade_id=uploaded_id)
         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Handler for downloading files from server
+def download_files(request, filename):
+    path = os.path.join(settings.MEDIA_ROOT, filename)
+    if os.path.exists(path):
+        response = FileResponse(open(path, "rb"))
+        response['Content-Disposition'] = f"attachment; filename={filename}"
+        response['Content-Type'] = 'text/csv'
+        return response
+    else:
+        return Response("File not found", status=status.HTTP_404_NOT_FOUND)
