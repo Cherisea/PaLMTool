@@ -17,6 +17,8 @@ def get_city_boundary(city, country=None, save_dir=settings.STATIC_ROOT):
             city: city name to query
             country: country to which city belongs
             save_dir: directory for saving generated geojson file (defaults to STATIC_ROOT)
+
+        Returns absolute path of generated geojson file
     """
     # Use default directory from settings if none provided
     if save_dir is None:
@@ -64,7 +66,7 @@ def get_city_boundary(city, country=None, save_dir=settings.STATIC_ROOT):
         with open(filename, "w") as f:
             json.dump(feature, f, indent=2)
 
-        return f"Saved boundary for {city} to {filename}."
+        return filename
     else:
         return f"No administrative boundary found for {city}. Raw result {results}"
 
