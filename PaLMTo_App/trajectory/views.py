@@ -8,6 +8,11 @@ from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
+from geo_process import get_city_boundary
+import geopandas as gpd
+import pandas as pd
+from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
+import uuid
 
 class GenerationConfigView(APIView):
      # Specify parser of HMTL forms and file uploads for Django REST Framework
@@ -31,42 +36,31 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
-            return Response({'id': uploaded.id}, status=status.HTTP_201_CREATED)
+            generated_file = _generate_trajectory(data, uploaded.id)
+            return Response({'id': uploaded.id, 'generated_file': generated_file}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class GenerateTrajectoryView(APIView):
-    def post(self, request):
-        uploaded_id  = request.data.get('uploaded_id')
-        method = request.data.get('generation_method')
+# class ListGeneratedTrajectoryView(APIView):
+#     # Extract URL path params for GET request
+#     def get(self, request, *args, **kwargs):
+#         config_id = kwargs.get('config')
 
-        if method not in ['length_constrained', 'point_to_point']:
-            return Response({'error': 'Invalid generation method'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Retrieve corresponding original file
-        # try:
-        #     uploaded = UploadedTrajectory.objects.get(id=uploaded_id)
-        # except:
-        #     return Response({'error': 'Uploaed trajectory not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        #=============== TODO: Generate Trajectories and Return Response================
+#         if config_id is None:
+#             return Response(
+#                 {"error": "config_id is required."},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
 
-class ListGeneratedTrajectoryView(APIView):
-    # Extract URL path params for GET request
-    def get(self, request, *args, **kwargs):
-        uploaded_id = kwargs.get('uploaded_id')
+#         trajectories = GeneratedTrajectory.objects.filter(config=config_id)
+#         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if uploaded_id is None:
-            return Response(
-                {"error": "uploaded_id is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        trajectories = GeneratedTrajectory.objects.filter(uploade_id=uploaded_id)
-        serializer = GeneratedTrajectorySerializer(trajectories, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-# Handler for downloading files from server
 def download_files(request, filename):
+    """
+        Download files from the server
+
+        filename: name of file to be downloaded
+    """
     path = os.path.join(settings.MEDIA_ROOT, filename)
     if os.path.exists(path):
         response = FileResponse(open(path, "rb"))
@@ -75,3 +69,42 @@ def download_files(request, filename):
         return response
     else:
         return Response("File not found", status=status.HTTP_404_NOT_FOUND)
+    
+def _generate_trajectory(data, config_id, save_dir=settings.MEDIA_ROOT):
+    """
+        Generate realistic trajectories from a sample trajectory file
+
+        data: QueryDict object containing form data
+        config_id: foreign key referencing configuration for generating trajectories
+        save_dir: directory to save generated files to
+    """
+    city_boundary = get_city_boundary(data["city"])
+    study_area = gpd.read_file(city_boundary)
+    df = pd.read_csv(data["file"])
+
+    TokenCreator = ConvertToToken(df, study_area, cell_size=data["cell_size"])
+    grid, sentence_df = TokenCreator.create_tokens()
+
+    ngram_model = NgramGenerator(sentence_df)
+    ngrams, start_end_points = ngram_model.create_ngrams()
+
+    if data["generatoin_method"] == "length_constrained":
+        traj_generator = TrajGenerator(ngrams, start_end_points, data["num_trajectories"], grid)
+        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(data["trajectory_len"], seed=None)
+    else:
+        traj_generator = TrajGenerator(ngrams, start_end_points, data["num_trajectories"], grid)
+        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+    
+    # Form a unique file name for generated trajectories
+    file_id = uuid.uuid4()
+    filename = f'generated_trajectories_{file_id}.csv'
+    file_path = os.path.join(save_dir, filename)
+
+    # Save files to server
+    new_trajs.to_csv(file_path)
+
+    # Save files to a database table
+    generated_traj = GeneratedTrajectory(config=config_id, generated_file=file_path)
+    generated_traj.save()
+
+    return filename
