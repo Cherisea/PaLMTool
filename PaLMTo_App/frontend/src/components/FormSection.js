@@ -115,7 +115,7 @@ function FormSection({
           </div>
           <p className="note">
             <i>
-              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory</a> by leaving this field blank.
+              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a> by leaving this field blank.
             </i>
           </p>
         </div>
