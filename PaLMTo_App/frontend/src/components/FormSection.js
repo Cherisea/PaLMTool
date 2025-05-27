@@ -56,7 +56,7 @@ function FormSection({
           <input 
             name="trajectory_length" 
             type="number" 
-            value={formData.trajectory_length} 
+            value={formData.trajectory_len} 
             onChange={handleChange} 
             step="100"
             min="100"
@@ -66,24 +66,23 @@ function FormSection({
           />
         </div>
 
-        {/* <div className="form-group">
+        <div className="form-group">
           <label >
-            Location <em>(optional)</em>
+            Location <span className="required-mark">*</span>
             <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
           </label>
           <input 
             name="locationName" 
             type="text" 
-            value={formData.locationName} 
+            value={formData.city} 
             onChange={handleChange}
             onKeyDown={handleKeyPress}
           />
-        </div> */}
+        </div>
 
         <div className="form-group">
           <label className="required">
-            Generation Method
-            <span className="required-mark">*</span>
+            Generation Method <span className="required-mark">*</span>
             <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
           </label>
           <select 
