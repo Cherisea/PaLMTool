@@ -18,8 +18,10 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
+  // Declare a state variable for storing download links
+  const [downloadLink, setDownloadLink] = useState('');
 
-  // Declare state variables for form submission
+  // Declare a state variable for form submission
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Declare state variables for form
@@ -118,10 +120,12 @@ function App() {
     }));
   };
 
-  // TODO: Handler for saving generated trajectories to local machine
+  // Handler for saving generated trajectories to local machine
   const handleSave = () => {
-    if (formData.locationCoordinates) {
-      console.warn("handleSave function not implemented yet.");
+    if (downloadLink) {
+      window.open(downloadLink, '_blank');
+    } else {
+      alert("No generated file available for download. Please generate trajectories first.")
     }
   };
 
@@ -147,6 +151,10 @@ function App() {
       const response = await api.post('', payload);
       alert("Configuration of trajectory generation set properly!");
       console.log(response.data);
+
+      // Extract download link from response sent from backend
+      const generatedFile = response.data.generated_file;
+      setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
