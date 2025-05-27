@@ -1,14 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import GeneratedTrajectorySerializer, GenerationConfigSerializer
-from .models import GeneratedTrajectory
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from geo_process import get_city_boundary
+from .geo_process import get_city_boundary
 import geopandas as gpd
 import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
@@ -104,7 +103,7 @@ def _generate_trajectory(data, config_id, save_dir=settings.MEDIA_ROOT):
     new_trajs.to_csv(file_path)
 
     # Save files to a database table
-    generated_traj = GeneratedTrajectory(config=config_id, generated_file=file_path)
+    generated_traj = GeneratedTrajectorySerializer(config=config_id, generated_file=file_path)
     generated_traj.save()
 
     return filename
