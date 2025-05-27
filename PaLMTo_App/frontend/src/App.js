@@ -26,9 +26,9 @@ function App() {
   const [formData, setFormData] = useState({
     cell_size: 50,
     num_trajectories: 1000,
-    trajectory_length: 100,
+    trajectory_len: 100,
     generation_method: "",
-    locationName: "",  // For city name
+    city: "", 
     locationCoordinates: null,  
     file: null,
   })
@@ -70,7 +70,7 @@ function App() {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      searchLocation(formData.locationName);
+      searchLocation(formData.city);
     }
   };
 
@@ -139,8 +139,8 @@ function App() {
       payload.append("file", formData.file);
     }
 
-    if (formData.generation_method !== "point_to_point" && formData.trajectory_length) {
-      payload.append("trajectory_length", formData.trajectory_length);
+    if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
+      payload.append("trajectory_len", formData.trajectory_len);
     }
 
     try {
