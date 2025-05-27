@@ -9,14 +9,14 @@ from django.conf import settings
 
 NOMINATIM_API = "https://nominatim.openstreetmap.org/search"
 
-def get_city_boundary(city, country=None, save_dir=None):
+def get_city_boundary(city, country=None, save_dir=settings.STATIC_ROOT):
     """
         Retrieves boundaries of city and save to save_dir in FeatureCollection format
 
         Args:
             city: city name to query
             country: country to which city belongs
-            save_dir: directory for saving generated geojson file (defaults to settings.GEOJSON_DIR)
+            save_dir: directory for saving generated geojson file (defaults to STATIC_ROOT)
     """
     # Use default directory from settings if none provided
     if save_dir is None:
