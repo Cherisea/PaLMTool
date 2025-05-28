@@ -138,6 +138,7 @@ function App() {
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
+    payload.append("city", formData.city);
 
     if (formData.file) {
       payload.append("file", formData.file);
