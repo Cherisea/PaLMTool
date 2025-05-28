@@ -30,35 +30,12 @@ function App() {
     num_trajectories: 1000,
     trajectory_len: 100,
     generation_method: "",
-    city: "", 
     locationCoordinates: null,  
     file: null,
   })
 
   // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
-
-  // Declare a variable to compute location coordiates by name
-  const searchLocation = async (cityName) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const newCenter = [parseFloat(lat), parseFloat(lon)];
-        setMapCenter(newCenter);
-        setFormData(prev => ({
-          ...prev,
-          locationCoordinates: { lat: parseFloat(lat), lng: parseFloat(lon) }
-        }));
-      }
-    } catch (error) {
-      console.error("Error searching location:", error);
-    }
-  };
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
@@ -67,14 +44,6 @@ function App() {
       'Content-Type': 'multipart/form-data'
     }
   });
-
-  // Create a variable to process 'enter' in location field
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      searchLocation(formData.city);
-    }
-  };
 
   // Handler for text and standard file upload
   const handleChange = (e) => {
@@ -138,7 +107,6 @@ function App() {
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
-    payload.append("city", formData.city);
 
     if (formData.file) {
       payload.append("file", formData.file);
@@ -169,7 +137,6 @@ function App() {
         <FormSection
           formData={formData}
           handleChange={handleChange}
-          handleKeyPress={handleKeyPress}
           handleFileDrop={handleFileDrop}
           handleSubmit={handleSubmit}
           getRootProps={getRootProps}
