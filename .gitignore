@@ -23,3 +23,9 @@ __pycache__/
 
 # Ignore .env file
 **/.env
+
+# Ignore generated trajectory files
+**/media/generated*
+
+# Ignore genrated geojson files
+**/static/*.geojson
