@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import GenerationConfigView
+from .views import GenerationConfigView, download_files
 
 
 urlpatterns = [
-    path('config/set', GenerationConfigView.as_view(), name='config-set')
+    path('generate/', GenerationConfigView.as_view(), name='generate'),
+    path('download/<str:filename>', download_files, name='download_files')
 ]
 

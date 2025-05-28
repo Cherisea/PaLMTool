@@ -18,17 +18,19 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
+  // Declare a state variable for storing download links
+  const [downloadLink, setDownloadLink] = useState('');
 
-  // Declare state variables for form submission
+  // Declare a state variable for form submission
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Declare state variables for form
   const [formData, setFormData] = useState({
     cell_size: 50,
     num_trajectories: 1000,
-    trajectory_length: 100,
+    trajectory_len: 100,
     generation_method: "",
-    locationName: "",  // For city name
+    city: "", 
     locationCoordinates: null,  
     file: null,
   })
@@ -60,7 +62,7 @@ function App() {
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
-    baseURL: '/trajectory/config/set',
+    baseURL: '/trajectory/generate/',
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -70,7 +72,7 @@ function App() {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      searchLocation(formData.locationName);
+      searchLocation(formData.city);
     }
   };
 
@@ -89,9 +91,17 @@ function App() {
 
   // Handler for drop zone files
   const handleFileDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    const maxSize = 100 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      alert('File is too large. Maximum size is 10 MB.');
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      file: acceptedFiles[0],
+      file: file,
     }));
   };
 
@@ -110,10 +120,12 @@ function App() {
     }));
   };
 
-  // TODO: Handler for saving generated trajectories to local machine
+  // Handler for saving generated trajectories to local machine
   const handleSave = () => {
-    if (formData.locationCoordinates) {
-      console.warn("handleSave function not implemented yet.");
+    if (downloadLink) {
+      window.open(downloadLink, '_blank');
+    } else {
+      alert("No generated file available for download. Please generate trajectories first.")
     }
   };
 
@@ -126,16 +138,24 @@ function App() {
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
-    // payload.append("file", formData.file);
+    payload.append("city", formData.city);
 
-    if (formData.generation_method != "point_to_point" && formData.trajectory_length) {
-      payload.append("trajectory_length", formData.trajectory_length);
+    if (formData.file) {
+      payload.append("file", formData.file);
+    }
+
+    if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
+      payload.append("trajectory_len", formData.trajectory_len);
     }
 
     try {
       const response = await api.post('', payload);
       alert("Configuration of trajectory generation set properly!");
       console.log(response.data);
+
+      // Extract download link from response sent from backend
+      const generatedFile = response.data.generated_file;
+      setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);

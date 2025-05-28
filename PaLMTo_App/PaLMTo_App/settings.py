@@ -120,6 +120,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -137,8 +138,11 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
 ]
 
-# GeoJSON files directory
-GEOJSON_DIR = BASE_DIR / 'trajectory' / 'geojson'
-
 # Server filepath for storing user-uploaded files
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# URL for accessing files stored on server
+MEDIA_URL = '/media/'
+
+# Size limit of uploaded files set at 100MB. Default to 2.5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024

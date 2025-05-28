@@ -107,6 +107,12 @@ input:disabled {
   border-color: #333;
 }
 
+.note {
+  font-size: 0.9em; /* Slightly smaller font size */
+  color: #666; /* Gray color for less emphasis */
+  margin-top: 5px; /* Space above the note */
+}
+
 button {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
@@ -116,7 +122,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
   width: 40%;
-  margin: 3rem auto;
+  margin: 2rem auto;
   display: block;
 }
 
@@ -140,7 +146,7 @@ button:hover {
 }
 
 .save-button {
-  margin: 0 auto;  /* Center horizontally */
+  margin: auto;  /* Center horizontally */
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   background-color: #4CAF50;

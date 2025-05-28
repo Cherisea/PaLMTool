@@ -54,9 +54,9 @@ function FormSection({
             <FiInfo title="Number of points in a generated trajectory. Not applicable for point-to-point trajectory generation" className="info-icon"/>
           </label>
           <input 
-            name="trajectory_length" 
+            name="trajectory_len" 
             type="number" 
-            value={formData.trajectory_length} 
+            value={formData.trajectory_len} 
             onChange={handleChange} 
             step="100"
             min="100"
@@ -68,13 +68,13 @@ function FormSection({
 
         <div className="form-group">
           <label >
-            Location <em>(optional)</em>
+            Location <span className="required-mark">*</span>
             <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
           </label>
           <input 
-            name="locationName" 
+            name="city" 
             type="text" 
-            value={formData.locationName} 
+            value={formData.city} 
             onChange={handleChange}
             onKeyDown={handleKeyPress}
           />
@@ -82,8 +82,7 @@ function FormSection({
 
         <div className="form-group">
           <label className="required">
-            Generation Method
-            <span className="required-mark">*</span>
+            Generation Method <span className="required-mark">*</span>
             <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
           </label>
           <select 
@@ -100,9 +99,8 @@ function FormSection({
 
         <div className="form-group">
           <label className="required">
-            Sample Trajectory
-            <span className="required-mark">*</span>
-            <FiInfo title="Sample trajectory on which synthetic trajectories are based" className="info-icon"/>
+            Sample Trajectory <em>(optional)</em>
+            <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
           </label>
           <div {...getRootProps({ className: "dropzone" })}>
             <input {...getInputProps()} />
@@ -114,6 +112,11 @@ function FormSection({
                   (<p>Drag & drop a file here, or click to select one</p>)
             }
           </div>
+          <p className="note">
+            <i>
+              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a> by leaving this field blank.
+            </i>
+          </p>
         </div>
         <button type='submit'>Generate</button>
       </form>

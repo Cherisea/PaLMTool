@@ -5,14 +5,14 @@
 import csv
 import io
 from rest_framework import serializers
-from .models import UploadedTrajectory, GeneratedTrajectory, GenerationConfig
+from .models import GeneratedTrajectory, GenerationConfig
 
-class UploadedTrajectorySerializer(serializers.ModelSerializer):
+class GenerationConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UploadedTrajectory
-        fields = ['id', 'uploaded_at', 'original_file']
+        model = GenerationConfig
+        fields='__all__'
 
-    def validate(self, file):
+    def validate_file(self, file):
         """
             Check if uploaded file is a csv file with three columns:
             ['trip_id', 'timestamp', 'geometry']
@@ -21,7 +21,7 @@ class UploadedTrajectorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("File must be a .csv")
         
         try:
-            content = file.read.decode('utf-8')
+            content = file.read().decode('utf-8')
             file.seek(0)
 
             # Convert string to a file object and pass it to reader
@@ -36,19 +36,10 @@ class UploadedTrajectorySerializer(serializers.ModelSerializer):
         
         return file
 
-class GenerationConfigSerializer(serializers.ModelSerializer):
-    # uploaded = UploadedTrajectorySerializer(read_only=True)
-    # uploaded = serializers.PrimaryKeyRelatedField(queryset=UploadedTrajectory.objects.all())
-
-    class Meta:
-        model = GenerationConfig
-        fields='__all__'
-
 class GeneratedTrajectorySerializer(serializers.ModelSerializer):
-    uploaded = UploadedTrajectorySerializer(read_only=True)
     config = GenerationConfigSerializer(read_only=True)
 
     class Meta:
         model = GeneratedTrajectory
-        fields = ['id', 'uploaded', 'config', 'generated_file', 'created_at']
+        fields = '__all__'
 
