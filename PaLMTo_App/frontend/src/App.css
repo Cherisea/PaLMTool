@@ -146,7 +146,7 @@ button:hover {
 }
 
 .save-button {
-  margin: auto;  /* Center horizontally */
+  margin: 4rem auto;  /* Center horizontally */
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   background-color: #4CAF50;
