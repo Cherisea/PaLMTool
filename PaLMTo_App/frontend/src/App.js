@@ -35,7 +35,7 @@ function App() {
   })
 
   // Declare a state variable for center of map
-  const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
+  const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
@@ -87,6 +87,8 @@ function App() {
       ...prev,
       locationCoordinates: latlng,
     }));
+
+    setMapCenter(latlng)
   };
 
   // Handler for saving generated trajectories to local machine
@@ -148,7 +150,6 @@ function App() {
           mapCenter={mapCenter}
           locationCoordinates={formData.locationCoordinates}
           onLocationSelect={handleLocationSelect}
-          onSave={handleSave}
         />
 
         <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
