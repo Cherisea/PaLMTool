@@ -41,5 +41,5 @@ class GeneratedTrajectorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeneratedTrajectory
-        fields = ['id', 'uploaded', 'config', 'generated_file', 'created_at']
+        fields = '__all__'
 
