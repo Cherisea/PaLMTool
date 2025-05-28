@@ -54,7 +54,7 @@ function FormSection({
             <FiInfo title="Number of points in a generated trajectory. Not applicable for point-to-point trajectory generation" className="info-icon"/>
           </label>
           <input 
-            name="trajectory_length" 
+            name="trajectory_len" 
             type="number" 
             value={formData.trajectory_len} 
             onChange={handleChange} 
@@ -72,7 +72,7 @@ function FormSection({
             <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
           </label>
           <input 
-            name="locationName" 
+            name="city" 
             type="text" 
             value={formData.city} 
             onChange={handleChange}
