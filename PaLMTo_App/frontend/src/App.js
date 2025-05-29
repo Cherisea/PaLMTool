@@ -30,35 +30,12 @@ function App() {
     num_trajectories: 1000,
     trajectory_len: 100,
     generation_method: "",
-    city: "", 
     locationCoordinates: null,  
     file: null,
   })
 
   // Declare a state variable for center of map
-  const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
-
-  // Declare a variable to compute location coordiates by name
-  const searchLocation = async (cityName) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const newCenter = [parseFloat(lat), parseFloat(lon)];
-        setMapCenter(newCenter);
-        setFormData(prev => ({
-          ...prev,
-          locationCoordinates: { lat: parseFloat(lat), lng: parseFloat(lon) }
-        }));
-      }
-    } catch (error) {
-      console.error("Error searching location:", error);
-    }
-  };
+  const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
 
   // Create an axios instance for communicating with backend API
   const api = axios.create({
@@ -67,14 +44,6 @@ function App() {
       'Content-Type': 'multipart/form-data'
     }
   });
-
-  // Create a variable to process 'enter' in location field
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      searchLocation(formData.city);
-    }
-  };
 
   // Handler for text and standard file upload
   const handleChange = (e) => {
@@ -118,6 +87,8 @@ function App() {
       ...prev,
       locationCoordinates: latlng,
     }));
+
+    setMapCenter(latlng)
   };
 
   // Handler for saving generated trajectories to local machine
@@ -138,7 +109,6 @@ function App() {
     payload.append("cell_size", formData.cell_size);
     payload.append("num_trajectories", formData.num_trajectories);
     payload.append("generation_method", formData.generation_method);
-    payload.append("city", formData.city);
 
     if (formData.file) {
       payload.append("file", formData.file);
@@ -150,7 +120,7 @@ function App() {
 
     try {
       const response = await api.post('', payload);
-      alert("Configuration of trajectory generation set properly!");
+      alert("New trajectories successfully generated!");
       console.log(response.data);
 
       // Extract download link from response sent from backend
@@ -159,7 +129,7 @@ function App() {
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
-      alert("Setting configuration failed. Please try again.")
+      alert("Failed to set correct parameters for trajectory generation. Please try again.")
     };
   }
 
@@ -169,7 +139,6 @@ function App() {
         <FormSection
           formData={formData}
           handleChange={handleChange}
-          handleKeyPress={handleKeyPress}
           handleFileDrop={handleFileDrop}
           handleSubmit={handleSubmit}
           getRootProps={getRootProps}
@@ -181,7 +150,6 @@ function App() {
           mapCenter={mapCenter}
           locationCoordinates={formData.locationCoordinates}
           onLocationSelect={handleLocationSelect}
-          onSave={handleSave}
         />
 
         <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>

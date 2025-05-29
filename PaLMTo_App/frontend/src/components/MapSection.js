@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, onSave }) {
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect}) {
   return (
     <div className="map-box">
       <div className="map-container">

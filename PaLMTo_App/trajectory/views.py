@@ -8,7 +8,7 @@ from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from .geo_process import get_city_boundary
+from .geo_process import extract_boundary
 import geopandas as gpd
 import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
@@ -83,13 +83,12 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     cell_size = int(data['cell_size'])
     num_trajs = int(data["num_trajectories"])
 
-    city_boundary = get_city_boundary(data["city"])
-    study_area = gpd.read_file(city_boundary)
-
+    # Reset file pointer
     data['file'].seek(0)
     df = pd.read_csv(data["file"])
-    # Convert geometry column to Python dict
+    # Convert geometry column to Python list
     df['geometry'] = df['geometry'].apply(ast.literal_eval)
+    study_area = extract_boundary(df)
 
     TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
     grid, sentence_df = TokenCreator.create_tokens()
@@ -110,7 +109,7 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     filename = f'generated_trajectories_{file_id}.csv'
     file_path = os.path.join(save_dir, filename)
 
-    # Save files to server
+    # Save files to server file system
     new_trajs.to_csv(file_path)
 
     # Save files to a database table

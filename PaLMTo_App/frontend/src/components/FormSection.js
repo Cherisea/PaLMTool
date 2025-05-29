@@ -3,7 +3,6 @@ import { FiInfo } from "react-icons/fi";
 function FormSection({ 
   formData, 
   handleChange, 
-  handleKeyPress, 
   handleFileDrop, 
   handleSubmit,
   getRootProps,
@@ -63,20 +62,6 @@ function FormSection({
             disabled={formData.generation_method === "point_to_point"}
             className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
             required={formData.generation_method !== "point_to_point"}
-          />
-        </div>
-
-        <div className="form-group">
-          <label >
-            Location <span className="required-mark">*</span>
-            <FiInfo title="Name of city with which new trajectories are to be superimposed. Leave this blank if visualizing trajectories are not required" className="info-icon"/>
-          </label>
-          <input 
-            name="city" 
-            type="text" 
-            value={formData.city} 
-            onChange={handleChange}
-            onKeyDown={handleKeyPress}
           />
         </div>
 
