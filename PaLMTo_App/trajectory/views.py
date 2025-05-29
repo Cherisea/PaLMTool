@@ -109,7 +109,7 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     filename = f'generated_trajectories_{file_id}.csv'
     file_path = os.path.join(save_dir, filename)
 
-    # Save files to server
+    # Save files to server file system
     new_trajs.to_csv(file_path)
 
     # Save files to a database table
