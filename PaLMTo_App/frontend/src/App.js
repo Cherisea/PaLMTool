@@ -120,7 +120,7 @@ function App() {
 
     try {
       const response = await api.post('', payload);
-      alert("Configuration of trajectory generation set properly!");
+      alert("New trajectories successfully generated!");
       console.log(response.data);
 
       // Extract download link from response sent from backend
@@ -129,7 +129,7 @@ function App() {
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
-      alert("Setting configuration failed. Please try again.")
+      alert("Failed to set correct parameters for trajectory generation. Please try again.")
     };
   }
 
