@@ -6,14 +6,20 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect}) {
   return (
     <div className="map-box">
       <div className="map-container">
+        {/* A container that holds a map */}
         <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+
+          {/* Display actual map image by dynamically calculating tile coordinates */}
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
           <MapUpdater center={mapCenter} />
+
           <LocationPicker onSelect={onLocationSelect} />
           {locationCoordinates && (<Marker position={locationCoordinates} />)}
+
         </MapContainer>
       </div>
     </div>
