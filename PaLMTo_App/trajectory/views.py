@@ -8,8 +8,7 @@ from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from .geo_process import extract_boundary
-import geopandas as gpd
+from .geo_process import extract_boundary, traj_to_geojson, extract_area_center
 import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 import uuid
@@ -37,24 +36,11 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
-            generated_file = _generate_trajectory(data, uploaded)
-            return Response({'id': uploaded.id, 'generated_file': generated_file}, status=status.HTTP_201_CREATED)
+            generated_file, visual_data = _generate_trajectory(data, uploaded)
+            return Response({'id': uploaded.id, 
+                             'generated_file': generated_file,
+                             'visualization': visual_data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class ListGeneratedTrajectoryView(APIView):
-#     # Extract URL path params for GET request
-#     def get(self, request, *args, **kwargs):
-#         config_id = kwargs.get('config')
-
-#         if config_id is None:
-#             return Response(
-#                 {"error": "config_id is required."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         trajectories = GeneratedTrajectory.objects.filter(config=config_id)
-#         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 def download_files(request, filename):
     """
@@ -78,6 +64,9 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
         data: QueryDict object containing form data
         config_instance: an instance of GenerationConfig model
         save_dir: directory to save generated files to
+
+        Return filename of generated trajectory data and a dictionar containing GeoJSON data for 
+        frontend visualization
     """
     # Cast value of integer fields as Python integer
     cell_size = int(data['cell_size'])
@@ -99,11 +88,16 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     if data["generation_method"] == "length_constrained":
         traj_len = int(data["trajectory_len"])
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
+        new_trajs, _ = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+        new_trajs, _ = traj_generator.generate_trajs_using_origin_destination()
     
+    # Convert trajectory data to geojson for frontend visualization
+    original = traj_to_geojson(df)
+    generated = traj_to_geojson(new_trajs)
+    center = extract_area_center(study_area)
+
     # Form a unique file name for generated trajectories
     file_id = uuid.uuid4()
     filename = f'generated_trajectories_{file_id}.csv'
@@ -116,4 +110,4 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     generated_traj = GeneratedTrajectory(config=config_instance, generated_file=file_path)
     generated_traj.save()
 
-    return filename
+    return filename, {"original": original, "generated": generated, "center": center}
