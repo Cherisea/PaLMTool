@@ -18,6 +18,9 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
+  // Declare a state variable for storing GeoJSON data
+  const [visualData, setVisualData] = useState(null);
+
   // Declare a state variable for storing download links
   const [downloadLink, setDownloadLink] = useState('');
 
@@ -126,6 +129,9 @@ function App() {
       // Extract download link from response sent from backend
       const generatedFile = response.data.generated_file;
       setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
+
+      // Extract GeoJSON feature collection from backend response
+      setVisualData(response.data.visualization)
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
@@ -150,6 +156,7 @@ function App() {
           mapCenter={mapCenter}
           locationCoordinates={formData.locationCoordinates}
           onLocationSelect={handleLocationSelect}
+          visualData={visualData}
         />
 
         <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
