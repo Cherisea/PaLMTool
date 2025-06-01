@@ -1,30 +1,14 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
-import { useState } from "react";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
 
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData }) {
-  // Declare a state variable to store name of current active tab
-  const [activeTab, setActiveTab] = useState('location')
 
   return (
     <div className="map-box">
-      {/* Tab buttons - only show if visualization data exists */}
-      {visualData && (
-        <div className="map-tabs">
-          <button className={activeTab === 'location' ? 'active' : ''} onClick={() => setActiveTab('location')}>
-            Location Selection
-          </button>
-
-          <button className={activeTab === 'trajectories' ? 'active' : ''} onClick={() => setActiveTab('trajectories')}>
-            Trajectory Comparison
-          </button>
-
-        </div>
-      )}
 
       {/* Show corresponding view based on active tab */}
-      {( !visualData || activeTab === 'location') ? (
+      {( !visualData ) ? (
         // Default single map
         <div className="map-container">
           <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
@@ -73,7 +57,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
                 <GeoJSON 
                   data={visualData.generated} 
-                  style={{ color: 'blue', weight: 2 }} 
+                  style={{ color: 'red', weight: 2 }} 
                 />
 
               </MapContainer>
