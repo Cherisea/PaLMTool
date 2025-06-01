@@ -160,7 +160,7 @@ function App() {
         />
 
         <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
-          Save Trajectories
+          Save
         </button>
       </div>
     </div>
