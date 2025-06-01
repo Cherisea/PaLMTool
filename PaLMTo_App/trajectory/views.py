@@ -88,14 +88,14 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     if data["generation_method"] == "length_constrained":
         traj_len = int(data["trajectory_len"])
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, _ = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
+        new_trajs, new_trajs_gpf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, _ = traj_generator.generate_trajs_using_origin_destination()
+        new_trajs, new_trajs_gpf = traj_generator.generate_trajs_using_origin_destination()
     
     # Convert trajectory data to geojson for frontend visualization
     original = traj_to_geojson(df)
-    generated = traj_to_geojson(new_trajs)
+    generated = traj_to_geojson(new_trajs_gpf)
     center = extract_area_center(study_area)
 
     # Form a unique file name for generated trajectories
