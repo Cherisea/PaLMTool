@@ -54,11 +54,13 @@ def traj_to_geojson(trajectory):
     sample = trajectory['geometry'].sample(1000).to_list()
 
     for traj in sample:
+        # GeoJSON coordinate format [lon, lat]
+        coords = [[point.x, point.y] for point in traj]
         features.append({
             'type': 'Feature',
             'geometry': {
                 'type': 'LineString',
-                'coordinates': traj
+                'coordinates': coords
             }
         })
 
