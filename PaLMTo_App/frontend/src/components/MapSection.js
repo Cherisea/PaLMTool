@@ -7,7 +7,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   return (
     <div className="map-box">
 
-      {/* Show corresponding view based on active tab */}
+      {/* Show corresponding view based on the availability of visualization data */}
       {( !visualData ) ? (
         // Default single map
         <div className="map-container">
