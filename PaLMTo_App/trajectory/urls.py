@@ -4,7 +4,6 @@ from .views import GenerationConfigView, download_files, compare_trajectory_heat
 
 urlpatterns = [
     path('generate/', GenerationConfigView.as_view(), name='generate'),
-    path('compare/', compare_trajectory_heatmap, name='compare_trajectory'),
-    path('download/<str:filename>', download_files, name='download_files')
+    path('download/<str:filename>', download_files, name='download_files'),
 ]
 
