@@ -3,7 +3,8 @@
 """
 import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, mapping
+from Palmto_gen import ConvertToToken, DisplayTrajs
 
 def extract_boundary(df):
     """
@@ -79,5 +80,54 @@ def traj_to_geojson(trajectory):
         'type': 'FeatureCollection',
         'features': features
     }
+
+def heatmap_geojson(df, area, cell_size=800):
+    """
+        Prepare heatmap data in a GeoJSON format for frontend visualization
+
+        df: dataframe containing trajectories in list of coordinate pairs
+        area: a GeoDataFrame defining the boundary of a geographical area
+        cell_size: size of cells in meters
+
+        Return a GeoJSON feature collection with data necessary for plotting a heatmap in frontend
+    """
+    # Initialize a TokenCreator instance
+    TokenCreator = ConvertToToken(df, area, cell_size)
+    grid, _, num_cells = TokenCreator.create_grid()
+
+    # Merge grid with Shapely points in df
+    display_traj_tmp = DisplayTrajs([], [])
+    merged_df = display_traj_tmp.merge_grid_with_points(grid, df, num_cells)
+
+    # Get point counts in each region
+    valid_df = merged_df[merged_df['point_region'] != 'nan']
+    polygon_counts = valid_df['point_region'].value_counts()
+
+    # Get maximum count
+    max_count = polygon_counts.max() if len(polygon_counts) > 0 else 1
+
+    # Constract feature array
+    features = []
+    for region, cell in grid.iterrows():
+        count = polygon_counts.get(region, 0)
+
+        feature = {
+            'type': 'Feature',
+            'properties': {
+                'count': int(count),
+                'normalized': float(count / max_count),
+                'region': region
+            },
+            'geometry': mapping(cell['geometry'])
+        }
+        features.append(feature)
+
+    return {
+        'type': 'FeatureCollection',
+        'features': features,
+        'maxCount': max_count
+    }
+
+
 
 
