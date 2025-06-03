@@ -40,6 +40,17 @@ def extract_boundary(df):
 
     return gpd.GeoDataFrame(pd.DataFrame([{"geometry": poly}]), geometry='geometry')    
 
+def extract_area_center(gdf):
+    """
+        Extracts coordinate pair of the center of a map area from a GeoDataFrame 
+
+        gdf: GeoDataFrame returned from extract_boundary function
+
+        Return coordinate pair in (lat, lon) format for leaflet visualization
+    """
+    centroid = gdf.geometry[0].centroid
+    return [centroid.y, centroid.x]
+
 def traj_to_geojson(trajectory):
     """
         Convert a list of Shapely points to a GeoJSON feature collection for frontend visualization
@@ -69,13 +80,4 @@ def traj_to_geojson(trajectory):
         'features': features
     }
 
-def extract_area_center(gdf):
-    """
-        Extracts coordinate pair of the center of a map area from a GeoDataFrame 
 
-        gdf: GeoDataFrame returned from extract_boundary function
-
-        Return coordinate pair in (lat, lon) format for leaflet visualization
-    """
-    centroid = gdf.geometry[0].centroid
-    return [centroid.y, centroid.x]
