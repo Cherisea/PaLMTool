@@ -36,10 +36,10 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
-            sentence_df, study_area, new_trajs, new_trajs_gpf = _process_config(data)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = _process_config(data)
             generated_file = save_trajectory(new_trajs, uploaded)
-            visual_data = generate_trajectory_visual(sentence_df, new_trajs_gpf, study_area)
-            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gpf,study_area)
+            visual_data = generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
+            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area)
 
             return Response({'id': uploaded.id, 
                              'generated_file': generated_file,
@@ -92,12 +92,12 @@ def _process_config(data):
     if data["generation_method"] == "length_constrained":
         traj_len = int(data["trajectory_len"])
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, new_trajs_gpf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
+        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-        new_trajs, new_trajs_gpf = traj_generator.generate_trajs_using_origin_destination()
+        new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
 
-    return sentence_df, study_area, new_trajs, new_trajs_gpf
+    return sentence_df, study_area, new_trajs, new_trajs_gdf
     
 def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
     """
@@ -124,12 +124,12 @@ def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
 
     return filename
 
-def generate_trajectory_visual(df, new_trajs_gpf, study_area):
+def generate_trajectory_visual(df, new_trajs_gdf, study_area):
     """
         Prepare trajectory data for frontend visualization
 
         df: original dataframe formatted as lists of Shapely points
-        new_trajs_gpf: generated trajectories as lists of Shapely points
+        new_trajs_gdf: GeoDataFrame generated trajectories as lists of Shapely points
         study_area: a GeoDataFrame defining geographical boundary of an area
 
         Return a dictionary containing GeoJSON data for original and generated trajectories, along with
@@ -137,12 +137,12 @@ def generate_trajectory_visual(df, new_trajs_gpf, study_area):
     """
     # Convert trajectory data to geojson for frontend visualization
     original = traj_to_geojson(df)
-    generated = traj_to_geojson(new_trajs_gpf)
+    generated = traj_to_geojson(new_trajs_gdf)
     center = extract_area_center(study_area)
 
     return {"original": original, "generated": generated, "center": center}
 
-def compare_trajectory_heatmap(df, new_trajs_gpf, study_area, sample=5000):
+def compare_trajectory_heatmap(df, new_trajs_gdf, study_area, sample=1000):
     """
         Prepare trajectory data for frontend heatmap 
     
@@ -152,7 +152,7 @@ def compare_trajectory_heatmap(df, new_trajs_gpf, study_area, sample=5000):
         area and its bounds
     """
     original_heatmap = heatmap_geojson(df.sample(sample), study_area)
-    generated_heatmap = heatmap_geojson(new_trajs_gpf.sample(sample), study_area)
+    generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area)
 
     bounds = study_area.total_bounds
     center = extract_area_center(study_area)
