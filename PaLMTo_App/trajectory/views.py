@@ -39,7 +39,7 @@ class GenerationConfigView(APIView):
             sentence_df, study_area, new_trajs, new_trajs_gdf = _process_config(data)
             generated_file = save_trajectory(new_trajs, uploaded)
             visual_data = generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area)
+            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area, int(data["num_trajectories"]))
 
             return Response({'id': uploaded.id, 
                              'generated_file': generated_file,
@@ -142,7 +142,7 @@ def generate_trajectory_visual(df, new_trajs_gdf, study_area):
 
     return {"original": original, "generated": generated, "center": center}
 
-def compare_trajectory_heatmap(df, new_trajs_gdf, study_area, sample=1000):
+def compare_trajectory_heatmap(df, new_trajs_gdf, study_area, sample):
     """
         Prepare trajectory data for frontend heatmap 
     
