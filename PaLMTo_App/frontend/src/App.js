@@ -165,9 +165,9 @@ function App() {
           heatmapData={heatmapData}
         />
 
-          <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
-            Save
-          </button>
+        <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
+          Save
+        </button>
        
       </div>
     </div>
