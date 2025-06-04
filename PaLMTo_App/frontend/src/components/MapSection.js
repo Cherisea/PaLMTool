@@ -56,18 +56,18 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   const ViewControl = () => {
     return (
-      <div className="view-toggle-buttons">
+      <div className="view-toggle-pills">
         <button 
-          className={`toggle-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
+          className={`pill-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
           onClick={() => setViewMode('trajectory')}>
-          Trajectory View
+          T<span>rajectory View</span>
         </button>
 
         <button
-          className={`toggle-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
+          className={`pill-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
           onClick={() => setViewMode('heatmap')}
           disabled={!heatmapData}>
-          Heatmap View
+          H<span>eatmap View</span>
         </button>
       </div>
     );
@@ -115,7 +115,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   }
 
   return (
-    <div className="map-box">
+    <div className="map-box" style={{ position: 'relative' }}>
       <ViewControl />
       {viewMode === 'heatmap' && heatmapData ? (
         <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
