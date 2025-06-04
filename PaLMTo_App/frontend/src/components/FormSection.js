@@ -48,6 +48,23 @@ function FormSection({
         </div>
 
         <div className="form-group">
+          <label className="required">
+            Generation Method <span className="required-mark">*</span>
+            <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
+          </label>
+          <select 
+            name="generation_method" 
+            value={formData.generation_method} 
+            onChange={handleChange} 
+            required
+          >
+            <option value="">Select a Method</option>
+            <option value="length_constrained">Length Constrained</option>
+            <option value="point_to_point">Point to Point</option>
+          </select>
+        </div>
+
+        <div className="form-group">
           <label>
             Trajectory Length <em>(optional)</em>
             <FiInfo title="Number of points in a generated trajectory. Not applicable for point-to-point trajectory generation" className="info-icon"/>
@@ -63,23 +80,6 @@ function FormSection({
             className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
             required={formData.generation_method !== "point_to_point"}
           />
-        </div>
-
-        <div className="form-group">
-          <label className="required">
-            Generation Method <span className="required-mark">*</span>
-            <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
-          </label>
-          <select 
-            name="generation_method" 
-            value={formData.generation_method} 
-            onChange={handleChange} 
-            required
-          >
-            <option value="">Select a Method</option>
-            <option value="length_constrained">Length Constrained</option>
-            <option value="point_to_point">Point to Point</option>
-          </select>
         </div>
 
         <div className="form-group">
