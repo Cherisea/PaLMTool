@@ -116,7 +116,7 @@ def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
     file_path = os.path.join(save_dir, filename)
 
     # Save files to server file system
-    trajs.to_csv(file_path)
+    trajs.to_csv(file_path, index=False)
 
     # Save files to a database table
     generated_traj = GeneratedTrajectory(config=config_instance, generated_file=file_path)
