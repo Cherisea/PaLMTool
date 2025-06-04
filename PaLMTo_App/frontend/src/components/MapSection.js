@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
+import { useState } from "react";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -48,7 +49,30 @@ const HeatmapMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, heatmapActive }) {
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData }) 
+{
+  // Declare a state variable for current view mode
+  const [viewMode, setViewMode] = useState('trajectory');
+
+  const ViewControl = () => {
+    return (
+      <div className="view-toggle-buttons">
+        <button 
+          className={`toggle-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
+          onClick={() => setViewMode('trajectory')}>
+          Trajectory View
+        </button>
+
+        <button
+          className={`toggle-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
+          onClick={() => setViewMode('heatmap')}
+          disabled={!heatmapData}>
+          Heatmap View
+        </button>
+      </div>
+    );
+  };
+
   // Color scale function for heatmap
   const getColor = (normalized) => {
     if (normalized > 0.8) return '#800026';
@@ -61,6 +85,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     return '#FFEDA0';
   };
 
+  // Styling of heatmap cells
   const heatmapStyle = (feature) => {
     return {
       fillColor: getColor(feature.properties.normalized),
@@ -71,6 +96,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     };
   };
 
+  // Display a popup box when hovering on a cell
   const onEachFeature = (feature, layer) => {
     layer.bindPopup(`Count: ${feature.properties.count}`);
   };
@@ -88,11 +114,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     );
   }
 
-  // Show heatmap if active and data available
-  if (heatmapActive && heatmapData) {
-    return (
-      <div className="map-box">
-        <div style={{ display: 'flex', gap: '20px', height: '500px' }}>
+  return (
+    <div className="map-box">
+      <ViewControl />
+      {viewMode === 'heatmap' && heatmapData ? (
+        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
           <HeatmapMap
             title="Original Trajectories Heatmap"
             data={heatmapData.original}
@@ -110,29 +136,25 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             onEachFeature={onEachFeature}
           />
         </div>
-      </div>
-    );
-  }
-
-  // Default to trajectory view
-  return (
-    <div className="map-box">
-      <div style={{ display: 'flex', gap: '20px', height: '500px' }}>
-        <TrajectoryMap
-          title="Original Trajectories"
-          data={visualData.original}
-          center={visualData.center}
-          color="blue"
-        />
-        <TrajectoryMap
-          title="Generated Trajectories"
-          data={visualData.generated}
-          center={visualData.center}
-          color="red"
-        />
-      </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
+          <TrajectoryMap
+            title="Original Trajectories"
+            data={visualData.original}
+            center={visualData.center}
+            color="blue"
+          />
+          <TrajectoryMap
+            title="Generated Trajectories"
+            data={visualData.generated}
+            center={visualData.center}
+            color="red"
+          />
+        </div>
+      )}
     </div>
   );
+
 };
 
 export default MapSection; 
