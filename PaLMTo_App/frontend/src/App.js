@@ -18,8 +18,6 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
-  // Declare a state variable that tracks click on "compare" button
-  const [heatmapActive, setHeatmapActive]= useState(false);
 
   // Declare a state variable for storing heatmap GeoJSON data
   const [heatmapData, setHeatmapData] = useState(null);
@@ -109,11 +107,6 @@ function App() {
     }
   };
 
-  // Handler of compare button
-  const handleCompare = () => {
-    setHeatmapActive(true)
-  }
-
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,15 +163,10 @@ function App() {
           onLocationSelect={handleLocationSelect}
           visualData={visualData}
           heatmapData={heatmapData}
-          heatmapActive={heatmapActive}
         />
 
           <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
             Save
-          </button>
-
-          <button className="save-button" onClick={handleCompare} disabled={!isSubmitted}>
-            Compare
           </button>
        
       </div>
