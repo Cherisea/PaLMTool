@@ -26,7 +26,7 @@ h2 {
 }
 
 .form-box {
-  width: 35%;
+  width: 30%;
   padding: 2rem;
   background-color: #ffffff;
   border-right: 1px solid #eee;
@@ -131,7 +131,7 @@ button:hover {
 }
 
 .map-box {
-  width: 65%;
+  width: 70%;
   display: flex;
   flex-direction: column;
   padding: 2rem 1rem 1rem 1rem; /* top right bottom left */
@@ -142,11 +142,10 @@ button:hover {
 .map-container {
   flex: 1;  /* Take remaining space */
   min-height: 600px;  /* Minimum height */
-  margin-bottom: 1rem;  /* Space between map and button */
 }
 
 .save-button {
-  margin: 4rem auto;  /* Center horizontally */
+  margin: 2rem auto;  
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   background-color: #4CAF50;
@@ -154,10 +153,10 @@ button:hover {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  width: 15%;
+  width: 7%;
   position: relative;
-  left: 20%;
-  bottom: 5rem;
+  left: 15%;
+  bottom: 6rem;
 }
 
 .save-button:disabled {
@@ -169,6 +168,53 @@ button:hover {
   background-color: #45a049;
 }
 
+.view-toggle-pills {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  z-index: 1000;
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  padding: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  transform-origin: top right;
+}
 
+.view-toggle-pills:hover .pill-btn span {
+  display: inline;
+}
 
+.pill-btn {
+  padding: 4px 10px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #666;
+  transition: all 0.2s;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+}
 
+.pill-btn span {
+  display: none;
+}
+
+.pill-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.pill-btn.active {
+  background: #4A90E2;
+  color: white;
+}
+
+.pill-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

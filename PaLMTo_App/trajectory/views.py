@@ -8,8 +8,7 @@ from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from .geo_process import extract_boundary
-import geopandas as gpd
+from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson
 import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 import uuid
@@ -37,24 +36,16 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
-            generated_file = _generate_trajectory(data, uploaded)
-            return Response({'id': uploaded.id, 'generated_file': generated_file}, status=status.HTTP_201_CREATED)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = _process_config(data)
+            generated_file = save_trajectory(new_trajs, uploaded)
+            visual_data = generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
+            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area, int(data["num_trajectories"]))
+
+            return Response({'id': uploaded.id, 
+                             'generated_file': generated_file,
+                             'visualization': visual_data,
+                             'heatmap': heatmap_data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class ListGeneratedTrajectoryView(APIView):
-#     # Extract URL path params for GET request
-#     def get(self, request, *args, **kwargs):
-#         config_id = kwargs.get('config')
-
-#         if config_id is None:
-#             return Response(
-#                 {"error": "config_id is required."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         trajectories = GeneratedTrajectory.objects.filter(config=config_id)
-#         serializer = GeneratedTrajectorySerializer(trajectories, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 def download_files(request, filename):
     """
@@ -71,15 +62,17 @@ def download_files(request, filename):
     else:
         return Response("File not found", status=status.HTTP_404_NOT_FOUND)
     
-def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
+def _process_config(data):
     """
-        Generate realistic trajectories from a sample trajectory file
-
+        Process data sent from frontend form.
+    
         data: QueryDict object containing form data
-        config_instance: an instance of GenerationConfig model
-        save_dir: directory to save generated files to
+        
+        Return a dataframe representing trajectory as a "sentence", a GeoDataFrame defining geographical boundary,
+        generated trajectories as a list of coordinate pairs and generated trajectories as Shapely point for 
+        visualization
     """
-    # Cast value of integer fields as Python integer
+     # Cast value of integer fields as Python integer
     cell_size = int(data['cell_size'])
     num_trajs = int(data["num_trajectories"])
 
@@ -103,17 +96,70 @@ def _generate_trajectory(data, config_instance, save_dir=settings.MEDIA_ROOT):
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
         new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+
+    return sentence_df, study_area, new_trajs, new_trajs_gdf
     
+def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
+    """
+        Save generated trajectories to local machine as well as database table.
+
+        trajs: trajectory data formatted as a list of coordinate pairs
+        config_instance: foreign key of GeneratedTrajecotry table
+        save_dir: local directory for saving trajectory files to
+
+        Return filename of saved trajectory. 
+    """
+
     # Form a unique file name for generated trajectories
     file_id = uuid.uuid4()
     filename = f'generated_trajectories_{file_id}.csv'
     file_path = os.path.join(save_dir, filename)
 
     # Save files to server file system
-    new_trajs.to_csv(file_path)
+    trajs.to_csv(file_path, index=False)
 
     # Save files to a database table
     generated_traj = GeneratedTrajectory(config=config_instance, generated_file=file_path)
     generated_traj.save()
 
     return filename
+
+def generate_trajectory_visual(df, new_trajs_gdf, study_area):
+    """
+        Prepare trajectory data for frontend visualization
+
+        df: original dataframe formatted as lists of Shapely points
+        new_trajs_gdf: GeoDataFrame generated trajectories as lists of Shapely points
+        study_area: a GeoDataFrame defining geographical boundary of an area
+
+        Return a dictionary containing GeoJSON data for original and generated trajectories, along with
+        the center of study area
+    """
+    # Convert trajectory data to geojson for frontend visualization
+    original = traj_to_geojson(df)
+    generated = traj_to_geojson(new_trajs_gdf)
+    center = extract_area_center(study_area)
+
+    return {"original": original, "generated": generated, "center": center}
+
+def compare_trajectory_heatmap(df, new_trajs_gdf, study_area, sample):
+    """
+        Prepare trajectory data for frontend heatmap 
+    
+        sample: a subset of df trajectories for visualization 
+
+        Return a dictionary containg heatmap data for original and generated trajectories, center of study
+        area and its bounds
+    """
+    original_heatmap = heatmap_geojson(df.sample(sample), study_area)
+    generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area)
+
+    bounds = study_area.total_bounds
+    center = extract_area_center(study_area)
+
+    return {
+            'original': original_heatmap,
+            'generated': generated_heatmap,
+            'center': center,
+            'bounds': [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]  # [[miny, minx], [maxy, maxx]]
+        }

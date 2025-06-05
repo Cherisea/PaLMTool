@@ -29,7 +29,13 @@ class GenerationConfigSerializer(serializers.ModelSerializer):
             header = next(csv_reader)
 
             expected = ['trip_id', 'timestamp', 'geometry']
-            if header != expected:
+            
+            # Geometry is a mandatory column in CSV file
+            if 'geometry' not in header:
+                raise serializers.ValidationError("CSV file must have a 'geometry' column.")
+            
+            # Check if other columns are allowed
+            if not all(item in expected for item in header):
                 raise serializers.ValidationError(f"CSV header must be exactly {expected}.")
         except Exception as e:
             raise serializers.ValidationError(f"Failed to read file: {str(e)}")
