@@ -3,6 +3,7 @@
 """
 import pandas as pd
 import geopandas as gpd
+import numpy as np
 from shapely.geometry import Polygon, mapping
 from Palmto_gen import ConvertToToken, DisplayTrajs
 
@@ -103,19 +104,26 @@ def heatmap_geojson(df, area, cell_size=800):
     valid_df = merged_df[merged_df['point_region'] != 'nan']
     polygon_counts = valid_df['point_region'].value_counts()
 
-    # Get maximum count
-    max_count = polygon_counts.max() if len(polygon_counts) > 0 else 1
+    # Normalize counts using a approach similar to matplotlib
+    if len(polygon_counts) > 0:
+        max_count = polygon_counts.max()
+        min_count = polygon_counts.min()
+    else:
+        max_count = 1
+        min_count = 0
 
-    # Constract feature array
+    # Construct feature array
     features = []
     for region, cell in grid.iterrows():
         count = polygon_counts.get(region, 0)
+
+        normalized = (count - min_count) / (max_count - min_count)
 
         feature = {
             'type': 'Feature',
             'properties': {
                 'count': int(count),
-                'normalized': float(count / max_count),
+                'normalized': float(normalized),
                 'region': region
             },
             'geometry': mapping(cell['geometry'])
