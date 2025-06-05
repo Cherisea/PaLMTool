@@ -75,14 +75,20 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Color scale function for heatmap
   const getColor = (normalized) => {
-    if (normalized > 0.8) return '#800026';
-    if (normalized > 0.6) return '#BD0026';
-    if (normalized > 0.4) return '#E31A1C';
-    if (normalized > 0.2) return '#FC4E2A';
-    if (normalized > 0.1) return '#FD8D3C';
-    if (normalized > 0.05) return '#FEB24C';
-    if (normalized > 0) return '#FED976';
-    return '#FFEDA0';
+    // More breakpoints for smoother transitions matching matplotlib's YlOrRd
+    if (normalized >= 0.95) return '#800026';
+    if (normalized >= 0.85) return '#990026';
+    if (normalized >= 0.75) return '#BD0026';
+    if (normalized >= 0.65) return '#D70026';
+    if (normalized >= 0.55) return '#E31A1C';
+    if (normalized >= 0.45) return '#F03B20';
+    if (normalized >= 0.35) return '#FC4E2A';
+    if (normalized >= 0.25) return '#FD8D3C';
+    if (normalized >= 0.15) return '#FEB24C';
+    if (normalized >= 0.10) return '#FEC44F';
+    if (normalized >= 0.05) return '#FED976';
+    if (normalized > 0) return '#FFEDA0';
+    return '#FFFFCC';
   };
 
   // Styling of heatmap cells
