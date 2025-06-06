@@ -114,8 +114,8 @@ def heatmap_geojson(df, area, cell_size=800):
 
     # Construct feature array
     features = []
-    for region, cell in grid.iterrows():
-        count = polygon_counts.get(region, 0)
+    for _, region in grid.iterrows():
+        count = polygon_counts.get(region['geometry'], 0)
 
         normalized = (count - min_count) / (max_count - min_count)
 
@@ -124,9 +124,8 @@ def heatmap_geojson(df, area, cell_size=800):
             'properties': {
                 'count': int(count),
                 'normalized': float(normalized),
-                'region': region
             },
-            'geometry': mapping(cell['geometry'])
+            'geometry': mapping(region['geometry'])
         }
         features.append(feature)
 
