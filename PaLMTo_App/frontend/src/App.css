@@ -113,6 +113,73 @@ input:disabled {
   margin-top: 5px; /* Space above the note */
 }
 
+/* Make the button container relative for positioning */
+.button-container {
+  position: relative;
+  width: 40%;
+  margin: 2rem auto;
+}
+
+/* Style the submit button to take full width of its container */
+.button-container button[type='submit'] {
+  width: 100%;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Progress container as overlay */
+.progress-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  pointer-events: none; /* Allow clicks to pass through to button */
+  z-index: 2;
+}
+
+/* Progress bar styling */
+.progress-bar {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Ensure button text remains visible during loading */
+.button-container button[type='submit']:disabled {
+  background-color: #4CAF50; /* Keep the original color */
+  opacity: 0.8;
+}
+
 button {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
