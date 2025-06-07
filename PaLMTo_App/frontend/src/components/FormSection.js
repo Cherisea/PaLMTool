@@ -1,5 +1,5 @@
 import { FiInfo } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function FormSection({ 
   formData, 
@@ -9,11 +9,24 @@ function FormSection({
   getInputProps,
   isDragActive
 }) {
+  // State variable for notification message
+  const [notification, setNotification] = useState(null);
+
   // State variable for loading status
   const [isLoading, setIsLoading] = useState(false);
 
   // State variable for current progress
   const [progress, setProgress] = useState(0);
+
+  // Auto-hide notification after 5 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -34,16 +47,30 @@ function FormSection({
     try {
       await handleSubmit(e);
       setProgress(100);
+      setNotification({
+        type: 'success',
+        message: 'Trajectories generated successfully!'
+      });
     } catch (error) {
       console.error("Form submission error: ", error)
+      setNotification({
+        type: 'error',
+        message: 'Failed to generate trajectories. Please try again.'
+      });
     } finally {
-      // clearInterval(progressInterval)
+      clearInterval(progressInterval)
       setIsLoading(false);
     }
   };
 
   return (
     <div className="form-box">
+      {notification && (
+        <div className={`notification-banner ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+
       <h2>PaLMTo Trajectory Generation</h2>
       <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
         <div className="form-group">
