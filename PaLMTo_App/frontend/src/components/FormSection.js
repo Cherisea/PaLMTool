@@ -1,18 +1,51 @@
 import { FiInfo } from "react-icons/fi";
+import { useState } from "react";
 
 function FormSection({ 
   formData, 
   handleChange, 
-  handleFileDrop, 
   handleSubmit,
   getRootProps,
   getInputProps,
-  isDragActive 
+  isDragActive
 }) {
+  // State variable for loading status
+  const [isLoading, setIsLoading] = useState(false);
+
+  // State variable for current progress
+  const [progress, setProgress] = useState(0);
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setProgress(0);
+
+    // Simulate progress update
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prevProgress + 10;
+      })
+    }, 900);
+
+    try {
+      await handleSubmit(e);
+      setProgress(100);
+    } catch (error) {
+      console.error("Form submission error: ", error)
+    } finally {
+      // clearInterval(progressInterval)
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="form-box">
       <h2>PaLMTo Trajectory Generation</h2>
-      <form onSubmit={handleSubmit} encType='multipart/form-data'>
+      <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
         <div className="form-group">
           <label className="required">
             Cell Size
@@ -103,7 +136,19 @@ function FormSection({
             </i>
           </p>
         </div>
-        <button type='submit'>Generate</button>
+
+        <div className="button-container">
+          <button type='submit' disabled={isLoading}>
+            {isLoading ? 'Generating...' : 'Generate'}
+          </button>
+          {isLoading && (
+            <div className="progress-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+          )}
+
+        </div>
+        
       </form>
     </div>
   );
