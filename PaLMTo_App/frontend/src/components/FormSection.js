@@ -29,7 +29,7 @@ function FormSection({
         }
         return prevProgress + 10;
       })
-    }, 900);
+    }, 1100);
 
     try {
       await handleSubmit(e);

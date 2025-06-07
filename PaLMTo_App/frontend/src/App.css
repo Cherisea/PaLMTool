@@ -144,7 +144,7 @@ input:disabled {
 /* Progress bar styling */
 .progress-bar {
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(240, 233, 233, 0.3);
   transition: width 0.3s ease;
   position: relative;
 }
@@ -177,7 +177,7 @@ input:disabled {
 /* Ensure button text remains visible during loading */
 .button-container button[type='submit']:disabled {
   background-color: #4CAF50; /* Keep the original color */
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 button {
