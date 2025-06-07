@@ -39,7 +39,8 @@ class GenerationConfigView(APIView):
             sentence_df, study_area, new_trajs, new_trajs_gdf = _process_config(data)
             generated_file = save_trajectory(new_trajs, uploaded)
             visual_data = generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area, int(data["num_trajectories"]))
+            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
+                                                      study_area, int(data["num_trajectories"]))
 
             return Response({'id': uploaded.id, 
                              'generated_file': generated_file,
@@ -96,7 +97,6 @@ def _process_config(data):
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
         new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
-
     return sentence_df, study_area, new_trajs, new_trajs_gdf
     
 def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
