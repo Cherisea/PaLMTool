@@ -127,8 +127,6 @@ function App() {
 
     try {
       const response = await api.post('', payload);
-      alert("New trajectories successfully generated!");
-      console.log(response.data);
 
       // Extract download link from response sent from backend
       const generatedFile = response.data.generated_file;
@@ -141,7 +139,7 @@ function App() {
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
       alert("Failed to set correct parameters for trajectory generation. Please try again.")
-    };
+    }
   }
 
   return (
