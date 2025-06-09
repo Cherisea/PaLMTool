@@ -59,7 +59,7 @@ function FormSection({
           type: 'success',
           message: 'Trajectories generated successfully!'
         })
-      }, 500);
+      }, 1000);
     } catch (error) {
       console.error("Form submission error: ", error)
       setNotification({
