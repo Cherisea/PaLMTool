@@ -15,17 +15,17 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
         <div className="popup-body">
           <div className="stat-item">
             <span className="stat-label">Cells Created:</span>
-            <span className="stat-value">{stats.cellsCreated}</span>
+            <span className="stat-value">{stats.cellsCreated.toLocaleString()}</span>
           </div>
 
           <div className="stat-item">
             <span className="stat-label">Unique Bigrams:</span>
-            <span className="stat-value">{stats.uniqueBigrams}</span>
+            <span className="stat-value">{stats.uniqueBigrams.toLocaleString()}</span>
           </div>
 
           <div className="stat-item">
             <span className="stat-label">Unique Trigrams:</span>
-            <span className="stat-value">{stats.uniqueTrigrams}</span>
+            <span className="stat-value">{stats.uniqueTrigrams.toLocaleString()}</span>
           </div>
 
         </div>
