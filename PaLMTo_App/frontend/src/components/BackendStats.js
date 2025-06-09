@@ -20,7 +20,7 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
 
           <div className="stat-item">
             <span className="stat-label">Unique Bigrams:</span>
-            <span className="stat-value">{stats.uniqueBigrams} points</span>
+            <span className="stat-value">{stats.uniqueBigrams}</span>
           </div>
 
           <div className="stat-item">
