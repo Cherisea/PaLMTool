@@ -1,18 +1,93 @@
 import { FiInfo } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import StatisticsPopup from "./BackendStats";
 
 function FormSection({ 
   formData, 
   handleChange, 
-  handleFileDrop, 
   handleSubmit,
   getRootProps,
   getInputProps,
-  isDragActive 
+  isDragActive,
+  stats
 }) {
+  // State variable for stats popup window
+  const [showStats, setShowStats] = useState(false);
+
+  // State variable for notification message
+  const [notification, setNotification] = useState(null);
+
+  // State variable for loading status
+  const [isLoading, setIsLoading] = useState(false);
+
+  // State variable for current progress
+  const [progress, setProgress] = useState(0);
+
+  // Auto-hide notification after 5 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setProgress(0);
+
+    // Simulate progress update
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prevProgress + 10;
+      })
+    }, 1100);
+
+    try {
+      await handleSubmit(e);
+      setProgress(100);
+      setShowStats(true);
+
+      setTimeout(() => {
+        setNotification({
+          type: 'success',
+          message: 'Trajectories generated successfully!'
+        })
+      }, 1000);
+    } catch (error) {
+      console.error("Form submission error: ", error)
+      setNotification({
+        type: 'error',
+        message: 'Failed to generate trajectories. Please try again.'
+      });
+    } finally {
+      clearInterval(progressInterval)
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="form-box">
+      <StatisticsPopup
+        isOpen={showStats}
+        onClose={() => setShowStats(false)}
+        stats={stats}
+      />
+
+      {notification && (
+        <div className={`notification-banner ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+
       <h2>PaLMTo Trajectory Generation</h2>
-      <form onSubmit={handleSubmit} encType='multipart/form-data'>
+      <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
         <div className="form-group">
           <label className="required">
             Cell Size
@@ -103,7 +178,19 @@ function FormSection({
             </i>
           </p>
         </div>
-        <button type='submit'>Generate</button>
+
+        <div className="button-container">
+          <button type='submit' disabled={isLoading}>
+            {isLoading ? 'Generating...' : 'Generate'}
+          </button>
+          {isLoading && (
+            <div className="progress-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+          )}
+
+        </div>
+        
       </form>
     </div>
   );

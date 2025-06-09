@@ -13,6 +13,10 @@ import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 import uuid
 import ast
+from io import StringIO
+from contextlib import redirect_stdout
+
+STATS = {}
 
 class GenerationConfigView(APIView):
      # Specify parser of HMTL forms and file uploads for Django REST Framework
@@ -36,15 +40,19 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
+            global STATS
+
             sentence_df, study_area, new_trajs, new_trajs_gdf = _process_config(data)
             generated_file = save_trajectory(new_trajs, uploaded)
             visual_data = generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,study_area, int(data["num_trajectories"]))
+            heatmap_data = compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
+                                                      study_area, int(data["num_trajectories"]))
 
             return Response({'id': uploaded.id, 
                              'generated_file': generated_file,
                              'visualization': visual_data,
-                             'heatmap': heatmap_data}, status=status.HTTP_201_CREATED)
+                             'heatmap': heatmap_data,
+                             'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def download_files(request, filename):
@@ -72,6 +80,8 @@ def _process_config(data):
         generated trajectories as a list of coordinate pairs and generated trajectories as Shapely point for 
         visualization
     """
+    global STATS
+
      # Cast value of integer fields as Python integer
     cell_size = int(data['cell_size'])
     num_trajs = int(data["num_trajectories"])
@@ -84,10 +94,24 @@ def _process_config(data):
     study_area = extract_boundary(df)
 
     TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
-    grid, sentence_df = TokenCreator.create_tokens()
+
+    # Capture stdout from create_tokens method
+    f = StringIO()
+    with redirect_stdout(f):
+        grid, sentence_df = TokenCreator.create_tokens()
+    content = f.getvalue()
+    STATS["cellsCreated"] = int(content.strip().split(":")[1])
+    
 
     ngram_model = NgramGenerator(sentence_df)
-    ngrams, start_end_points = ngram_model.create_ngrams()
+
+    # Capture stdout from create_ngrams method
+    f.seek(0)
+    with redirect_stdout(f):
+        ngrams, start_end_points = ngram_model.create_ngrams()
+    content = f.getvalue()
+    STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+    STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
 
     if data["generation_method"] == "length_constrained":
         traj_len = int(data["trajectory_len"])
@@ -96,7 +120,6 @@ def _process_config(data):
     else:
         traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
         new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
-
     return sentence_df, study_area, new_trajs, new_trajs_gdf
     
 def save_trajectory(trajs, config_instance, save_dir=settings.MEDIA_ROOT):
