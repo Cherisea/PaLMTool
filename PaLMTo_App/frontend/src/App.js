@@ -7,6 +7,7 @@ import L from "leaflet"
 import "leaflet/dist/leaflet.css";
 import FormSection from './components/FormSection';
 import MapSection from './components/MapSection';
+import './components/BackendStats.css';
 
 // Fix default icon issue with Leaflet in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -18,6 +19,8 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
+  // Declare a state variable for storing backend statistics
+  const [statsData, setStatsData] = useState(null);
 
   // Declare a state variable for storing heatmap GeoJSON data
   const [heatmapData, setHeatmapData] = useState(null);
@@ -131,6 +134,9 @@ function App() {
       // Extract download link from response sent from backend
       const generatedFile = response.data.generated_file;
       setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
+      
+      // Extract backend statistics
+      setStatsData(response.data.stats)
 
       // Extract GeoJSON feature collection from backend response
       setVisualData(response.data.visualization)
@@ -153,6 +159,7 @@ function App() {
           getRootProps={getRootProps}
           getInputProps={getInputProps}
           isDragActive={isDragActive}
+          stats={statsData}
         />
         
         <MapSection
