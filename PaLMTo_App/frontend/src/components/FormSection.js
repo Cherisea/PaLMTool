@@ -1,5 +1,6 @@
 import { FiInfo } from "react-icons/fi";
 import { useState, useEffect } from "react";
+import StatisticsPopup from "./BackendStats";
 
 function FormSection({ 
   formData, 
@@ -7,8 +8,12 @@ function FormSection({
   handleSubmit,
   getRootProps,
   getInputProps,
-  isDragActive
+  isDragActive,
+  stats
 }) {
+  // State variable for stats popup window
+  const [showStats, setShowStats] = useState(false);
+
   // State variable for notification message
   const [notification, setNotification] = useState(null);
 
@@ -47,10 +52,14 @@ function FormSection({
     try {
       await handleSubmit(e);
       setProgress(100);
-      setNotification({
-        type: 'success',
-        message: 'Trajectories generated successfully!'
-      });
+      setShowStats(true);
+
+      setTimeout(() => {
+        setNotification({
+          type: 'success',
+          message: 'Trajectories generated successfully!'
+        })
+      }, 500);
     } catch (error) {
       console.error("Form submission error: ", error)
       setNotification({
@@ -65,6 +74,12 @@ function FormSection({
 
   return (
     <div className="form-box">
+      <StatisticsPopup
+        isOpen={showStats}
+        onClose={() => setShowStats(false)}
+        stats={stats}
+      />
+
       {notification && (
         <div className={`notification-banner ${notification.type}`}>
           {notification.message}
