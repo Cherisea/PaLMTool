@@ -23,11 +23,10 @@ class GenerationConfigView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        # Create a mutable copy of QueryDict object
         data = request.data.copy()
         file = data.get('file')
 
-        # Append default file to request if it's missing
+        # Construct default file if it's missing
         if not file:
             demo_filepath = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
             # Read file content
@@ -37,6 +36,7 @@ class GenerationConfigView(APIView):
                     'demo.csv', file_content, 'text/csv'
                 )
 
+        print(f"Data: {data}")
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
