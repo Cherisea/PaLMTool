@@ -194,7 +194,7 @@ input:disabled {
 /* Progress bar styling */
 .progress-bar {
   height: 100%;
-  background-color: rgba(240, 233, 233, 0.3);
+  background-color: rgb(98, 111, 71, 0.8);
   transition: width 0.3s ease;
   position: relative;
 }
