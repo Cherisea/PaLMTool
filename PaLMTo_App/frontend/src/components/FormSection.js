@@ -61,13 +61,13 @@ function FormSection({
         })
       }, 1000);
     } catch (error) {
-      console.error("Form submission error: ", error)
+      console.error("Form submission error: ", error);
       setNotification({
         type: 'error',
         message: 'Failed to generate trajectories. Please try again.'
       });
     } finally {
-      clearInterval(progressInterval)
+      clearInterval(progressInterval);
       setIsLoading(false);
     }
   };
