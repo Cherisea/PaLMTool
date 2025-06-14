@@ -36,7 +36,6 @@ class GenerationConfigView(APIView):
                     'demo.csv', file_content, 'text/csv'
                 )
 
-        print(f"Data: {data}")
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
             uploaded = serializer.save()
