@@ -144,7 +144,7 @@ function App() {
       setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
-      alert("Failed to set correct parameters for trajectory generation. Please try again.")
+      throw error;
     }
   }
 
