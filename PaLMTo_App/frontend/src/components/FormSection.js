@@ -86,7 +86,7 @@ function FormSection({
         </div>
       )}
 
-      <h2>PaLMTo Trajectory Generation</h2>
+      <h2>WebPaLMTo Trajectory Generation</h2>
       <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
         <div className="form-group">
           <label className="required">
