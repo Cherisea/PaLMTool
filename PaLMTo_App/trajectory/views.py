@@ -8,13 +8,14 @@ from django.conf import settings
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson
+from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
 import pandas as pd
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 import uuid
 import ast
 from io import StringIO
 from contextlib import redirect_stdout
+from datetime import datetime, timedelta
 
 STATS = {}
 
@@ -53,6 +54,65 @@ class GenerationConfigView(APIView):
                              'heatmap': heatmap_data,
                              'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class Trajectory3DView(APIView):
+    def get(self, request):
+        # TODO: replace demo file with dynamically generated file
+        df = pd.read_csv('demo.csv')
+        processed_data = self.prepare_3d_data(df)
+
+        return Response(processed_data, status=status.HTTP_200_OK)
+        
+
+    def prepare_3d_data(self, df):
+        """
+            Convert trajectory data to 3D format with temporal info
+        """
+        features = []
+
+        # Convert Unix timestamp to local time
+        region = extract_boundary(df)
+        centroid = extract_area_center(region)
+        df = convert_time(df, centroid.x, centroid.y)
+
+        for _, row in df.iterrows():
+            start_time_str = row['timestamp']
+            start_time = datetime.strptime(start_time_str, '%d/%m/%Y %H:%M:%S')
+
+            # Parse geometry column
+            geometry = ast.literal_eval(row['geometry'])
+
+            # Create time-stamped coordinates with 15s interval
+            coords_with_time = []
+            for i, point in enumerate(geometry):
+                point_time = start_time + timedelta(seconds=i * 15)
+
+                # Create 3d data point
+                coords_with_time.append((
+                    point[0],
+                    point[1],
+                    point_time.isoformat()
+                ))
+
+            features.append({
+                'type': 'Feature',
+                'properties': {
+                    'trajectory_id': row.get('trip_id', f'traj_{len(features)}'),
+                    'start_time': start_time.isoformat(),
+                    'end_time': coords_with_time[-1][2]
+                },
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': coords_with_time
+                }
+            })
+        
+        # Return result in GoeJSON format
+        return {
+            'type': 'FeatureCollection',
+            'features': features
+        }
+
 
 def download_files(request, filename):
     """
