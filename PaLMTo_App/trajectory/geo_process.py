@@ -138,7 +138,7 @@ def heatmap_geojson(df, area, cell_size=800):
         'maxCount': max_count
     }
 
-def convert_time(df, lat, lon):
+def convert_time(df, lon, lat):
     """
         Convert timestamps formatted as epoch Unix timestamp in seconds to a local time
         indicated by geographical coordinates
