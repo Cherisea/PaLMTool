@@ -6,6 +6,9 @@ import geopandas as gpd
 import numpy as np
 from shapely.geometry import Polygon, mapping
 from Palmto_gen import ConvertToToken, DisplayTrajs
+from timezonefinder import TimezoneFinder
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 def extract_boundary(df):
     """
@@ -135,6 +138,28 @@ def heatmap_geojson(df, area, cell_size=800):
         'maxCount': max_count
     }
 
+def convert_time(df, lat, lon):
+    """
+        Convert timestamps formatted as epoch Unix timestamp in seconds to a local time
+        indicated by geographical coordinates
+
+        df: dataframe with a timestamp column in epoch Unix format
+        lat: latitude of the center of a region
+        lon: longitude of the center of a region
+
+        Returns modified dataframe with timestamp column represented by a 24-hour formatted time 
+    """
+    # Obtain timezone from coords
+    tz = TimezoneFinder()
+    timezone = tz.timezone_at(lng=lon, lat=lat)
+
+    if not timezone:
+        raise ValueError(f"Could not find timezone for coordiates Lon: {lon}, Lat: {lat}")
+
+    df['timestamp'] = df['timestamp'].apply(lambda x: 
+                                            datetime.fromtimestamp(x, tz=ZoneInfo(timezone)).strftime("%d/%m/%Y %H:%M:%S"))
+
+    return df
 
 
 
