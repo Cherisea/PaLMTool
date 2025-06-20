@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GenerationConfigView, download_files, compare_trajectory_heatmap, Trajectory3DView
+from .views import GenerationConfigView, download_files, Trajectory3DView
 
 
 urlpatterns = [
