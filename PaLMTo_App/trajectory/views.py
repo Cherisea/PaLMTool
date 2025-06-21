@@ -16,6 +16,7 @@ import ast
 from io import StringIO
 from contextlib import redirect_stdout
 from datetime import datetime, timedelta
+import requests
 
 # Holds statistics related to trajectory generation
 STATS = {}
@@ -257,16 +258,29 @@ class MapMatchingView(APIView):
             return Response({"Error": f"File {file_path} not found"}, status=status.HTTP_404_NOT_FOUND)
         
         try:
+            matched_trajs = []
             df = pd.read_csv(file_path)
             df['geometry'] = df['geometry'].apply(ast.literal_eval)
 
             for _, row in df.iterrows():
-                trip_id = row['trip_id']
-                traj_str = row['geometry']
+                traj = row['geometry']
 
-                
+                # Convert trajectory into OSRM-complaint format
+                traj_trip = []
+                for coord in traj:
+                    traj_trip.append(f"{coord[0]}, {coord[1]}")
+                osrm_str = ";".join(traj_trip)
+                osrm_url = "http://router.project-osrm.org/match/v1/driving/"
 
-                # TODO: call OSRM to perform map-matching
+                # Make request to OSRM
+                response = requests.get(f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson")
+
+                if response.status_code == 200:
+                    matched_data = response.json()
+                    matched_data['trip_id'] = row['trip_id']
+                    matched_trajs.append(matched_data)
+
+            return Response(matched_trajs, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
