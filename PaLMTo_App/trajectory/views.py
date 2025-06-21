@@ -17,9 +17,14 @@ from io import StringIO
 from contextlib import redirect_stdout
 from datetime import datetime, timedelta
 
+# Holds statistics related to trajectory generation
 STATS = {}
 
 class GenerationConfigView(APIView):
+    """
+        A class for processing frontend form and sending back data related to trajectory generation 
+        using PaLMTo_gen library
+    """
      # Specify parser of HMTL forms and file uploads for Django REST Framework
     parser_classes = [MultiPartParser, FormParser]
 
@@ -56,6 +61,10 @@ class GenerationConfigView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class Trajectory3DView(APIView):
+    """
+        A class for handling frontend request thatt renders 3D visualization 
+        view of timestamped trajectory trail.
+    """
     def get(self, request):
         # TODO: replace demo file with dynamically generated file
         df = pd.read_csv('demo.csv')
