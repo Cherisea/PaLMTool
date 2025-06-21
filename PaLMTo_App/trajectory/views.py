@@ -58,86 +58,8 @@ class GenerationConfigView(APIView):
                              'visualization': visual_data,
                              'heatmap': heatmap_data,
                              'stats': STATS}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class Trajectory3DView(APIView):
-    """
-        A class for handling frontend request thatt renders 3D visualization 
-        view of timestamped trajectory trail.
-    """
-    def get(self, request):
-        # TODO: replace demo file with dynamically generated file
-        df = pd.read_csv('demo.csv')
-        processed_data = self.prepare_3d_data(df)
-
-        return Response(processed_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         
-
-    def prepare_3d_data(self, df):
-        """
-            Convert trajectory data to 3D format with temporal info
-        """
-        features = []
-
-        # Convert Unix timestamp to local time
-        region = extract_boundary(df)
-        centroid = extract_area_center(region)
-        df = convert_time(df, centroid.x, centroid.y)
-
-        for _, row in df.iterrows():
-            start_time_str = row['timestamp']
-            start_time = datetime.strptime(start_time_str, '%d/%m/%Y %H:%M:%S')
-
-            # Parse geometry column
-            geometry = ast.literal_eval(row['geometry'])
-
-            # Create time-stamped coordinates with 15s interval
-            coords_with_time = []
-            for i, point in enumerate(geometry):
-                point_time = start_time + timedelta(seconds=i * 15)
-
-                # Create 3d data point
-                coords_with_time.append((
-                    point[0],
-                    point[1],
-                    point_time.isoformat()
-                ))
-
-            features.append({
-                'type': 'Feature',
-                'properties': {
-                    'trajectory_id': row.get('trip_id', f'traj_{len(features)}'),
-                    'start_time': start_time.isoformat(),
-                    'end_time': coords_with_time[-1][2]
-                },
-                'geometry': {
-                    'type': 'LineString',
-                    'coordinates': coords_with_time
-                }
-            })
-        
-        # Return result in GoeJSON format
-        return {
-            'type': 'FeatureCollection',
-            'features': features
-        }
-
-
-def download_files(request, filename):
-    """
-        Download files from the server
-
-        filename: name of file to be downloaded
-    """
-    path = os.path.join(settings.MEDIA_ROOT, filename)
-    if os.path.exists(path):
-        response = FileResponse(open(path, "rb"))
-        response['Content-Disposition'] = f"attachment; filename={filename}"
-        response['Content-Type'] = 'text/csv'
-        return response
-    else:
-        return Response("File not found", status=status.HTTP_404_NOT_FOUND)
-    
 def _process_config(data):
     """
         Process data sent from frontend form.
@@ -254,3 +176,81 @@ def compare_trajectory_heatmap(df, new_trajs_gdf, study_area, sample):
             'center': center,
             'bounds': [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]  # [[miny, minx], [maxy, maxx]]
         }
+
+class Trajectory3DView(APIView):
+    """
+        A class for handling frontend request thatt renders 3D visualization 
+        view of timestamped trajectory trail.
+    """
+    def get(self, request):
+        # TODO: replace demo file with dynamically generated file
+        df = pd.read_csv('demo.csv')
+        processed_data = self.prepare_3d_data(df)
+
+        return Response(processed_data, status=status.HTTP_200_OK)
+        
+
+    def prepare_3d_data(self, df):
+        """
+            Convert trajectory data to 3D format with temporal info
+        """
+        features = []
+
+        # Convert Unix timestamp to local time
+        region = extract_boundary(df)
+        centroid = extract_area_center(region)
+        df = convert_time(df, centroid.x, centroid.y)
+
+        for _, row in df.iterrows():
+            start_time_str = row['timestamp']
+            start_time = datetime.strptime(start_time_str, '%d/%m/%Y %H:%M:%S')
+
+            # Parse geometry column
+            geometry = ast.literal_eval(row['geometry'])
+
+            # Create time-stamped coordinates with 15s interval
+            coords_with_time = []
+            for i, point in enumerate(geometry):
+                point_time = start_time + timedelta(seconds=i * 15)
+
+                # Create 3d data point
+                coords_with_time.append((
+                    point[0],
+                    point[1],
+                    point_time.isoformat()
+                ))
+
+            features.append({
+                'type': 'Feature',
+                'properties': {
+                    'trajectory_id': row.get('trip_id', f'traj_{len(features)}'),
+                    'start_time': start_time.isoformat(),
+                    'end_time': coords_with_time[-1][2]
+                },
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': coords_with_time
+                }
+            })
+        
+        # Return result in GoeJSON format
+        return {
+            'type': 'FeatureCollection',
+            'features': features
+        }
+
+# Function-based view
+def download_files(request, filename):
+    """
+        Download files from the server
+
+        filename: name of file to be downloaded
+    """
+    path = os.path.join(settings.MEDIA_ROOT, filename)
+    if os.path.exists(path):
+        response = FileResponse(open(path, "rb"))
+        response['Content-Disposition'] = f"attachment; filename={filename}"
+        response['Content-Type'] = 'text/csv'
+        return response
+    else:
+        return Response("File not found", status=status.HTTP_404_NOT_FOUND)
