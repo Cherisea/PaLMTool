@@ -179,7 +179,7 @@ class GenerationConfigView(APIView):
 
 class Trajectory3DView(APIView):
     """
-        A class for handling frontend request thatt renders 3D visualization 
+        A class for handling frontend request that renders 3D visualization 
         view of timestamped trajectory trail.
     """
     def get(self, request):
@@ -238,6 +238,38 @@ class Trajectory3DView(APIView):
             'type': 'FeatureCollection',
             'features': features
         }
+
+class MapMatchingView(APIView):
+    """
+        A class for mapping trajectory trip to actual road network
+    """
+    def post(self, request):
+        # Get file name from request
+        file_name = request.data.get('filename')
+
+        if not file_name:
+            return Response({"Error": "No file name provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get full file path
+        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+
+        if not os.path.exists(file_path):
+            return Response({"Error": f"File {file_path} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            df = pd.read_csv(file_path)
+            df['geometry'] = df['geometry'].apply(ast.literal_eval)
+
+            for _, row in df.iterrows():
+                trip_id = row['trip_id']
+                traj_str = row['geometry']
+
+                
+
+                # TODO: call OSRM to perform map-matching
+        except Exception as e:
+            return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Function-based view
 def download_files(request, filename):
