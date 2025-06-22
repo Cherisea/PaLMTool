@@ -33,7 +33,7 @@ const TrajectoryMap = ({ title, data, center, color }) => (
   </div>
 );
 
-const HeatmapMap = ({ title, data, center, bounds, style, onEachFeature }) => (
+const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -65,7 +65,7 @@ const  MapMatchingMap = ({ title, data, center, style }) => (
   </div>
 )
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData }) 
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, mapMatchData }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -84,6 +84,13 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           onClick={() => setViewMode('heatmap')}
           disabled={!heatmapData}>
           H<span>eatmap View</span>
+        </button>
+
+        <button
+          className={`pill-btn ${viewMode == 'map-matching' ? 'active' : ''}`}
+          onClick={() => setViewMode('map-matching')}
+          disabled={!mapMatchData}>
+          M<span>ap-Matching View</span>
         </button>
       </div>
     );
@@ -141,7 +148,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       <ViewControl />
       {viewMode === 'heatmap' && heatmapData ? (
         <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
-          <HeatmapMap
+          <HeatMap
             title="Original Trajectories Heatmap"
             data={heatmapData.original}
             center={heatmapData.center}
@@ -149,7 +156,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             style={heatmapStyle}
             onEachFeature={onEachFeature}
           />
-          <HeatmapMap
+          <HeatMap
             title="Generated Trajectories Heatmap"
             data={heatmapData.generated}
             center={heatmapData.center}
