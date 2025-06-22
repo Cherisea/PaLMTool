@@ -49,6 +49,22 @@ const HeatmapMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
+const  MapMatchingMap = ({ title, data, center, style }) => (
+  <div style={{ flex: 1 }}>
+    <h3>{title}</h3>
+    <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
+      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
+      <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      <GeoJSON data={data} style={style} />
+      </MapContainer>
+    </div>
+  </div>
+)
+
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData }) 
 {
   // Declare a state variable for current view mode
