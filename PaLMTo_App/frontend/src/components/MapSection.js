@@ -49,17 +49,40 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
-const  MapMatchingMap = ({ title, data, center, style }) => (
+const  MapMatchingMap = ({ title, data, center, originalData }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
-      <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+        <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      <GeoJSON data={data} style={style} />
+        {/* Original trajectory trip in dashed line */}
+        <GeoJSON 
+          data={originalData} 
+          style={{
+            color: 'gray',
+            weight: 2,
+            opacity: 0.6,
+            dashArray: '5, 5'
+          }} 
+        />
+
+        {/* Matched trajectory  in solid lin*/}
+        {data && data.map((trajectory, index) => (
+          <GeoJSON
+            key={`matched-${index}`}
+            data={trajectory.matchings[0].geometry}
+            style={{
+              color: 'red',
+              weight: 3,
+              opacity: 0.8
+            }}
+          />
+        ))}
+        
       </MapContainer>
     </div>
   </div>
@@ -163,6 +186,21 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             bounds={heatmapData.bounds}
             style={heatmapStyle}
             onEachFeature={onEachFeature}
+          />
+        </div>
+      ) : viewMode === 'map-matching' && mapMatchData ? (
+        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px'}}>
+          <MapMatchingMap
+            // title="Generated Trajectories"
+            // data={}
+            // center={}
+            // style={}
+          />
+          <MapMatchingMap
+            // title="Generated Trajectories Matched with Map"
+            // data={}
+            // center={}
+            // style={}
           />
         </div>
       ) : (
