@@ -268,19 +268,37 @@ class MapMatchingView(APIView):
                 # Convert trajectory into OSRM-complaint format
                 traj_trip = []
                 for coord in traj:
-                    traj_trip.append(f"{coord[0]}, {coord[1]}")
+                    traj_trip.append(f"{coord[0]},{coord[1]}")
                 osrm_str = ";".join(traj_trip)
                 osrm_url = "http://router.project-osrm.org/match/v1/driving/"
+                full_url = f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson"
 
                 # Make request to OSRM
-                response = requests.get(f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson")
+                response = requests.get(full_url)
 
                 if response.status_code == 200:
                     matched_data = response.json()
-                    matched_data['trip_id'] = row['trip_id']
-                    matched_trajs.append(matched_data)
 
-            return Response(matched_trajs, status=status.HTTP_200_OK)
+                    if 'matchings' in matched_data and matched_data['matchings']:
+                        matching = matched_data['matchings'][0]
+
+                        # Create GeoJSON feature for frontend
+                        matched_feature = {
+                            'type': 'Feature',
+                            'properties': {
+                                'trip_id': row['trip_id'],
+                                'confidence': matching.get('confidence', 0),
+                                'distance': matching.get('distance', 0),
+                                'duration': matching.get('duration', 0)
+                            },
+                            'geometry': matching['geometry']
+                        }
+                        matched_trajs.append(matched_feature)
+
+            return Response({
+                'type': 'FeatureCollection',
+                'features': matched_trajs
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
