@@ -261,8 +261,9 @@ class MapMatchingView(APIView):
             matched_trajs = []
             df = pd.read_csv(file_path)
             df['geometry'] = df['geometry'].apply(ast.literal_eval)
+            sub_df = df.sample(frac=0.01, random_state=404)
 
-            for _, row in df.iterrows():
+            for _, row in sub_df.iterrows():
                 traj = row['geometry']
 
                 # Convert trajectory into OSRM-complaint format
@@ -274,7 +275,7 @@ class MapMatchingView(APIView):
                 full_url = f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson"
 
                 # Make request to OSRM
-                response = requests.get(full_url)
+                response = requests.get(full_url, timeout=10)
 
                 if response.status_code == 200:
                     matched_data = response.json()
