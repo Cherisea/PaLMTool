@@ -19,6 +19,9 @@ L.Icon.Default.mergeOptions({
 
 // Main React component 
 function App() {
+  // Declare a state variable for storing file name of generated trajectories
+  const [generatedFileName, setGeneratedFileName] = useState(null);
+
   // Declare a state variable for storing backend statistics
   const [statsData, setStatsData] = useState(null);
 
@@ -134,6 +137,9 @@ function App() {
       // Extract download link from response sent from backend
       const generatedFile = response.data.generated_file;
       setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
+
+      // Store file name of generated trajectories
+      setGeneratedFileName(generatedFile);
       
       // Extract backend statistics
       setStatsData(response.data.stats)
@@ -168,6 +174,7 @@ function App() {
           onLocationSelect={handleLocationSelect}
           visualData={visualData}
           heatmapData={heatmapData}
+          generatedFileName={generatedFileName}
         />
 
         <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
