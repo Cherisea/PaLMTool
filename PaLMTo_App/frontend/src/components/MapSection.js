@@ -1,7 +1,8 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -60,38 +61,66 @@ const  MapMatchingMap = ({ title, data, center, originalData }) => (
         />
 
         {/* Original trajectory trip in dashed line */}
-        <GeoJSON 
-          data={originalData} 
-          style={{
-            color: 'gray',
-            weight: 2,
-            opacity: 0.6,
-            dashArray: '5, 5'
-          }} 
-        />
+        {originalData && (
+          <GeoJSON 
+            data={originalData} 
+            style={{
+              color: 'gray',
+              weight: 2,
+              opacity: 0.6,
+              dashArray: '5, 5'
+            }} 
+          />
+        )}
 
         {/* Matched trajectory  in solid lin*/}
-        {data && data.map((trajectory, index) => (
+        {data && data.features && (
           <GeoJSON
-            key={`matched-${index}`}
-            data={trajectory.matchings[0].geometry}
+            data={data}
             style={{
               color: 'red',
               weight: 3,
               opacity: 0.8
             }}
           />
-        ))}
+        )}
         
       </MapContainer>
     </div>
   </div>
 )
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, mapMatchData }) 
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, generatedFileName }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
+
+  // Declare a state variable for map matching data
+  const [mapMatchData, setMapMatchData] = useState(null);
+
+  // Declare a state variable for status of fetching map matching data
+  const [mapMatchLoading, setMapMatchLoading] = useState(false);
+
+  // ? Consider moving data fetching logic to a separate script
+  useEffect(() => {
+    if (viewMode === 'map-matching' && generatedFileName && !mapMatchData) {
+      fetchMapMatchingData();
+    }
+  }, [viewMode, generatedFileName, mapMatchData]);
+
+  const fetchMapMatchingData = async () => {
+    setMapMatchLoading(true);
+    try {
+      const response = await axios.post('trajectory/map-match/', {
+        filename: generatedFileName
+      });
+      setMapMatchData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch map-matching data: ', error);
+    } finally {
+      setMapMatchLoading(false);
+    }
+  };
 
   const ViewControl = () => {
     return (
@@ -110,9 +139,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         </button>
 
         <button
-          className={`pill-btn ${viewMode == 'map-matching' ? 'active' : ''}`}
+          className={`pill-btn ${viewMode === 'map-matching' ? 'active' : ''}`}
           onClick={() => setViewMode('map-matching')}
-          disabled={!mapMatchData}>
+          disabled={!generatedFileName}>
           M<span>ap-Matching View</span>
         </button>
       </div>
@@ -188,20 +217,38 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             onEachFeature={onEachFeature}
           />
         </div>
-      ) : viewMode === 'map-matching' && mapMatchData ? (
-        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px'}}>
-          <MapMatchingMap
-            // title="Generated Trajectories"
-            // data={}
-            // center={}
-            // style={}
-          />
-          <MapMatchingMap
-            // title="Generated Trajectories Matched with Map"
-            // data={}
-            // center={}
-            // style={}
-          />
+      ) : viewMode === 'map-matching' && generatedFileName ? (
+        <div style={{ height: '500px', marginTop: '10px'}}>
+          {mapMatchLoading ? (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              fontSize: '18px',
+              color: '#666'
+            }}>
+              Loading map-matching data...
+            </div>
+          ) : mapMatchData ? (
+            <MapMatchingMap
+              title="Generated Trajectories (Map-Matching View)"
+              data={mapMatchData}
+              originalData={visualData.generated}
+              center={visualData.center}
+            />
+          ) : (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              fontSize: '18px',
+              color: '#666'
+            }}>
+              Failed to load map-matching data
+            </div>
+          )}
         </div>
       ) : (
         <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
