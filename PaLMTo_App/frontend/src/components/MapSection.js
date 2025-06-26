@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
@@ -50,45 +50,25 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
-const  MapMatchingMap = ({ title, data, center, originalData }) => (
+const  MapMatchingMap = ({ title, data, center }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
+      <MapContainer center={center} zoom={15} style={{ height: "100%", width: "100%" }}>
         <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {/* Original trajectory trip in dashed line */}
-        {originalData && (
-          <GeoJSON 
-            data={originalData} 
-            style={{
-              color: 'gray',
-              weight: 2,
-              opacity: 0.6,
-              dashArray: '5, 5'
-            }} 
-          />
-        )}
-
-        {/* Matched trajectory  in solid lin*/}
-        {data && data.features && (
-          <GeoJSON
-            data={data}
-            style={{
-              color: 'red',
-              weight: 3,
-              opacity: 0.8
-            }}
-          />
-        )}
+        <GeoJSON data={data} style={{
+            color: 'red',
+            weight: 3,
+            opacity: 0.8}}
+        />
         
       </MapContainer>
     </div>
   </div>
-)
+);
 
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, generatedFileName }) 
 {
@@ -102,13 +82,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   const [mapMatchLoading, setMapMatchLoading] = useState(false);
 
   // ? Consider moving data fetching logic to a separate script
-  useEffect(() => {
-    if (viewMode === 'map-matching' && generatedFileName && !mapMatchData) {
-      fetchMapMatchingData();
-    }
-  }, [viewMode, generatedFileName, mapMatchData]);
-
-  const fetchMapMatchingData = async () => {
+  const fetchMapMatchingData = useCallback(async () => {
     setMapMatchLoading(true);
     try {
       const response = await axios.post('trajectory/map-match/', {
@@ -120,7 +94,13 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     } finally {
       setMapMatchLoading(false);
     }
-  };
+  }, [generatedFileName]);
+
+  useEffect(() => {
+    if (viewMode === 'map-matching' && generatedFileName && !mapMatchData) {
+      fetchMapMatchingData();
+    }
+  }, [viewMode, generatedFileName, mapMatchData, fetchMapMatchingData]);
 
   const ViewControl = () => {
     return (
@@ -226,15 +206,13 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               alignItems: 'center',
               height: '100%',
               fontSize: '18px',
-              color: '#666'
-            }}>
+              color: '#666'}}>
               Loading map-matching data...
             </div>
           ) : mapMatchData ? (
             <MapMatchingMap
               title="Generated Trajectories (Map-Matching View)"
               data={mapMatchData}
-              originalData={visualData.generated}
               center={visualData.center}
             />
           ) : (
@@ -244,8 +222,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               alignItems: 'center',
               height: '100%',
               fontSize: '18px',
-              color: '#666'
-            }}>
+              color: '#666'}}>
               Failed to load map-matching data
             </div>
           )}
