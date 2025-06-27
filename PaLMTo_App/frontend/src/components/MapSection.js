@@ -3,6 +3,7 @@ import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { FiDownload } from "react-icons/fi";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -34,9 +35,7 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, showDownload=fa
       {/* Download button overlay */}
       {showDownload && onDownload && (
         <div className="download-overlay" onClick={onDownload} title="Download generated trajectories">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-          </svg>
+          <FiDownload size={24} />
         </div>
       )}
 
@@ -74,7 +73,6 @@ const  MapMatchingMap = ({ title, data, center }) => (
             weight: 3,
             opacity: 0.8}}
         />
-        
       </MapContainer>
     </div>
   </div>
@@ -190,7 +188,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect,
     <div className="map-box" style={{ position: 'relative' }}>
       <ViewControl />
       {viewMode === 'heatmap' && heatmapData ? (
-        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <HeatMap
             title="Original Trajectories Heatmap"
             data={heatmapData.original}
@@ -209,7 +207,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect,
           />
         </div>
       ) : viewMode === 'map-matching' && generatedFileName ? (
-        <div style={{ display: 'flex', height: '500px', marginTop: '10px'}}>
+        <div style={{ display: 'flex', height: '600px', marginTop: '10px'}}>
           {mapMatchLoading ? (
             <div style={{
               display: 'flex',
@@ -239,7 +237,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect,
           )}
         </div>
       ) : (
-        <div style={{ display: 'flex', gap: '20px', height: '500px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <TrajectoryMap
             title="Original Trajectories"
             data={visualData.original}
