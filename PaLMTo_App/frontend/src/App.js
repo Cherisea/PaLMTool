@@ -34,9 +34,6 @@ function App() {
   // Declare a state variable for storing download links
   const [downloadLink, setDownloadLink] = useState('');
 
-  // Declare a state variable for form submission
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
   // Declare state variables for form
   const [formData, setFormData] = useState({
     cell_size: 50,
@@ -105,7 +102,7 @@ function App() {
   };
 
   // Handler for saving generated trajectories to local machine
-  const handleSave = () => {
+  const handleDownload = () => {
     if (downloadLink) {
       window.open(downloadLink, '_blank');
     } else {
@@ -147,7 +144,6 @@ function App() {
       // Extract GeoJSON feature collection from backend response
       setVisualData(response.data.visualization)
       setHeatmapData(response.data.heatmap)
-      setIsSubmitted(true)
     } catch (error) {
       console.error("Configuration not set:", error.response?.data || error.message);
       throw error;
@@ -175,11 +171,8 @@ function App() {
           visualData={visualData}
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
+          onDownload={handleDownload}
         />
-
-        <button className="save-button" onClick={handleSave} disabled={!isSubmitted}>
-          Save
-        </button>
        
       </div>
     </div>
