@@ -18,7 +18,7 @@ const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect
   </div>
 );
 
-const TrajectoryMap = ({ title, data, center, color }) => (
+const TrajectoryMap = ({ title, data, center, color, onDownload, showDownload=false }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -30,6 +30,16 @@ const TrajectoryMap = ({ title, data, center, color }) => (
 
         <GeoJSON data={data} style={{ color, weight: 2 }} />
       </MapContainer>
+
+      {/* Download button overlay */}
+      {showDownload && onDownload && (
+        <div className="download-overlay" onClick={onDownload} title="Download generated trajectories">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+        </div>
+      )}
+
     </div>
   </div>
 );
@@ -70,7 +80,8 @@ const  MapMatchingMap = ({ title, data, center }) => (
   </div>
 );
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, generatedFileName }) 
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, 
+  visualData, heatmapData, generatedFileName, onDownload }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -234,12 +245,15 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             data={visualData.original}
             center={visualData.center}
             color="blue"
+            showDownload={false}
           />
           <TrajectoryMap
             title="Generated Trajectories"
             data={visualData.generated}
             center={visualData.center}
             color="red"
+            showDownload={true}
+            onDownload={onDownload}
           />
         </div>
       )}
