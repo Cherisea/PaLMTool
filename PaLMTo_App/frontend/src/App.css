@@ -253,12 +253,12 @@ button:hover {
   flex-direction: column;
   padding: 2rem 1rem 1rem 1rem;
   box-sizing: border-box;
-  height: 90%; 
+  height: 95%; 
 }
 
 .map-container {
   flex: 1;  /* Take remaining space */
-  min-height: 600px;  /* Minimum height */
+  min-height: 650px;  /* Minimum height */
 }
 
 .view-toggle-pills {
@@ -315,7 +315,7 @@ button:hover {
 /* Download overlay styling */
 .download-overlay {
   position: absolute;
-  bottom: 20px;
+  bottom: 10px;
   right: 20px;
   width: 48px;
   height: 48px;
