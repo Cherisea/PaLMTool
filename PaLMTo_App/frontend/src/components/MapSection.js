@@ -198,7 +198,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           />
         </div>
       ) : viewMode === 'map-matching' && generatedFileName ? (
-        <div style={{ height: '500px', marginTop: '10px'}}>
+        <div style={{ display: 'flex', height: '500px', marginTop: '10px'}}>
           {mapMatchLoading ? (
             <div style={{
               display: 'flex',
