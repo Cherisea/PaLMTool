@@ -261,30 +261,6 @@ button:hover {
   min-height: 600px;  /* Minimum height */
 }
 
-.save-button {
-  margin: 2rem auto;  
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 7%;
-  position: relative;
-  left: 15%;
-  bottom: 6rem;
-}
-
-.save-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.save-button:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
 .view-toggle-pills {
   position: absolute;
   top: 2px;
