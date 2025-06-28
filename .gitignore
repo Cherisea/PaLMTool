@@ -29,3 +29,6 @@ __pycache__/
 
 # Ignore genrated geojson files
 **/static/*.geojson
+
+# Ignore map-matched files generated from synthetic trajectories
+**/media/matched*
