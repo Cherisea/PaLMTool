@@ -113,13 +113,13 @@ class GenerationConfigView(APIView):
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
         return sentence_df, study_area, new_trajs, new_trajs_gdf
         
-    def save_trajectory(self, trajs, config_instance, save_dir=settings.MEDIA_ROOT):
+    def save_trajectory(self, trajs, config_instance, save_dir="generated"):
         """
             Save generated trajectories to local machine as well as database table.
 
             trajs: trajectory data formatted as a list of coordinate pairs
             config_instance: foreign key of GeneratedTrajecotry table
-            save_dir: local directory for saving trajectory files to
+            save_dir: media sub-folder for saving trajectory files
 
             Return filename of saved trajectory. 
         """
@@ -127,8 +127,10 @@ class GenerationConfigView(APIView):
         # Form a unique file name for generated trajectories
         file_id = uuid.uuid4()
         filename = f'generated_trajectories_{file_id}.csv'
-        file_path = os.path.join(save_dir, filename)
+        subdir = os.path.join(settings.MEDIA_ROOT, save_dir)
+        file_path = os.path.join(subdir, filename)
 
+        os.makedirs(subdir, exist_ok=True)
         # Save files to server file system
         trajs.to_csv(file_path, index=False)
 
@@ -303,6 +305,8 @@ class MapMatchingView(APIView):
         except Exception as e:
             return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def save_matched_trajs(self, matched_data, save_dir="matched"):
+        pass
 
 # Function-based view
 def download_files(request, filename):
