@@ -254,7 +254,7 @@ class MapMatchingView(APIView):
             return Response({"Error": "No file name provided"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Get full file path
-        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+        file_path = os.path.join(settings.MEDIA_ROOT, "generated", file_name)
 
         if not os.path.exists(file_path):
             return Response({"Error": f"File {file_path} not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -299,10 +299,10 @@ class MapMatchingView(APIView):
                         matched_trajs.append(matched_feature)
 
             matched_filename = self.save_matched_trajs(matched_trajs)
+            map_data = {'type': 'FeatureCollection', 'features': matched_trajs}
 
             return Response({
-                'type': 'FeatureCollection',
-                'features': matched_trajs,
+                'map_data': map_data,
                 'output_file': matched_filename
             }, status=status.HTTP_200_OK)
         except Exception as e:
