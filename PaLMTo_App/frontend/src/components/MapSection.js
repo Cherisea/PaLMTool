@@ -72,7 +72,7 @@ function onEachSnappedFeature(feature, layer) {
   }
 }
 
-const  MapMatchingMap = ({ title, data, center }) => (
+const  MapMatchingMap = ({ title, data, center, onDownload }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -93,6 +93,13 @@ const  MapMatchingMap = ({ title, data, center }) => (
         })}
         
       </MapContainer>
+
+      {/* Download button overlay */}
+      {onDownload && (
+        <div className="download-overlay" onClick={onDownload} title="Download generated trajectories">
+          <FiDownload size={24} />
+        </div>
+      )}
     </div>
   </div>
 );
@@ -246,6 +253,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               title="Generated Trajectories (Map-Matching View)"
               data={mapMatchData}
               center={visualData.center}
+              onDownload={onDownload}
             />
           ) : (
             <div style={{
