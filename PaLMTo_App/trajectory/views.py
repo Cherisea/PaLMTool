@@ -298,15 +298,53 @@ class MapMatchingView(APIView):
                         }
                         matched_trajs.append(matched_feature)
 
+            matched_filename = self.save_matched_trajs(matched_trajs)
+
             return Response({
                 'type': 'FeatureCollection',
-                'features': matched_trajs
+                'features': matched_trajs,
+                'output_file': matched_filename
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
     def save_matched_trajs(self, matched_data, save_dir="matched"):
-        pass
+        """
+            Save trajectories snapped to actual roads in a csv file.
+
+            matched_data: GeoJSON feature collection data with matched trajectories and
+                          related attributes
+            save_dir: media sub-folder for saving csv file 
+        """
+        file_id = uuid.uuid4
+        out_filename = f'matched_trajectories_{file_id}.csv'
+        subdir = os.path.join(settings.MEDIA_ROOT, save_dir)
+
+        os.makedirs(subdir, exist_ok=True)
+        full_path = os.path.join(subdir, out_filename)
+
+        csv_data = []
+        for feature in matched_data:
+            trip_id = feature['properties']['trip_id']
+            confidence = feature['properties']['confidence']
+            distance = feature['properties']['distance']
+            duration = feature['properties']['duration']
+
+            coords = feature['geometry']['coordinates']
+            geometry_str = str(coords)
+
+            csv_data.append({
+                "trip_id": trip_id,
+                "confidence": confidence,
+                "distance": distance,
+                "duration": duration,
+                "geometry": geometry_str
+            })
+
+        df = pd.DataFrame(csv_data)
+        df.to_csv(full_path, index=False)
+
+        return out_filename
 
 # Function-based view
 def download_files(request, filename):
