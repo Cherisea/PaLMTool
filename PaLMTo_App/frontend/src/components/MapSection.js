@@ -59,6 +59,19 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
+function getRandomColor() {
+  // Generate random hex code for coloring snapped trajectories
+  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+}
+
+function onEachSnappedFeature(feature, layer) {
+  // Add a popup window to each trajectory when hovered
+  if (feature.properties && feature.properties.trip_id) {
+    layer.bindPopup(`Trip ID: ${feature.properties.trip_id}`);
+    layer.on('mouseover', function () { this.openPopup(); });
+  }
+}
+
 const  MapMatchingMap = ({ title, data, center }) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
@@ -68,11 +81,17 @@ const  MapMatchingMap = ({ title, data, center }) => (
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <GeoJSON data={data} style={{
-            color: 'red',
-            weight: 3,
-            opacity: 0.8}}
-        />
+
+        {data.features.map((feature, index) => {
+          const color = getRandomColor();
+          return (
+            <GeoJSON key={feature.properties.trip_id || index} 
+                     data={feature} 
+                     style={{ color: color, weight: 5, opacity: 1, dashArray: "10, 6", lineCap: "butt" }}
+                     onEachFeature={onEachSnappedFeature} />
+          )
+        })}
+        
       </MapContainer>
     </div>
   </div>
