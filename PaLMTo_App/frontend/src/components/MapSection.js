@@ -97,8 +97,8 @@ const  MapMatchingMap = ({ title, data, center }) => (
   </div>
 );
 
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, 
-  visualData, heatmapData, generatedFileName, onDownload }) 
+// Main entry of script
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, generatedFileName, onDownload }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -109,6 +109,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect,
   // Declare a state variable for status of fetching map matching data
   const [mapMatchLoading, setMapMatchLoading] = useState(false);
 
+  // Declare a state variable for filename of matched trajectories saved in csv
+  const [matchedTrajFile, setMatchedTrajFile] = useState(''); 
+
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async () => {
     setMapMatchLoading(true);
@@ -116,7 +119,8 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect,
       const response = await axios.post('trajectory/map-match/', {
         filename: generatedFileName
       });
-      setMapMatchData(response.data);
+      setMapMatchData(response.data.map_data);
+      setMatchedTrajFile(response.data.output_file)
     } catch (error) {
       console.error('Failed to fetch map-matching data: ', error);
     } finally {
