@@ -316,7 +316,7 @@ class MapMatchingView(APIView):
                           related attributes
             save_dir: media sub-folder for saving csv file 
         """
-        file_id = uuid.uuid4
+        file_id = uuid.uuid4()
         out_filename = f'matched_trajectories_{file_id}.csv'
         subdir = os.path.join(settings.MEDIA_ROOT, save_dir)
 
