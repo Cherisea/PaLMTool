@@ -253,7 +253,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               title="Generated Trajectories (Map-Matching View)"
               data={mapMatchData}
               center={visualData.center}
-              onDownload={onDownload}
+              onDownload={() => onDownload(matchedTrajFile)}
             />
           ) : (
             <div style={{
@@ -282,7 +282,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="red"
             showDownload={true}
-            onDownload={onDownload}
+            onDownload={() => onDownload(generatedFileName)}
           />
         </div>
       )}
