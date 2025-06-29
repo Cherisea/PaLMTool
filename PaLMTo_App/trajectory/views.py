@@ -249,6 +249,7 @@ class MapMatchingView(APIView):
     def post(self, request):
         # Get file name from request
         file_name = request.data.get('filename')
+        percentage = request.data.get('percentage', 1.0)
 
         if not file_name:
             return Response({"Error": "No file name provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -263,7 +264,7 @@ class MapMatchingView(APIView):
             matched_trajs = []
             df = pd.read_csv(file_path)
             df['geometry'] = df['geometry'].apply(ast.literal_eval)
-            sub_df = df.sample(frac=0.01, random_state=404)
+            sub_df = df.sample(frac=percentage/100, random_state=404)
 
             for _, row in sub_df.iterrows():
                 traj = row['geometry']
