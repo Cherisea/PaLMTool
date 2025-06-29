@@ -96,7 +96,7 @@ const  MapMatchingMap = ({ title, data, center, onDownload }) => (
 
       {/* Download button overlay */}
       {onDownload && (
-        <div className="download-overlay" onClick={onDownload} title="Download generated trajectories">
+        <div className="download-overlay" onClick={onDownload} title="Download map-matched trajectories">
           <FiDownload size={24} />
         </div>
       )}
@@ -250,7 +250,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             </div>
           ) : mapMatchData ? (
             <MapMatchingMap
-              title="Generated Trajectories (Map-Matching View)"
+              title="Map-matched Trajectories"
               data={mapMatchData}
               center={visualData.center}
               onDownload={() => onDownload(matchedTrajFile)}
