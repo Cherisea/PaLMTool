@@ -1,4 +1,5 @@
 import React from "react";
+import { FiX } from "react-icons/fi";
 
 const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, onCancel}) => {
     if (!isOpen) return null;
@@ -6,6 +7,10 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
     return (
         <div className="modal-overlay">
             <div className="modal-content">
+                <button onClick={onCancel} className="modal-close-btn" title="Close">
+                    <FiX size={20} />
+                </button>
+
                 <h3>Map-matching Configuration</h3>
                 <p>Enter the percentage of generated trajectories to process for map-matching:</p>
                 <div style={{ marginBottom: '20px' }}>
@@ -28,14 +33,6 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <button onClick={onCancel} style={{
-                        padding: '8px 16px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        background: '#f5f5f5',
-                        cursor: 'pointer'
-                    }}>Cancel</button>
-
                     <button onClick={onSubmit} style={{
                         padding: '8px 16px',
                         border: 'none',
