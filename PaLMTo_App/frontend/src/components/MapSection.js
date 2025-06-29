@@ -4,6 +4,7 @@ import MapUpdater from "./MapUpdater";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
+import MapMatchInputModal from "./MapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -119,12 +120,19 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for filename of matched trajectories saved in csv
   const [matchedTrajFile, setMatchedTrajFile] = useState(''); 
 
+  // Declare a state variable for the presence of user input in map-matching view
+  const [showMapMatchInput, setShowMapMatchInput] = useState(false);
+
+  // Declare a state variable for user input
+  const [mapMatchPerc, setMapMatchPerc] = useState(1);
+
   // ? Consider moving data fetching logic to a separate script
-  const fetchMapMatchingData = useCallback(async () => {
+  const fetchMapMatchingData = useCallback(async (percentage) => {
     setMapMatchLoading(true);
     try {
       const response = await axios.post('trajectory/map-match/', {
-        filename: generatedFileName
+        filename: generatedFileName,
+        percentage: percentage
       });
       setMapMatchData(response.data.map_data);
       setMatchedTrajFile(response.data.output_file)
@@ -135,9 +143,27 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     }
   }, [generatedFileName]);
 
+  // Show input box when switching to map-matching view
+  const handleMapMatchView = () => {
+    setShowMapMatchInput(true);
+  }
+
+  // Process user input submission
+  const handleMapMatchSubmit = () => {
+    setShowMapMatchInput(false);
+    setViewMode('map-matching');
+    fetchMapMatchingData(mapMatchPerc);
+  }
+
+  // Process user input cancellation
+  const handleMapMatchCancel = () => {
+    setShowMapMatchInput(false);
+    setMapMatchPerc(1);
+  }
+
   useEffect(() => {
     if (viewMode === 'map-matching' && generatedFileName && !mapMatchData) {
-      fetchMapMatchingData();
+      
     }
   }, [viewMode, generatedFileName, mapMatchData, fetchMapMatchingData]);
 
@@ -159,7 +185,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
         <button
           className={`pill-btn ${viewMode === 'map-matching' ? 'active' : ''}`}
-          onClick={() => setViewMode('map-matching')}
+          onClick={handleMapMatchView}
           disabled={!generatedFileName}>
           M<span>ap-Matching View</span>
         </button>
@@ -217,6 +243,14 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   return (
     <div className="map-box" style={{ position: 'relative' }}>
       <ViewControl />
+      <MapMatchInputModal 
+        isOpen={showMapMatchInput}
+        percentage={mapMatchPerc}
+        onPercentageChange={setMapMatchPerc}
+        onSubmit={handleMapMatchSubmit}
+        onCancel={handleMapMatchCancel}
+      />
+
       {viewMode === 'heatmap' && heatmapData ? (
         <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <HeatMap
