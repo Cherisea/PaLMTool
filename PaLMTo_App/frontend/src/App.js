@@ -31,9 +31,6 @@ function App() {
   // Declare a state variable for storing GeoJSON data
   const [visualData, setVisualData] = useState(null);
 
-  // Declare a state variable for storing download links
-  const [downloadLink, setDownloadLink] = useState('');
-
   // Declare state variables for form
   const [formData, setFormData] = useState({
     cell_size: 50,
@@ -102,9 +99,10 @@ function App() {
   };
 
   // Handler for saving generated trajectories to local machine
-  const handleDownload = () => {
-    if (downloadLink) {
-      window.open(downloadLink, '_blank');
+  const handleDownload = (filename) => {
+    if (filename) {
+      const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${filename}`
+      window.open(downloadUrl, '_blank');
     } else {
       alert("No generated file available for download. Please generate trajectories first.")
     }
@@ -133,7 +131,6 @@ function App() {
 
       // Extract download link from response sent from backend
       const generatedFile = response.data.generated_file;
-      setDownloadLink(`${process.env.REACT_APP_API_URL}/trajectory/download/${generatedFile}`);
 
       // Store file name of generated trajectories
       setGeneratedFileName(generatedFile);
