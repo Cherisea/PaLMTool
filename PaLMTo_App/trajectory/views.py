@@ -353,9 +353,16 @@ def download_files(request, filename):
 
         filename: name of file to be downloaded
     """
-    path = os.path.join(settings.MEDIA_ROOT, filename)
-    if os.path.exists(path):
-        response = FileResponse(open(path, "rb"))
+    # A list of subdirs under media where generated files are stored
+    subdirs = ["generated", "matched"]
+
+    for subdir in subdirs:
+        full_path = os.path.join(settings.MEDIA_ROOT, subdir, filename)
+        if os.path.exists(full_path):
+            break
+
+    if os.path.exists(full_path):
+        response = FileResponse(open(full_path, "rb"))
         response['Content-Disposition'] = f"attachment; filename={filename}"
         response['Content-Type'] = 'text/csv'
         return response
