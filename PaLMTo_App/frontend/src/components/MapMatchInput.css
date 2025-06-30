@@ -33,7 +33,7 @@
 /* Close button styling */
 .modal-close-btn {
   position: absolute;
-  top: -30px;
+  top: -25px;
   right: 4px;
   background: none;
   border: none;
@@ -50,7 +50,6 @@
 }
 
 .modal-close-btn:hover {
-  background: #f5f5f5;
   color: #333;
 }
 
