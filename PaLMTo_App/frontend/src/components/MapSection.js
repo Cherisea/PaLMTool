@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import MapMatchInputModal from "./MapMatchInput";
@@ -73,9 +73,11 @@ function onEachSnappedFeature(feature, layer) {
   }
 }
 
-const  MapMatchingMap = ({ title, data, center, onDownload }) => (
+const  MapMatchingMap = ({ title, data, center, onDownload, perc }) => (
   <div style={{ flex: 1 }}>
-    <h3>{title}</h3>
+    <h3 style={{ textAlign: "center" }}>
+      {title} {perc !== undefined && `(${perc}% Processed)`}
+    </h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
       <MapContainer center={center} zoom={15} style={{ height: "100%", width: "100%" }}>
         <TileLayer
@@ -145,9 +147,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Show input box when switching to map-matching view
   const handleMapMatchView = () => {
-    if (!mapMatchLoading && viewMode !== 'map-matching') {
+    if (!mapMatchData && viewMode !== 'map-matching' && !mapMatchLoading) {
       setShowMapMatchInput(true);
-    } else if (viewMode !== 'map-matching') {
+    } else if (viewMode !== 'map-matching' || mapMatchData) {
       setViewMode('map-matching');
     }
   }
@@ -286,6 +288,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               data={mapMatchData}
               center={visualData.center}
               onDownload={() => onDownload(matchedTrajFile)}
+              perc={mapMatchPerc}
             />
           ) : (
             <div style={{
