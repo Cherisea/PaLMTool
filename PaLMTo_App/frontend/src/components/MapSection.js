@@ -165,12 +165,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     setMapMatchPerc(1);
   }
 
-  useEffect(() => {
-    if (viewMode === 'map-matching' && generatedFileName && !mapMatchData) {
-      
-    }
-  }, [viewMode, generatedFileName, mapMatchData, fetchMapMatchingData]);
-
   const ViewControl = () => {
     return (
       <div className="view-toggle-pills">
