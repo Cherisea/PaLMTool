@@ -8,7 +8,7 @@ import MapMatchInputModal from "./MapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
-    <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+    <MapContainer center={mapCenter} zoom={2} style={{ height: "100%", width: "100%" }}>
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -275,6 +275,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           {mapMatchLoading ? (
             <div style={{
               display: 'flex',
+              flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
               height: '100%',
@@ -283,7 +284,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               color: '#666'}}>
               <div>Loading map-matching data...</div>
               <div className="spinner" style={{
-                marginTop: '20px',
+                marginLeft: '24px',
                 width: '40px',
                 height: '40px',
                 border: '4px solid #f3f3f3',
