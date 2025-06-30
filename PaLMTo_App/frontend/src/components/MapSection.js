@@ -145,7 +145,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Show input box when switching to map-matching view
   const handleMapMatchView = () => {
-    setShowMapMatchInput(true);
+    if (!mapMatchLoading && viewMode !== 'map-matching') {
+      setShowMapMatchInput(true);
+    } else if (viewMode !== 'map-matching') {
+      setViewMode('map-matching');
+    }
   }
 
   // Process user input submission
