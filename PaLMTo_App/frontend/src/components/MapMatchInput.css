@@ -70,7 +70,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 3px;
 }
 
 .percentage-input {
@@ -88,9 +88,10 @@
   box-shadow: 0 0 4px #4CAF50;  
 }
 
-.percentage-label {
+.input-suffix {
+  margin-left: 4px;
   font-size: 16px;
-  color: #333;
+  color: #666;
 }
 
 .button-container {

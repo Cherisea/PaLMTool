@@ -22,6 +22,7 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
                         onChange={(e) => onPercentageChange(parseFloat(e.target.value))}
                         className="percentage-input"
                     />
+                    <span className="input-suffix">%</span>
                 </div>
 
                 <div className="button-container">
