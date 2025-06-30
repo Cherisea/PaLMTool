@@ -278,6 +278,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               justifyContent: 'center',
               alignItems: 'center',
               height: '100%',
+              width: '100%',
               fontSize: '18px',
               color: '#666'}}>
               Loading map-matching data...
