@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiX } from "react-icons/fi";
 
 function StatisticsPopup({ isOpen, onClose, stats }) {
   if (!isOpen) return null;
@@ -9,7 +10,7 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
 
         <div className="popup-header">
           <h3>Generation Statistics</h3>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={onClose}><FiX size={20} /></button>
         </div>
 
         <div className="popup-body">
