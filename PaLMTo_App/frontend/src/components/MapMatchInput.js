@@ -25,7 +25,7 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
                     <span className="input-suffix">%</span>
                 </div>
 
-                <div className="button-container">
+                <div className="process-btn-container">
                     <button onClick={onSubmit} className="process-button">Process</button>
                 </div>
             </div>
