@@ -281,7 +281,16 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               width: '100%',
               fontSize: '18px',
               color: '#666'}}>
-              Loading map-matching data...
+              <div>Loading map-matching data...</div>
+              <div className="spinner" style={{
+                marginTop: '20px',
+                width: '40px',
+                height: '40px',
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #3498db',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
             </div>
           ) : mapMatchData ? (
             <MapMatchingMap
