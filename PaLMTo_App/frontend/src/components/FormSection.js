@@ -174,7 +174,7 @@ function FormSection({
             onChange={handleChange} 
             step="100"
             min="100"
-            disabled={formData.generation_method === "point_to_point"}
+            disabled={formData.generation_method === "point_to_point" || formData.generation_method === ""}
             className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
             required={formData.generation_method !== "point_to_point"}
           />
