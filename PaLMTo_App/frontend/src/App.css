@@ -236,7 +236,7 @@ input:disabled {
 }
 
 .bounce {
-  animation: bounce 1s infinite;
+  animation: bounce 2s infinite;
 }
 
 /* Ensure button text remains visible during loading */
