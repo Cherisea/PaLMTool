@@ -201,21 +201,21 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         <button 
           className={`pill-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
           onClick={() => setViewMode('trajectory')}>
-          T<span>rajectory View</span>
+          Trajectory View
         </button>
 
         <button
           className={`pill-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
           onClick={() => setViewMode('heatmap')}
           disabled={!heatmapData}>
-          H<span>eatmap View</span>
+          Heatmap View
         </button>
 
         <button
           className={`pill-btn ${viewMode === 'map-matching' ? 'active' : ''}`}
           onClick={handleMapMatchView}
           disabled={!generatedFileName}>
-          M<span>ap-Matching View</span>
+          Map-Matching View
         </button>
       </div>
     );
