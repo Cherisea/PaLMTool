@@ -148,7 +148,11 @@ function FormSection({
         <div className="form-group">
           <label className="required">
             Generation Method <span className="required-mark">*</span>
-            <FiInfo title="Approach via which trajectories should be generated" className="info-icon"/>
+            <FiInfo 
+              title="Approach via which trajectories should be generated. 'Length-constrained' method generates new
+              trajectories with a predefined length; 'Point-to-Point' fills the gap between two bigrams" 
+              className="info-icon"
+            />
           </label>
           <select 
             name="generation_method" 
