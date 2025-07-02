@@ -177,7 +177,15 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Function that control bounce effect of download button
   const triggerBounce = () => {
     setBounceDownload(true);
-    setTimeout(() => setBounceDownload(false), 3000);
+    setTimeout(() => {
+      setBounceDownload(false);
+      setTimeout(() => {
+        setBounceDownload(true);
+        setTimeout(() => {
+          setBounceDownload(false);
+        }, 1000)
+      }, 1000);
+    }, 1000);
   }
 
   // Set up a side effect that calls bounce 
