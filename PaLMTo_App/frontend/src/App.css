@@ -229,6 +229,16 @@ input:disabled {
   }
 }
 
+@keyframes bounce {
+  0%, 100% { transform: translateY(0);}
+  10%, 30%, 50%, 70%, 90% { transform: translateY(-10px);}
+  20%, 40%, 60%, 80% { transform: translateY(0);}
+}
+
+.bounce {
+  animation: bounce 1s infinite;
+}
+
 /* Ensure button text remains visible during loading */
 .button-container button[type='submit']:disabled {
   background-color: #4CAF50; /* Keep the original color */
@@ -334,6 +344,7 @@ button:hover {
   transition: all 0.2s ease;
   z-index: 1000;
   color: #4CAF50;
+  border: 3px solid #ff3333;
 }
 
 .download-overlay:hover {
