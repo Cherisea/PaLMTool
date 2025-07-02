@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import MapMatchInputModal from "./MapMatchInput";
@@ -20,7 +20,7 @@ const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect
   </div>
 );
 
-const TrajectoryMap = ({ title, data, center, color, onDownload, showDownload=false }) => (
+const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false}) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -35,7 +35,9 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, showDownload=fa
 
       {/* Download button overlay */}
       {showDownload && onDownload && (
-        <div className="download-overlay" onClick={onDownload} title="Download generated trajectories">
+        <div className={`download-overlay${bounce ? ' bounce' : ''}`}
+             onClick={onDownload} 
+             title="Download generated trajectories">
           <FiDownload size={24} />
         </div>
       )}
@@ -73,7 +75,7 @@ function onEachSnappedFeature(feature, layer) {
   }
 }
 
-const  MapMatchingMap = ({ title, data, center, onDownload, perc }) => (
+const  MapMatchingMap = ({ title, data, center, onDownload, perc, bounce }) => (
   <div style={{ flex: 1 }}>
     <h3 style={{ textAlign: "center" }}>
       {title} {perc !== undefined && `(${perc}% Processed)`}
@@ -99,7 +101,9 @@ const  MapMatchingMap = ({ title, data, center, onDownload, perc }) => (
 
       {/* Download button overlay */}
       {onDownload && (
-        <div className="download-overlay" onClick={onDownload} title="Download map-matched trajectories">
+        <div className={`download-overlay${bounce ? ' bounce' : ''}`} 
+             onClick={onDownload} 
+             title="Download map-matched trajectories">
           <FiDownload size={24} />
         </div>
       )}
@@ -127,6 +131,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Declare a state variable for user input
   const [mapMatchPerc, setMapMatchPerc] = useState(1);
+
+  // Declare a state variable for download bounce effect
+  const [bounceDownload, setBounceDownload] = useState(false);
 
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
@@ -166,6 +173,19 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     setShowMapMatchInput(false);
     setMapMatchPerc(1);
   }
+
+  // Function that control bounce effect of download button
+  const triggerBounce = () => {
+    setBounceDownload(true);
+    setTimeout(() => setBounceDownload(false), 3000);
+  }
+
+  // Set up a side effect that calls bounce 
+  useEffect(() => {
+    if (generatedFileName || mapMatchData) {
+      triggerBounce();
+    }
+  }, [generatedFileName, mapMatchData])
 
   const ViewControl = () => {
     return (
@@ -282,7 +302,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               width: '100%',
               fontSize: '18px',
               color: '#666'}}>
-              <div>Loading map-matching data...</div>
+              <div>Generating map-matching data...</div>
               <div className="spinner" style={{
                 marginLeft: '24px',
                 width: '40px',
@@ -300,6 +320,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               center={visualData.center}
               onDownload={() => onDownload(matchedTrajFile)}
               perc={mapMatchPerc}
+              bounce={bounceDownload}
             />
           ) : (
             <div style={{
@@ -329,6 +350,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             color="red"
             showDownload={true}
             onDownload={() => onDownload(generatedFileName)}
+            bounce={bounceDownload}
           />
         </div>
       )}
