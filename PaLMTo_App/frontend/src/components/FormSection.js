@@ -88,6 +88,29 @@ function FormSection({
 
       <h2>WebPaLMTo Trajectory Generation</h2>
       <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
+      <div className="form-group">
+          <label className="required">
+            Sample Trajectory
+            <span className="required-mark">*</span>
+            <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
+          </label>
+          <div {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            {
+              isDragActive ? 
+                (<p>Drop the file here ...</p>) : 
+                formData.file ? 
+                  (<p>{formData.file.name}</p>) : 
+                  (<p>Drag & drop a file here, or click to select one</p>)
+            }
+          </div>
+          <p className="note">
+            <i>
+              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a> by leaving this field blank.
+            </i>
+          </p>
+        </div>
+
         <div className="form-group">
           <label className="required">
             Cell Size
@@ -107,7 +130,7 @@ function FormSection({
 
         <div className="form-group">
           <label className="required">
-            Number of Trajectories
+            Number of Generated Trajectories
             <span className="required-mark">*</span>
             <FiInfo title="Quantity of new trajectories to be generated" className="info-icon"/>
           </label>
@@ -116,8 +139,8 @@ function FormSection({
             type="number" 
             value={formData.num_trajectories} 
             onChange={handleChange}
-            step="1000"
-            min="1000"
+            step="100"
+            min="100"
             required 
           />
         </div>
@@ -155,28 +178,6 @@ function FormSection({
             className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
             required={formData.generation_method !== "point_to_point"}
           />
-        </div>
-
-        <div className="form-group">
-          <label className="required">
-            Sample Trajectory <em>(optional)</em>
-            <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
-          </label>
-          <div {...getRootProps({ className: "dropzone" })}>
-            <input {...getInputProps()} />
-            {
-              isDragActive ? 
-                (<p>Drop the file here ...</p>) : 
-                formData.file ? 
-                  (<p>{formData.file.name}</p>) : 
-                  (<p>Drag & drop a file here, or click to select one</p>)
-            }
-          </div>
-          <p className="note">
-            <i>
-              Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a> by leaving this field blank.
-            </i>
-          </p>
         </div>
 
         <div className="button-container">
