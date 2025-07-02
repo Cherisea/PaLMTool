@@ -35,7 +35,7 @@ function App() {
   // Declare state variables for form
   const [formData, setFormData] = useState({
     cell_size: 50,
-    num_trajectories: 1000,
+    num_trajectories: 100,
     trajectory_len: 100,
     generation_method: "",
     locationCoordinates: null,  
