@@ -135,6 +135,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for download bounce effect
   const [bounceDownload, setBounceDownload] = useState(false);
 
+  // Declare a state variable for hovering state of a snapshot
+  const [hovered, setHovered] = useState(null);
+
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
     setMapMatchLoading(true);
@@ -195,28 +198,56 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     }
   }, [generatedFileName, mapMatchData])
 
-  const ViewControl = () => {
+  const ViewSnapshots = () => {
+    const snapshots = [
+      {
+        id: 'trajectory',
+        title: 'Trajectory View',
+        available: !!visualData,
+        color: '#007bff'
+      },
+      {
+        id: 'heatmap',
+        title: 'Heatmap View',
+        available: !!heatmapData,
+        color: '#ff9800'
+      },
+      {
+        id: 'map-matching',
+        title: 'Map-Matching View',
+        available: !!mapMatchData,
+        color: '#4caf50'
+      }
+    ]; 
+
     return (
-      <div className="view-toggle-pills">
-        <button 
-          className={`pill-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
-          onClick={() => setViewMode('trajectory')}>
-          Trajectory View
-        </button>
-
-        <button
-          className={`pill-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
-          onClick={() => setViewMode('heatmap')}
-          disabled={!heatmapData}>
-          Heatmap View
-        </button>
-
-        <button
-          className={`pill-btn ${viewMode === 'map-matching' ? 'active' : ''}`}
-          onClick={handleMapMatchView}
-          disabled={!generatedFileName}>
-          Map-Matching View
-        </button>
+      <div className="view-snapshots-bar">
+        {snapshots.map((snap, idx) => (
+          <div
+            key={snap.id}
+            className={
+              `snapshot-thumb` + 
+              (viewMode === snap.id ? ' active' : '') +
+              (!snap.available ? ' disabled' : '') + 
+              (hovered === idx ? ' hovered' : hovered !== null ? ' not-hovered' : '')
+            }
+            onClick={() => {
+              if (snap.id === 'map-matching') {
+                if (snap.available) {
+                  setViewMode('map-matching');
+                } else {
+                  handleMapMatchView();
+                }
+              } else if (snap.available) {
+                setViewMode(snap.id)
+              }
+            }}
+            onMouseEnter={() => setHovered(idx)}
+            onMouseLeave={() => setHovered(null)}
+            title={snap.title}
+          >
+          </div>
+        ))}
       </div>
     );
   };
@@ -270,7 +301,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className="map-box" style={{ position: 'relative' }}>
-      <ViewControl />
+      
       <MapMatchInputModal 
         isOpen={showMapMatchInput}
         percentage={mapMatchPerc}
@@ -362,6 +393,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           />
         </div>
       )}
+      <ViewSnapshots />
     </div>
   );
 
