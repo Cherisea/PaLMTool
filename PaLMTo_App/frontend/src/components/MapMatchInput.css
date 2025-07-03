@@ -93,6 +93,14 @@
   color: #666;
 }
 
+.processing-time-message {
+  margin-top: 10px;
+  color: #0c18f0;
+  font-size: 0.9em;
+  text-align: center;
+  font-style: italic;
+}
+
 .process-btn-container {
   display: flex;
   justify-content: center;
