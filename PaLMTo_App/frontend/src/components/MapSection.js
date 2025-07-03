@@ -195,28 +195,72 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     }
   }, [generatedFileName, mapMatchData])
 
-  const ViewControl = () => {
+  const ViewSnapshots = () => {
+    const snapshots = [
+      {
+        id: 'trajectory',
+        title: 'Trajectory',
+        available: !!visualData,
+        render: () => (
+          <div className="snapshot-map">
+            <TrajectoryMap 
+              title=""
+              data={visualData.generated}
+              center={visualData.center}
+              color="red"
+              showDownload={false}
+            />
+          </div>
+        )
+      },
+      {
+        id: 'heatmap',
+        title: 'Heatmap',
+        available: !!heatmapData,
+        render: () => (
+          <div className="snapshot-map">
+            <HeatMap 
+              title=""
+              data={heatmapData.generated}
+              center={heatmapData.center}
+              bounds={heatmapData.bounds}
+              style={heatmapStyle}
+            />
+          </div>
+        )
+      },
+      {
+        id: 'map-matching',
+        title: 'Map-Matching',
+        available: !!mapMatchData,
+        render: () => (
+          <div className="snapshot-map">
+            {mapMatchData ? (
+              <MapMatchingMap 
+                title=""
+                data={mapMatchData}
+                center={visualData.center}
+              />
+            ) : (
+              <div className="snapshot-placeholder" />
+            )}
+          </div>
+        )
+      }
+    ]; 
+
     return (
-      <div className="view-toggle-pills">
-        <button 
-          className={`pill-btn ${viewMode === 'trajectory' ? 'active' : ''}`}
-          onClick={() => setViewMode('trajectory')}>
-          Trajectory View
-        </button>
-
-        <button
-          className={`pill-btn ${viewMode === 'heatmap' ? 'active' : ''}`}
-          onClick={() => setViewMode('heatmap')}
-          disabled={!heatmapData}>
-          Heatmap View
-        </button>
-
-        <button
-          className={`pill-btn ${viewMode === 'map-matching' ? 'active' : ''}`}
-          onClick={handleMapMatchView}
-          disabled={!generatedFileName}>
-          Map-Matching View
-        </button>
+      <div className="view-snapshots-bar">
+        {snapshots.map(snap => (
+          <div
+            key={snap.id}
+            className={`snapshot-thumb${viewMode === snap.id ? ' active' : ''}${!snap.available ? ' disabled' : ''}`}
+            onClick={() => snap.available && setViewMode(snap.id)}
+          >
+            {snap.render()}
+            <div className="snapshot-label">{snap.label}</div>
+          </div>
+        ))}
       </div>
     );
   };
@@ -270,7 +314,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className="map-box" style={{ position: 'relative' }}>
-      <ViewControl />
+      <ViewSnapshots />
       <MapMatchInputModal 
         isOpen={showMapMatchInput}
         percentage={mapMatchPerc}
