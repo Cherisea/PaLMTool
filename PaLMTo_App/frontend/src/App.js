@@ -170,6 +170,7 @@ function App() {
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
           onDownload={handleDownload}
+          numTrajs={formData.num_trajectories}
         />
        
       </div>
