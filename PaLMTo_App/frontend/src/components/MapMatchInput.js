@@ -28,7 +28,7 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
                     <span className="input-suffix">%</span>
                 </div>
                 
-                <div style={{ marginTop: '10px', color: '#555', fontSize: '0.95em'}}>
+                <div className="processing-time-message">
                     Approximate processing time for {count} requests: <b>{estimatedTime}</b> seconds 
                 </div>
 
