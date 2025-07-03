@@ -223,7 +223,17 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           <div
             key={snap.id}
             className={`snapshot-thumb${viewMode === snap.id ? ' active' : ''}${!snap.available ? ' disabled' : ''}`}
-            onClick={() => snap.available && setViewMode(snap.id)}
+            onClick={() => {
+              if (snap.id === 'map-matching') {
+                if (snap.available) {
+                  setViewMode('map-matching');
+                } else {
+                  handleMapMatchView();
+                }
+              } else if (snap.available) {
+                setViewMode(snap.id)
+              }
+            }}
             title={snap.title}
           >
           </div>
