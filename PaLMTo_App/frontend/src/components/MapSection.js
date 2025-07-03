@@ -135,6 +135,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for download bounce effect
   const [bounceDownload, setBounceDownload] = useState(false);
 
+  // Declare a state variable for hovering state of a snapshot
+  const [hovered, setHovered] = useState(null);
+
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
     setMapMatchLoading(true);
@@ -219,10 +222,15 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
     return (
       <div className="view-snapshots-bar">
-        {snapshots.map(snap => (
+        {snapshots.map((snap, idx) => (
           <div
             key={snap.id}
-            className={`snapshot-thumb${viewMode === snap.id ? ' active' : ''}${!snap.available ? ' disabled' : ''}`}
+            className={
+              `snapshot-thumb` + 
+              (viewMode === snap.id ? ' active' : '') +
+              (!snap.available ? ' disabled' : '') + 
+              (hovered === idx ? ' hovered' : hovered !== null ? ' not-hovered' : '')
+            }
             onClick={() => {
               if (snap.id === 'map-matching') {
                 if (snap.available) {
@@ -234,6 +242,8 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                 setViewMode(snap.id)
               }
             }}
+            onMouseEnter={() => setHovered(idx)}
+            onMouseLeave={() => setHovered(null)}
             title={snap.title}
           >
           </div>
