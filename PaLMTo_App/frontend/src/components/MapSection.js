@@ -199,53 +199,21 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     const snapshots = [
       {
         id: 'trajectory',
-        title: 'Trajectory',
+        title: 'Trajectory View',
         available: !!visualData,
-        render: () => (
-          <div className="snapshot-map">
-            <TrajectoryMap 
-              title=""
-              data={visualData.generated}
-              center={visualData.center}
-              color="red"
-              showDownload={false}
-            />
-          </div>
-        )
+        color: '#007bff'
       },
       {
         id: 'heatmap',
-        title: 'Heatmap',
+        title: 'Heatmap View',
         available: !!heatmapData,
-        render: () => (
-          <div className="snapshot-map">
-            <HeatMap 
-              title=""
-              data={heatmapData.generated}
-              center={heatmapData.center}
-              bounds={heatmapData.bounds}
-              style={heatmapStyle}
-            />
-          </div>
-        )
+        color: '#ff9800'
       },
       {
         id: 'map-matching',
-        title: 'Map-Matching',
+        title: 'Map-Matching View',
         available: !!mapMatchData,
-        render: () => (
-          <div className="snapshot-map">
-            {mapMatchData ? (
-              <MapMatchingMap 
-                title=""
-                data={mapMatchData}
-                center={visualData.center}
-              />
-            ) : (
-              <div className="snapshot-placeholder" />
-            )}
-          </div>
-        )
+        color: '#4caf50'
       }
     ]; 
 
@@ -256,9 +224,8 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             key={snap.id}
             className={`snapshot-thumb${viewMode === snap.id ? ' active' : ''}${!snap.available ? ' disabled' : ''}`}
             onClick={() => snap.available && setViewMode(snap.id)}
+            title={snap.title}
           >
-            {snap.render()}
-            <div className="snapshot-label">{snap.label}</div>
           </div>
         ))}
       </div>
@@ -314,7 +281,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className="map-box" style={{ position: 'relative' }}>
-      <ViewSnapshots />
+      
       <MapMatchInputModal 
         isOpen={showMapMatchInput}
         percentage={mapMatchPerc}
@@ -406,6 +373,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           />
         </div>
       )}
+      <ViewSnapshots />
     </div>
   );
 
