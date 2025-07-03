@@ -269,6 +269,7 @@ button:hover {
   padding: 1rem 0 1rem 1.5rem;
   box-sizing: border-box;
   height: 95%; 
+  min-height: 0;
 }
 
 .map-container {
@@ -276,51 +277,58 @@ button:hover {
   min-height: 650px;  /* Minimum height */
 }
 
-.view-toggle-pills {
-  position: absolute;
-  top: 2px;
-  right: 1px;
-  z-index: 1000;
+.view-snapshots-bar {
   display: flex;
-  gap: 2px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 6px;
-  padding: 2px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  transform-origin: top right;
+  justify-content: center;
+  gap: 24px;
+  /* padding: 12px 0 0 0; */
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
 }
 
-.view-toggle-pills:hover .pill-btn span {
-  display: inline;
-}
-
-.pill-btn {
-  padding: 4px 10px;
-  margin: 0;
-  border: none;
-  background: transparent;
+.snapshot-thumb {
+  width: 30px;
+  min-width: 30px;
+  height: 50px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
   cursor: pointer;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #666;
-  transition: all 0.2s;
-  font-weight: 500;
-  min-width: 50px;
-  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-.pill-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.05);
+.snapshot-thumb.active {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
 }
 
-.pill-btn.active {
-  background: #4A90E2;
-  color: white;
-}
-
-.pill-btn:disabled {
+.snapshot-thumb.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.snapshot-map {
+  width: 60%;
+  height: 50px;
+  pointer-events: none; /* disables interaction inside the map preview */
+}
+
+.snapshot-label {
+  font-size: 0.85em;
+  text-align: center;
+  margin-top: 2px;
+  color: #333;
+}
+
+.snapshot-placeholder {
+  width: 100%;
+  height: 60px;
+  background: #eee;
 }
 
 /* Download overlay styling */
