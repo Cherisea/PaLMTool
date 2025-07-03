@@ -13,7 +13,7 @@
   display: flex;
   flex-wrap: wrap;
   width: 90vw;
-  height: 90vh;
+  height: 93vh;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: #fff;
   border-radius: 12px;
@@ -26,7 +26,7 @@ h2 {
 }
 
 .form-box {
-  width: 30%;
+  width: 28%;
   padding: 2rem;
   background-color: #ffffff;
   border-right: 1px solid #eee;
@@ -266,7 +266,7 @@ button:hover {
   width: 70%;
   display: flex;
   flex-direction: column;
-  padding: 2rem 1rem 1rem 1rem;
+  padding: 1rem 0 1rem 1.5rem;
   box-sizing: border-box;
   height: 95%; 
 }
