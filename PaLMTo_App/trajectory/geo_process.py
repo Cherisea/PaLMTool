@@ -67,7 +67,7 @@ def traj_to_geojson(trajectory):
     features = []
 
     # Randomly select a subset of trajectories
-    sample = trajectory['geometry'].sample(1000).to_list()
+    sample = trajectory['geometry'].sample(frac=0.5, random_state=404).to_list() 
 
     for traj in sample:
         # GeoJSON coordinate format [lon, lat]
