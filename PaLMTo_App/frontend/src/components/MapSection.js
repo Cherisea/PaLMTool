@@ -112,7 +112,8 @@ const  MapMatchingMap = ({ title, data, center, onDownload, perc, bounce }) => (
 );
 
 // Main entry of script
-function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, heatmapData, generatedFileName, onDownload }) 
+function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
+  heatmapData, generatedFileName, onDownload, numTrajs }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -308,6 +309,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         onPercentageChange={setMapMatchPerc}
         onSubmit={handleMapMatchSubmit}
         onCancel={handleMapMatchCancel}
+        numTrajs={numTrajs}
       />
 
       {viewMode === 'heatmap' && heatmapData ? (
