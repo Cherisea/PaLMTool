@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 
 const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, onCancel, numTrajs}) => {
+    const [showMessage, setShowMessage] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setShowMessage(true);
+        const timer = setTimeout(() => setShowMessage(false), 3000);
+        return () => clearTimeout(timer);
+    }, [percentage, isOpen])
+
     if (!isOpen) return null;
 
-    const count = Math.ceil((percentage / 100) * numTrajs);
-    const estimatedTime = count * 8;
+    const validPerct = isNaN(percentage) || percentage === 0 ? 1 : percentage
+    const count = Math.ceil((validPerct / 100) * numTrajs) || 1;
+    const estimatedTime = count * 8 || 8;
 
     return (
         <div className="modal-overlay">
@@ -28,9 +38,9 @@ const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, o
                     <span className="input-suffix">%</span>
                 </div>
                 
-                <div className="processing-time-message">
+                {showMessage && <div className="processing-time-message">
                     Approximate processing time for {count} requests: <b>{estimatedTime}</b> seconds 
-                </div>
+                </div>}
 
                 <div className="process-btn-container">
                     <button onClick={onSubmit} className="process-button">Process</button>
