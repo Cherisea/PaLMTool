@@ -25,6 +25,7 @@ h2 {
   margin-bottom: 2rem;
 }
 
+/* ========================== Form Section ========================== */
 .form-box {
   width: 28%;
   padding: 2rem;
@@ -60,33 +61,6 @@ h2 {
 
 .notification-banner.success {
   background-color: #4CAF50;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .notification-banner.hiding {
@@ -220,25 +194,6 @@ input:disabled {
   animation: shimmer 1.5s infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0);}
-  10%, 30%, 50%, 70%, 90% { transform: translateY(-10px);}
-  20%, 40%, 60%, 80% { transform: translateY(0);}
-}
-
-.bounce {
-  animation: bounce 2s infinite;
-}
-
 /* Ensure button text remains visible during loading */
 .button-container button[type='submit']:disabled {
   background-color: #4CAF50; /* Keep the original color */
@@ -262,6 +217,43 @@ button:hover {
   background-color: #45a049;
 }
 
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ========================== Map Section ========================== */
 .map-box {
   width: 70%;
   display: flex;
@@ -355,4 +347,15 @@ button:hover {
 
 .download-overlay:active {
   transform: scale(0.95);
+}
+
+
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0);}
+  10%, 30%, 50%, 70%, 90% { transform: translateY(-10px);}
+  20%, 40%, 60%, 80% { transform: translateY(0);}
 }
