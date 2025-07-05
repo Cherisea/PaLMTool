@@ -354,6 +354,24 @@ button:hover {
   animation: bounce 2s infinite;
 }
 
+.doc-link-container {
+  text-align: center;
+  margin-top: 60px;
+  /* padding-top: 10px; */
+}
+
+.doc-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 2px 4px;
+  transition: all 0.3s ease;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
 @keyframes bounce {
   0%, 100% { transform: translateY(0);}
   10%, 30%, 50%, 70%, 90% { transform: translateY(-10px);}
