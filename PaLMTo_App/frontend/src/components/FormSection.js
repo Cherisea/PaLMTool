@@ -198,7 +198,7 @@ function FormSection({
       </form>
 
       <div className="doc-link-container">
-          <a href="/docs" target="_blank" rel="noopener noreferrer" className="doc-link">
+          <a href="https://github.com/Cherisea/PaLMTool/blob/main/README.md" target="_blank" rel="noopener noreferrer" className="doc-link">
             Doc
           </a>
       </div>
