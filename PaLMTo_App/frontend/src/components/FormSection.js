@@ -193,10 +193,15 @@ function FormSection({
               <div className="progress-bar" style={{ width: `${progress}%` }} />
             </div>
           )}
-
         </div>
         
       </form>
+
+      <div className="doc-link-container">
+          <a href="/docs" target="_blank" rel="noopener noreferrer" className="doc-link">
+            Doc
+          </a>
+      </div>
     </div>
   );
 }
