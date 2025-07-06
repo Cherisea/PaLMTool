@@ -201,6 +201,14 @@ function FormSection({
           <a href="https://github.com/Cherisea/PaLMTool/blob/main/README.md" target="_blank" rel="noopener noreferrer" className="doc-link">
             Doc
           </a>
+
+          <a href="https://pypi.org/project/Palmto-gen/" target="_blank" rel="noopener noreferrer" className="doc-link">
+            Library
+          </a>
+
+          <a href="https://pypi.org/project/Palmto-gen/" target="_blank" rel="noopener noreferrer" className="doc-link">
+            Papers
+          </a>
       </div>
     </div>
   );
