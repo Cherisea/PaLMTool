@@ -322,7 +322,7 @@ button:hover {
 /* Download overlay styling */
 .download-overlay {
   position: absolute;
-  bottom: 40px;
+  bottom: 60px;
   right: 5px;
   width: 48px;
   height: 48px;
