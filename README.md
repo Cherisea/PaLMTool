@@ -10,5 +10,11 @@ There are various ways to generate realistic trajectory data, with PaLMTo[^1] be
 |:---:|:---:|
 | *Earth representation* | *Cell size visualization* |
 
+**Number of Generated Trajectories**: total number of synthetic trajectories to be generated with PaLMTo. Theoretically, this value can be any natural number. 
+
+**Generation Method**: how synthetic trajectories should be generated using PaLMTo model. This field can only be set to one of two values: point-to-point and length-constrained. Point-to-point approach involves filling in the gap between pre-selected origin and destination points, while length-constrained method creates a trajectory by iteratively adding points to the origin until a predefined length is achieved. Refer to [^2] for a detailed explanation. 
+
+**Trajectory Length**: length of each trajectory generated with length-constrained method. This value controls how many location points a synthetic trajectory should contain. 
+
 [^1]: Mohammed, Hayat & Nascimento, Mario & Barbosa, Denilson. (2024). Effective Trajectory Imputation using Simple Probabilistic Language Models. 51-60. 10.1109/MDM61037.2024.00027. 
 [^2]: Mohammed, Hayat & Nascimento, Mario. (2024). Realistic Trajectory Generation using Simple Probabilistic Language Models. 21-24. 10.1145/3681770.3698572. 
