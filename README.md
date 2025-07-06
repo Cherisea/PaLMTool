@@ -6,16 +6,9 @@ There are various ways to generate realistic trajectory data, with PaLMTo[^1] be
 ## Glossary
 **Cell Size**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell.
 
-<div style="display: flex; gap: 20px; justify-content: center;">
-    <figure style="margin: 0; text-align: center;">
-        <img src="asset/earth.png" alt="Earth" width="300" height="200">
-        <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">Earth representation</figcaption>
-    </figure>
-    <figure style="margin: 0; text-align: center;">
-        <img src="asset/cell_size.png" alt="Cell Size" width="300" height="200">
-        <figcaption style="margin-top: 8px; font-size: 14px; color: #666;">Cell size visualization</figcaption>
-    </figure>
-</div>
+| ![Earth](asset/earth.png) | ![Cell Size](asset/cell_size.png) |
+|:---:|:---:|
+| *Earth representation* | *Cell size visualization* |
 
 [^1]: Mohammed, Hayat & Nascimento, Mario & Barbosa, Denilson. (2024). Effective Trajectory Imputation using Simple Probabilistic Language Models. 51-60. 10.1109/MDM61037.2024.00027. 
 [^2]: Mohammed, Hayat & Nascimento, Mario. (2024). Realistic Trajectory Generation using Simple Probabilistic Language Models. 21-24. 10.1145/3681770.3698572. 
