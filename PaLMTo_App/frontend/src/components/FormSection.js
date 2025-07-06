@@ -206,8 +206,8 @@ function FormSection({
             Library
           </a>
 
-          <a href="https://pypi.org/project/Palmto-gen/" target="_blank" rel="noopener noreferrer" className="doc-link">
-            Papers
+          <a href="https://www.researchgate.net/publication/385347801_Realistic_Trajectory_Generation_using_Simple_Probabilistic_Language_Models" target="_blank" rel="noopener noreferrer" className="doc-link">
+            Paper
           </a>
       </div>
     </div>
