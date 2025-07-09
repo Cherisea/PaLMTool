@@ -85,7 +85,7 @@ def traj_to_geojson(trajectory):
         'features': features
     }
 
-def heatmap_geojson(df, area, cell_size=800):
+def heatmap_geojson(df, area, cell_size=200):
     """
         Prepare heatmap data in a GeoJSON format for frontend visualization
 
