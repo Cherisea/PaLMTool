@@ -3,7 +3,7 @@ import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-import { FiDownload } from "react-icons/fi";
+import { FiBarChart2, FiDownload, FiNavigation, FiMap } from "react-icons/fi";
 import MapMatchInputModal from "./MapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
@@ -204,18 +204,21 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       {
         id: 'trajectory',
         title: 'Trajectory View',
+        icon: FiMap,
         available: !!visualData,
         color: '#007bff'
       },
       {
         id: 'heatmap',
         title: 'Heatmap View',
+        icon: FiBarChart2,
         available: !!heatmapData,
         color: '#ff9800'
       },
       {
         id: 'map-matching',
         title: 'Map-Matching View',
+        icon: FiNavigation,
         available: !!mapMatchData,
         color: '#4caf50'
       }
@@ -223,7 +226,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
     return (
       <div className="view-snapshots-bar">
-        {snapshots.map((snap, idx) => (
+        {snapshots.map((snap, idx) => {
+          const IconComponent = snap.icon;
+          return (
           <div
             key={snap.id}
             className={
@@ -243,12 +248,18 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                 setViewMode(snap.id)
               }
             }}
+            style={{
+              borderColor: viewMode === snap.id ? snap.color :
+                           hovered === idx ? snap.color : '#e9ecef'
+            }}
             onMouseEnter={() => setHovered(idx)}
             onMouseLeave={() => setHovered(null)}
             title={snap.title}
           >
+            <IconComponent className="snapshot-icon" style={{ color: snap.color }} />
           </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
