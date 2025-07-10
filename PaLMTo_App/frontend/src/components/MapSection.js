@@ -3,7 +3,7 @@ import LocationPicker from "./LocationPicker";
 import MapUpdater from "./MapUpdater";
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-import { FiBarChart2, FiDownload, FiNavigation, FiMap } from "react-icons/fi";
+import { FiDownload, FiMap, FiGrid, FiCrosshair } from "react-icons/fi";
 import MapMatchInputModal from "./MapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
@@ -211,14 +211,14 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       {
         id: 'heatmap',
         title: 'Heatmap View',
-        icon: FiBarChart2,
+        icon: FiGrid,
         available: !!heatmapData,
         color: '#ff9800'
       },
       {
         id: 'map-matching',
         title: 'Map-Matching View',
-        icon: FiNavigation,
+        icon: FiCrosshair,
         available: !!mapMatchData,
         color: '#4caf50'
       }
