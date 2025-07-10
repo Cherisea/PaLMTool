@@ -280,7 +280,7 @@ button:hover {
 }
 
 .snapshot-thumb {
-  width: 20px;
+  width: 30px;
   min-width: 20px;
   height: 40px;
   border: 2px solid #e9ecef;
@@ -294,14 +294,22 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 1;
+  /* padding: 2px 0; */
+}
+
+.snapshot-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .snapshot-thumb.hovered {
   transform: scale(1.2);
   z-index: 2;
-  border-color: #007bff;
 }
 
 .snapshot-thumb.not-hovered {
@@ -311,7 +319,6 @@ button:hover {
 }
 
 .snapshot-thumb.active {
-  border-color: #4CAF50;
   box-shadow: 0 2px 8px rgba(0,123,255,0.15);
 }
 
