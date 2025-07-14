@@ -109,7 +109,7 @@ function FormSection({
 
         <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
           <div className="step-dot">2</div>
-          <span className="step-label">Model Configuration</span>
+          <span className="step-label">Trajectory Generation</span>
         </div>
       </div>
 
