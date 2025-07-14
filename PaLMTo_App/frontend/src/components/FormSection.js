@@ -1,6 +1,7 @@
 import { FiInfo } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import StatisticsPopup from "./BackendStats";
+import DocLinks from "./DocLinks";
 
 function FormSection({ 
   formData, 
@@ -197,19 +198,7 @@ function FormSection({
         
       </form>
 
-      <div className="doc-link-container">
-          <a href="https://github.com/Cherisea/PaLMTool/blob/main/README.md" target="_blank" rel="noopener noreferrer" className="doc-link">
-            Doc
-          </a>
-
-          <a href="https://pypi.org/project/Palmto-gen/" target="_blank" rel="noopener noreferrer" className="doc-link">
-            Library
-          </a>
-
-          <a href="https://www.researchgate.net/publication/385347801_Realistic_Trajectory_Generation_using_Simple_Probabilistic_Language_Models" target="_blank" rel="noopener noreferrer" className="doc-link">
-            Paper
-          </a>
-      </div>
+      <DocLinks />
     </div>
   );
 }
