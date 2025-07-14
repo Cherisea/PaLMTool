@@ -24,6 +24,9 @@ function FormSection({
   // State variable for current progress
   const [progress, setProgress] = useState(0);
 
+  // State variable for current step 
+  const [currentStep, setCurrentStep] = useState(1);
+
   // Auto-hide notification after 5 seconds
   useEffect(() => {
     if (notification) {
@@ -73,6 +76,14 @@ function FormSection({
     }
   };
 
+  const nextStep = () => {
+    setCurrentStep(2);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(1);
+  };
+
   return (
     <div className="form-box">
       <StatisticsPopup
@@ -87,7 +98,21 @@ function FormSection({
         </div>
       )}
 
-      <h2>WebPaLMTo Trajectory Generation</h2>
+      {/* Step indicator */}
+      <div className="step-indicator">
+        <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+          <div className="step-dot">1</div>
+          <span className="step-label">Model Training</span>
+        </div>
+
+        <div className="step-line"></div>
+
+        <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+          <div className="step-dot">2</div>
+          <span className="step-label">Model Configuration</span>
+        </div>
+      </div>
+
       <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
       <div className="form-group">
           <label className="required">
