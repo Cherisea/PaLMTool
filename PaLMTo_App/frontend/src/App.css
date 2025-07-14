@@ -26,6 +26,69 @@ h2 {
 }
 
 /* ========================== Form Section ========================== */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.step-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  border: 3px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-dot {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.step-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.step.active .step-label {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.step-line {
+  width: 80px;
+  height: 3px;
+  background-color: #e0e0e0;
+  margin: 0 20px;
+  position: relative;
+  top: -20px;
+}
+
+.step.active + .step-line,
+.step-line.active {
+  background-color: #4CAF50;
+}
+
 .form-box {
   width: 28%;
   padding: 2rem;
