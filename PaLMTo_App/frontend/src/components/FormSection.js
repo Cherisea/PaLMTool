@@ -200,6 +200,10 @@ function FormSection({
                   next &gt;&gt;
                 </span>
               </div>
+
+              <div className="button-container">
+                <button type="submit">Train</button>
+              </div>
           </div>
         )}
 
@@ -276,12 +280,12 @@ function FormSection({
             <div className="button-container">
               <button type='submit' disabled={isLoading}>
                 {isLoading ? 'Generating...' : 'Generate'}
+                {isLoading && (
+                  <div className="progress-container">
+                    <div className="progress-bar" style={{ width: `${progress}%` }} />
+                  </div>
+                )}
               </button>
-              {isLoading && (
-                <div className="progress-container">
-                  <div className="progress-bar" style={{ width: `${progress}%` }} />
-                </div>
-              )}
             </div>
           </div>
         )}
