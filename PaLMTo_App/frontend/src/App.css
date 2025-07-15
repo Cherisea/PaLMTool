@@ -91,15 +91,20 @@ h2 {
 
 .form-box {
   width: 28%;
-  padding: 2rem;
+  padding: 2rem 2rem 1rem 2rem;
   background-color: #ffffff;
   border-right: 1px solid #eee;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.form-box h2 {
-  margin-bottom: 1.5rem;
-  text-align: center;
+.form-content {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
 }
 
 .notification-banner {
@@ -427,8 +432,8 @@ button:hover {
 .doc-link-container {
   border-top: 1px solid #e0e0e0;
   text-align: center;
-  margin-top: 60px;
   padding-top: 5px;
+  flex-shrink: 0;
 }
 
 .doc-link {
