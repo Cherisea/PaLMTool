@@ -186,9 +186,11 @@ function FormSection({
                   step="50"
                   min="50"
                   required 
+                  disabled={!!formData.ngram_file}
                 />
               </div>
-
+              
+              {/* TODO: remove after implementing an alternative navigation logic */}
               <div className="step-button-container">
                 <span
                   onClick={canProceed() ? nextStep : undefined}
@@ -202,7 +204,7 @@ function FormSection({
               </div>
 
               <div className="button-container">
-                <button type="submit">Train</button>
+                <button type="submit">{formData.ngram_file ? 'Load' : 'Train'}</button>
               </div>
           </div>
         )}
@@ -266,6 +268,7 @@ function FormSection({
               />
             </div>
 
+            {/* TODO: remove after implementing an alternative navigation logic */}
             <div className="prev-button-container">
               <span
                 onClick={prevStep}
