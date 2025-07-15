@@ -28,7 +28,7 @@ function FormSection({
   const [progress, setProgress] = useState(0);
 
   // State variable for current step 
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
 
   // Auto-hide notification after 5 seconds
   useEffect(() => {
@@ -80,15 +80,15 @@ function FormSection({
   };
 
   const nextStep = () => {
-    setCurrentStep(2);
+    setCurrentStep(prevStep => prevStep + 1);
   };
 
   const prevStep = () => {
-    setCurrentStep(1);
+    setCurrentStep(prevStep => Math.max(1, prevStep - 1));
   };
 
   const canProceed = () => {
-    if (currentStep === 1) {
+    if (currentStep === 2) {
       return (formData.file || formData.ngram_file) && formData.cell_size;
     };
     return true;
@@ -112,21 +112,28 @@ function FormSection({
       <div className="step-indicator">
         <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
           <div className="step-dot">1</div>
-          <span className="step-label">Model Training</span>
+          <span className="step-label">Overview</span>
         </div>
 
         <div className="step-line"></div>
 
         <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
           <div className="step-dot">2</div>
-          <span className="step-label">Trajectory Generation</span>
+          <span className="step-label">Model</span>
+        </div>
+
+        <div className="step-line"></div>
+
+        <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+          <div className="step-dot">3</div>
+          <span className="step-label">Trajectory</span>
         </div>
       </div>
 
       <div className="form-content">
         <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
         {/* STEP 1: model training */}
-        {currentStep === 1 && (
+        {currentStep === 2 && (
           <div className="step-contet">
             <div className="form-group">
                 <label className="required">
@@ -227,7 +234,7 @@ function FormSection({
         )}
 
         {/* STEP 2: additional parameters for trajectory generation */}
-        {currentStep === 2 && (
+        {currentStep === 3 && (
           <div className="step-content">
             <div className="form-group">
               <label className="required">
