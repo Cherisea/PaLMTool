@@ -216,6 +216,14 @@ input:disabled {
   border-color: #333;
 }
 
+.disabled-dropzone {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+}
+
 .note {
   font-size: 0.9em; /* Slightly smaller font size */
   color: #666; /* Gray color for less emphasis */
