@@ -7,9 +7,12 @@ function FormSection({
   formData, 
   handleChange, 
   handleSubmit,
-  getRootProps,
-  getInputProps,
-  isDragActive,
+  getSampleRootProps,
+  getSampleInputProps,
+  isSampleDragActive,
+  getNgramRootProps,
+  getNgramInputProps,
+  isNgramDragActive,
   stats
 }) {
   // State variable for stats popup window
@@ -133,12 +136,12 @@ function FormSection({
                 </label>
                 <div className="dropzone-row">
                   {/* Dropzone for sample trajectory file  */}
-                  <div {...getRootProps({ className: "dropzone" })}>
-                    <input {...getInputProps()} />
+                  <div {...getSampleRootProps({ className: "dropzone" })}>
+                    <input {...getSampleInputProps()} />
                     <div className="dropzone-content">
                       <FiFileText className="dropzone-icon" />
                       {
-                        isDragActive ? 
+                        isSampleDragActive ? 
                           (<p>Drop the file here ...</p>) : 
                           formData.file ? 
                             (<p>{formData.file.name}</p>) : 
@@ -148,12 +151,12 @@ function FormSection({
                   </div>
                   
                   {/* Dropzone for ngram dictionary file */}
-                  <div {...getRootProps({ className: "dropzone" })}>
-                    <input {...getInputProps()} />
+                  <div {...getNgramRootProps({ className: "dropzone" })}>
+                    <input {...getNgramInputProps()} />
                     <div className="dropzone-content">
                       <FiBook className="dropzone-icon" />
                       {
-                        isDragActive ? 
+                        isNgramDragActive ? 
                           (<p>Drop the file here ...</p>) : 
                           formData.ngram_file ? 
                             (<p>{formData.ngram_file.name}</p>) : 
