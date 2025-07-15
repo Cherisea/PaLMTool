@@ -1,10 +1,10 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
-import LocationPicker from "./LocationPicker";
-import MapUpdater from "./MapUpdater";
+import LocationPicker from "./locationPicker";
+import MapUpdater from "./mapUpdater";
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import { FiDownload, FiMap, FiGrid, FiCrosshair } from "react-icons/fi";
-import MapMatchInputModal from "./MapMatchInput";
+import MapMatchInputModal from "./mapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">

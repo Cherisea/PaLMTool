@@ -1,7 +1,7 @@
 import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
 import { useState, useEffect } from "react";
-import StatisticsPopup from "./BackendStats";
-import DocLinks from "./DocLinks";
+import StatisticsPopup from "./backendStats";
+import DocLinks from "./docLinks";
 
 function FormSection({ 
   formData, 
