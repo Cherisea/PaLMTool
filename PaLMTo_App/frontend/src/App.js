@@ -67,8 +67,8 @@ function App() {
     );
   };
 
-  // Handler for drop zone files
-  const handleFileDrop = (acceptedFiles) => {
+  // Handler for the first drop zone files
+  const handleSampleFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
     const maxSize = 500 * 1024 * 1024;
 
@@ -83,9 +83,37 @@ function App() {
     }));
   };
 
-  // Drag zone configuration
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop: handleFileDrop,
+  // Handler for the second drop zone files
+  const handleNgramFileDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    const maxSize = 500 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      alert('File is too large. Maximum size is 500 MB.');
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      ngram_file: file,
+    }));
+  }
+
+  // First drag zone instance for sample trajectory
+  const {getRootProps: getSampleRootProps, 
+         getInputProps: getSampleInputProps, 
+         isDragActive: isSampleDragActive} = useDropzone({
+    onDrop: handleSampleFileDrop,
+    multiple: false,
+    accept: {"application/json": [".json"], "text/csv": [".csv"]},
+  });
+
+  // Second drag zone instance for ngram files
+  const {getRootProps: getNgramRootProps,
+         getInputProps: getNgramInputProps,
+         isDragActive: isNgramDragActive
+  } = useDropzone({
+    onDrop: handleNgramFileDrop,
     multiple: false,
     accept: {"application/json": [".json"], "text/csv": [".csv"]},
   });
@@ -159,11 +187,13 @@ function App() {
         <FormSection
           formData={formData}
           handleChange={handleChange}
-          handleFileDrop={handleFileDrop}
           handleSubmit={handleSubmit}
-          getRootProps={getRootProps}
-          getInputProps={getInputProps}
-          isDragActive={isDragActive}
+          getSampleRootProps={getSampleRootProps}
+          getSampleInputProps={getSampleInputProps}
+          isSampleDragActive={isSampleDragActive}
+          getNgramRootProps={getNgramRootProps}
+          getNgramInputProps={getNgramInputProps}
+          isNgramDragActive={isNgramDragActive}
           stats={statsData}
         />
         
