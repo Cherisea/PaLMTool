@@ -165,15 +165,16 @@ function FormSection({
                 />
               </div>
 
-              <div className="button-container">
-                <button 
-                  type="button"
-                  onClick={nextStep}
-                  disabled={!canProceed()}
-                  className="next-button"
+              <div className="step-button-container">
+                <span
+                  onClick={canProceed() ? nextStep : undefined}
+                  className={`next-text${canProceed()? '' : ' disabled'}`}
+                  tabIndex={canProceed() ? 0 : -1}
+                  role="button"
+                  aria-disabled={!canProceed()}
                 >
-                  Next
-                </button>
+                  next &gt;&gt;
+                </span>
               </div>
           </div>
         )}
@@ -235,6 +236,17 @@ function FormSection({
                 className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
                 required={formData.generation_method !== "point_to_point"}
               />
+            </div>
+
+            <div className="prev-button-container">
+              <span
+                onClick={prevStep}
+                className="prev-text"
+                tabIndex={0}
+                role="button"
+              >
+                &lt;&lt; prev
+              </span>
             </div>
 
             <div className="button-container">
