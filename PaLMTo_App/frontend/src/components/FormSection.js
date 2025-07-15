@@ -89,7 +89,7 @@ function FormSection({
 
   const canProceed = () => {
     if (currentStep === 1) {
-      return formData.file && formData.cell_size;
+      return (formData.file || formData.ngram_file) && formData.cell_size;
     };
     return true;
   };
