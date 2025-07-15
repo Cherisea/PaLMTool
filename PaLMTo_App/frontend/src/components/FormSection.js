@@ -110,29 +110,37 @@ function FormSection({
 
       {/* Step indicator */}
       <div className="step-indicator">
-        <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-          <div className="step-dot">1</div>
-          <span className="step-label">Overview</span>
-        </div>
+        {[1, 2, 3].map((stepNum) => {
+          const isStepThree = stepNum === 3;
+          const canGoToStep = 
+              !isStepThree || canProceed() || currentStep === 3;
 
-        <div className="step-line"></div>
-
-        <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-          <div className="step-dot">2</div>
-          <span className="step-label">Model</span>
-        </div>
-
-        <div className="step-line"></div>
-
-        <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-          <div className="step-dot">3</div>
-          <span className="step-label">Trajectory</span>
-        </div>
+          return (
+            <div key={stepNum} style={{ display: "flex", alignItems: "center"}}>
+              <div
+                className={`step ${currentStep >= stepNum ? 'active' : ''} ${!canGoToStep ? 'disabled' : ''}`}
+                onClick={() => canGoToStep && setCurrentStep(stepNum)}
+                tabIndex={canGoToStep ? 0 : -1}
+                role="button"
+                aria-current={currentStep === stepNum}
+                aria-label={`Go to step ${stepNum}`}
+                style={{ cursor: canGoToStep ? "pointer" : "not-allowed", opacity: canGoToStep ? 1 : 0.5 }}
+                onKeyDown={e => {if (e.key === "Enter" || e.key === " ") setCurrentStep(stepNum); }}
+              >
+                <div className="step-dot">{stepNum}</div>
+                <span className="step-label">
+                  {stepNum === 1 ? "Overview" : stepNum === 2 ? "Model" : "Trajectory"}
+                </span>
+              </div>
+              {stepNum < 3 && <div className="step-line"></div>}
+            </div>
+          );
+        })}
       </div>
 
       <div className="form-content">
         <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
-        {/* STEP 1: model training */}
+        {/* STEP 2: model training */}
         {currentStep === 2 && (
           <div className="step-contet">
             <div className="form-group">
