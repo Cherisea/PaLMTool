@@ -285,6 +285,38 @@ button:hover {
   background-color: #45a049;
 }
 
+.step-button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.next-text, .prev-text {
+  color: #007bff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.next-text.disabled {
+  color: #aaa;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.prev-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.prev-text {
+  margin-right: 1rem;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
