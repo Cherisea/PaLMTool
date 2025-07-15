@@ -155,8 +155,8 @@ function FormSection({
                       {
                         isDragActive ? 
                           (<p>Drop the file here ...</p>) : 
-                          formData.file ? 
-                            (<p>{formData.file.name}</p>) : 
+                          formData.ngram_file ? 
+                            (<p>{formData.ngram_file.name}</p>) : 
                             (<p>Ngram Dictionary</p>)
                       }
                     </div>
