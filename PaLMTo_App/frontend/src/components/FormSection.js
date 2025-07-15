@@ -131,15 +131,30 @@ function FormSection({
                   <span className="required-mark">*</span>
                   <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
                 </label>
-                <div {...getRootProps({ className: "dropzone" })}>
-                  <input {...getInputProps()} />
-                  {
-                    isDragActive ? 
-                      (<p>Drop the file here ...</p>) : 
-                      formData.file ? 
-                        (<p>{formData.file.name}</p>) : 
-                        (<p>Drag & drop a file here, or click to select one</p>)
-                  }
+                <div className="dropzone-row">
+                  {/* Dropzone for sample trajectory file  */}
+                  <div {...getRootProps({ className: "dropzone" })}>
+                    <input {...getInputProps()} />
+                    {
+                      isDragActive ? 
+                        (<p>Drop the file here ...</p>) : 
+                        formData.file ? 
+                          (<p>{formData.file.name}</p>) : 
+                          (<p>Sample Trajectory</p>)
+                    }
+                  </div>
+                  
+                  {/* Dropzone for ngram dictionary file */}
+                  <div {...getRootProps({ className: "dropzone" })}>
+                    <input {...getInputProps()} />
+                    {
+                      isDragActive ? 
+                        (<p>Drop the file here ...</p>) : 
+                        formData.file ? 
+                          (<p>{formData.file.name}</p>) : 
+                          (<p>Ngram Dictionary</p>)
+                    }
+                  </div>
                 </div>
                 <p className="note">
                   <i>
