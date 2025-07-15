@@ -1,4 +1,4 @@
-import { FiInfo } from "react-icons/fi";
+import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import StatisticsPopup from "./BackendStats";
 import DocLinks from "./DocLinks";
@@ -135,25 +135,31 @@ function FormSection({
                   {/* Dropzone for sample trajectory file  */}
                   <div {...getRootProps({ className: "dropzone" })}>
                     <input {...getInputProps()} />
-                    {
-                      isDragActive ? 
-                        (<p>Drop the file here ...</p>) : 
-                        formData.file ? 
-                          (<p>{formData.file.name}</p>) : 
-                          (<p>Sample Trajectory</p>)
-                    }
+                    <div className="dropzone-content">
+                      <FiFileText className="dropzone-icon" />
+                      {
+                        isDragActive ? 
+                          (<p>Drop the file here ...</p>) : 
+                          formData.file ? 
+                            (<p>{formData.file.name}</p>) : 
+                            (<p>Sample Trajectory</p>)
+                      }
+                    </div>
                   </div>
                   
                   {/* Dropzone for ngram dictionary file */}
                   <div {...getRootProps({ className: "dropzone" })}>
                     <input {...getInputProps()} />
-                    {
-                      isDragActive ? 
-                        (<p>Drop the file here ...</p>) : 
-                        formData.file ? 
-                          (<p>{formData.file.name}</p>) : 
-                          (<p>Ngram Dictionary</p>)
-                    }
+                    <div className="dropzone-content">
+                      <FiBook className="dropzone-icon" />
+                      {
+                        isDragActive ? 
+                          (<p>Drop the file here ...</p>) : 
+                          formData.file ? 
+                            (<p>{formData.file.name}</p>) : 
+                            (<p>Ngram Dictionary</p>)
+                      }
+                    </div>
                   </div>
                 </div>
                 <p className="note">
