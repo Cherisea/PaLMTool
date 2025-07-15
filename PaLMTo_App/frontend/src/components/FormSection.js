@@ -221,19 +221,6 @@ function FormSection({
                   disabled={!!formData.ngram_file}
                 />
               </div>
-              
-              {/* TODO: remove after implementing an alternative navigation logic */}
-              <div className="step-button-container">
-                <span
-                  onClick={canProceed() ? nextStep : undefined}
-                  className={`next-text${canProceed()? '' : ' disabled'}`}
-                  tabIndex={canProceed() ? 0 : -1}
-                  role="button"
-                  aria-disabled={!canProceed()}
-                >
-                  next &gt;&gt;
-                </span>
-              </div>
 
               <div className="button-container">
                 <button type="submit">{formData.ngram_file ? 'Load' : 'Train'}</button>
@@ -298,18 +285,6 @@ function FormSection({
                 className={formData.generation_method === "point_to_point" ? "disabled-input" : ""}
                 required={formData.generation_method !== "point_to_point"}
               />
-            </div>
-
-            {/* TODO: remove after implementing an alternative navigation logic */}
-            <div className="prev-button-container">
-              <span
-                onClick={prevStep}
-                className="prev-text"
-                tabIndex={0}
-                role="button"
-              >
-                &lt;&lt; prev
-              </span>
             </div>
 
             <div className="button-container">
