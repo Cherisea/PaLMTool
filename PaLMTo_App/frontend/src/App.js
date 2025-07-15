@@ -40,6 +40,7 @@ function App() {
     generation_method: "",
     locationCoordinates: null,  
     file: null,
+    ngram_file: null,
   })
 
   // Declare a state variable for center of map
@@ -121,6 +122,10 @@ function App() {
 
     if (formData.file) {
       payload.append("file", formData.file);
+    }
+
+    if (formData.ngram_file) {
+      payload.append("ngram_file", formData.ngram_file);
     }
 
     if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
