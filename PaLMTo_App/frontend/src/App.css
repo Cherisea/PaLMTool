@@ -102,6 +102,16 @@
   overflow-y: auto; 
 }
 
+.dropzone-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.dropzone {
+  flex: 1;
+  max-height: fit-content;
+}
+
 .notification-banner {
   position: fixed;
   top: 20px;
