@@ -189,6 +189,16 @@ input:disabled {
   gap: 1rem;
 }
 
+.dropzone-content {
+  gap: 0.5rem;
+  font-size: 0.7rem;
+}
+
+.dropzone-icon {
+  font-size: 3rem;
+  color: #007bff;
+}
+
 .dropzone {
   border: 2px dashed #aaa;
   border-radius: 8px;
