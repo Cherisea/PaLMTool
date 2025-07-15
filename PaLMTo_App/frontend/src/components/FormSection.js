@@ -127,7 +127,7 @@ function FormSection({
           <div className="step-contet">
             <div className="form-group">
                 <label className="required">
-                  Upload File
+                  File Upload
                   <span className="required-mark">*</span>
                   <FiInfo title="Sample trajectory which synthetic trajectories will be generated from. Must be a csv file with three columns: 'trip_id', 'timestamp', 'geometry'" className="info-icon"/>
                 </label>
