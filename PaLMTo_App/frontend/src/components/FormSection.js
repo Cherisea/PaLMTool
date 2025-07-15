@@ -79,14 +79,6 @@ function FormSection({
     }
   };
 
-  const nextStep = () => {
-    setCurrentStep(prevStep => prevStep + 1);
-  };
-
-  const prevStep = () => {
-    setCurrentStep(prevStep => Math.max(1, prevStep - 1));
-  };
-
   const canProceed = () => {
     if (currentStep === 2) {
       return (formData.file || formData.ngram_file) && formData.cell_size;
