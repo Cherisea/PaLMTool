@@ -136,8 +136,16 @@ function FormSection({
                 </label>
                 <div className="dropzone-row">
                   {/* Dropzone for sample trajectory file  */}
-                  <div {...getSampleRootProps({ className: "dropzone" })}>
-                    <input {...getSampleInputProps()} />
+                  <div 
+                    {...getSampleRootProps({ 
+                        className: `dropzone${formData.ngram_file ? ' disabled-dropzone' : ''}`,
+                        tabIndex: formData.ngram_file ? -1 : 0 
+                    })}
+                    aria-disabled={!!formData.ngram_file}  
+                  >
+                    <input {...getSampleInputProps()} 
+                      disabled={!!formData.ngram_file}
+                    />
                     <div className="dropzone-content">
                       <FiFileText className="dropzone-icon" />
                       {
@@ -151,8 +159,17 @@ function FormSection({
                   </div>
                   
                   {/* Dropzone for ngram dictionary file */}
-                  <div {...getNgramRootProps({ className: "dropzone" })}>
-                    <input {...getNgramInputProps()} />
+                  <div 
+                    {...getNgramRootProps({ 
+                      className: `dropzone${formData.file ? ' disabled-dropzone' : ''}`,
+                      tabIndex: formData.file ? -1 : 0
+                    })}
+                    aria-disabled={!!formData.file}
+                  >
+                    <input 
+                      {...getNgramInputProps()} 
+                      disabled={!!formData.file}
+                    />
                     <div className="dropzone-content">
                       <FiBook className="dropzone-icon" />
                       {
