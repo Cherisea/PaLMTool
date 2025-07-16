@@ -28,7 +28,7 @@ function FormSteps({
             <div className="step-content">
               <h3>Step 1: Model Training/Loading</h3>
               <p>
-                This tool utilizes ngram language model for generating realistic trajectories. To build a "corpus" of location
+                This tool utilizes <a href="https://en.wikipedia.org/wiki/Word_n-gram_language_model" target="_blank" rel="noopener noreferrer">ngram language model</a> for generating realistic trajectories. To build a "corpus" of location
                 points, it extracts bigrams and trigrams by default from a uploaded trajectory file. Alternatively, we provide 
                 a custom file format that records previously constructed ngram dictionaries, which accelerates the generation
                 process by skipping the time-consuming step of forming a corpus. 
@@ -49,9 +49,9 @@ function FormSteps({
           </div>
         </div>
 
-        <div className="get-started">
-          <p>Ready to get started?</p>
-        </div>
+      <div className="button-container">
+        <button type="submit">Get Started</button>
+      </div>
       </div>
     </div>
   );
