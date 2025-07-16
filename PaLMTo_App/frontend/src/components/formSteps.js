@@ -139,7 +139,11 @@ function FormSteps({
       </div>
 
       <div className="button-container">
-        <button type="submit">{formData.ngram_file ? 'Load' : 'Train'}</button>
+        <button type="submit" 
+                disabled={!formData.ngram_file && (!formData.file || !formData.cell_size) }
+        >
+          {formData.ngram_file ? 'Load' : 'Train'}
+        </button>
       </div>
     </div>
   );
