@@ -122,9 +122,9 @@ function FormSteps({
 
       <div className="form-group">
         <label className="required">
-          Cell Size
+          Cell Side
           <span className="required-mark">*</span>
-          <FiInfo title="Size of each grid cell in meters representing a geological location over which trajectories are to be generated" className="info-icon"/>
+          <FiInfo title="Side length of each grid cell in meters representing a geological location over which trajectories are to be generated" className="info-icon"/>
         </label>
         <input 
           name="cell_size" 
