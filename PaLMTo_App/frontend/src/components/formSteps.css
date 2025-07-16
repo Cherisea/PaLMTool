@@ -1,0 +1,46 @@
+  .formsteps-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .overview-section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .overview-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .process-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .step-content h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .step-content p {
+    margin: 0.5rem 0 0 0;
+  }
+  
+  .get-started {
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+  
+  .get-started p {
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
