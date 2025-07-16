@@ -8,7 +8,8 @@ import "leaflet/dist/leaflet.css";
 import FormSection from './components/FormSection';
 import MapSection from './components/MapSection';
 import './components/backendStats.css';
-import './components/mapMatchInput.css'
+import './components/mapMatchInput.css';
+import './components/formSteps.css';
 
 // Fix default icon issue with Leaflet in React
 delete L.Icon.Default.prototype._getIconUrl;
