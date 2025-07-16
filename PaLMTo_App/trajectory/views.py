@@ -1,22 +1,31 @@
-from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import GenerationConfigSerializer
-from .models import GeneratedTrajectory
-from rest_framework.response import Response
+# REST API
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+
+# Django libraries
 from django.conf import settings
-import os
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import FileResponse
-from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
-import pandas as pd
-from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+# System libraries
+import os
 import uuid
-import ast
 from io import StringIO
 from contextlib import redirect_stdout
-from datetime import datetime, timedelta
+
+# Third-party libraries
+import ast
 import requests
+import pandas as pd
+from datetime import datetime, timedelta
+from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
+
+# Local imports
+from .models import GeneratedTrajectory
+from .serializers import GenerationConfigSerializer
+from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
 
 # Holds statistics related to trajectory generation
 STATS = {}
