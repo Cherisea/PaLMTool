@@ -79,12 +79,11 @@ function FormSection({
     }
   };
 
-  const canProceed = () => {
-    if (currentStep === 2) {
-      return (formData.file || formData.ngram_file) && formData.cell_size;
-    };
-    return true;
-  };
+  const handleDotClick = (stepNum) => {
+    if (stepNum < currentStep) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
 
   return (
     <div className="form-box">
@@ -103,21 +102,20 @@ function FormSection({
       {/* Step indicator */}
       <div className="step-indicator">
         {[1, 2, 3].map((stepNum) => {
-          const isStepThree = stepNum === 3;
-          const canGoToStep = 
-              !isStepThree || canProceed() || currentStep === 3;
+          const isStepThree = currentStep === 3;
+          const canGoToStep = stepNum < currentStep;
 
           return (
             <div key={stepNum} style={{ display: "flex", alignItems: "center"}}>
               <div
-                className={`step ${currentStep >= stepNum ? 'active' : ''} ${!canGoToStep ? 'disabled' : ''}`}
-                onClick={() => canGoToStep && setCurrentStep(stepNum)}
+                className={`step ${currentStep >= stepNum ? 'active' : ''} ${!canGoToStep && stepNum !== currentStep ? 'disabled' : ''}`}
+                onClick={() => handleDotClick(stepNum)}
                 tabIndex={canGoToStep ? 0 : -1}
                 role="button"
                 aria-current={currentStep === stepNum}
                 aria-label={`Go to step ${stepNum}`}
-                style={{ cursor: canGoToStep ? "pointer" : "not-allowed", opacity: canGoToStep ? 1 : 0.5 }}
-                onKeyDown={e => {if (e.key === "Enter" || e.key === " ") setCurrentStep(stepNum); }}
+                style={{ cursor: canGoToStep ? "pointer" : (stepNum === currentStep ? "default" : "not-allowed"), opacity: canGoToStep || stepNum === currentStep ? 1 : 0.5 }}
+                onKeyDown={e => {if ((e.key === "Enter" || e.key === " ") && canGoToStep) setCurrentStep(stepNum); }}
               >
                 <div className="step-dot">{stepNum}</div>
                 <span className="step-label">
