@@ -29,9 +29,9 @@ function FormSteps({
               <h3>Step 1: Model Training/Loading</h3>
               <p>
                 This tool utilizes <a href="https://en.wikipedia.org/wiki/Word_n-gram_language_model" target="_blank" rel="noopener noreferrer">ngram language model</a> for generating realistic trajectories. To build a "corpus" of location
-                points, it extracts bigrams and trigrams by default from a uploaded trajectory file. Alternatively, we provide 
-                a custom file format that records previously constructed ngram dictionaries, which accelerates the generation
-                process by skipping the time-consuming step of forming a corpus. 
+                points, it extracts bigrams and trigrams from sample trajectories. Alternatively, we provide 
+                a custom file format that records previously constructed ngram dictionaries, allowing users to skip
+                the time-consuming first step. 
               </p>
             </div>
           </div>
