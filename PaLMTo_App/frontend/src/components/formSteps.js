@@ -15,8 +15,44 @@ function FormSteps({
 }) {
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
-    <div>
-      <h2>WebPaLMTo Trajectory Generation</h2>
+    <div className="step-content">
+      <h2 className="formsteps-title">WebPaLMTo Trajectory Generation</h2>
+
+      <div className="overview-section">
+        <p className="overview-description">
+          Welcome to WebPaLMTo! This tool generates synthetic trajectories using a two-step process:
+        </p>
+
+        <div className="process-steps">
+          <div className="process-step">
+            <div className="step-content">
+              <h3>Step 1: Model Training/Loading</h3>
+              <p>
+                This tool utilizes ngram language model for generating realistic trajectories. To build a "corpus" of location
+                points, it extracts bigrams and trigrams by default from a uploaded trajectory file. Alternatively, we provide 
+                a custom file format that records previously constructed ngram dictionaries, which accelerates the generation
+                process by skipping the time-consuming step of forming a corpus. 
+              </p>
+            </div>
+          </div>
+
+          <div className="process-step">
+            <div className="step-content">
+              <h3>Step 2: Trajectory Generation</h3>
+              <p>
+                Configure generation parameters including the number of trajectories, 
+                generation method (Length Constrained or Point-to-Point), and optional 
+                trajectory length. The trained model will create synthetic trajectories 
+                based on your specifications.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="get-started">
+          <p>Ready to get started?</p>
+        </div>
+      </div>
     </div>
   );
 
