@@ -31,10 +31,13 @@
   }
   
   .step-content h3 {
-    margin: 0;
+    margin: 0 0 0.5rem 0;
     font-size: 1.1rem;
   }
   
   .step-content p {
     margin: 0.5rem 0 0 0;
+    text-align: justify;
+    color: #333;
+    line-height: 1.3;
   }
