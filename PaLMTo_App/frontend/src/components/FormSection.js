@@ -42,6 +42,12 @@ function FormSection({
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+      return;
+    }
+
     setIsLoading(true);
     setProgress(0);
 
