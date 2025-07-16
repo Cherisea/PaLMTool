@@ -1,12 +1,16 @@
-// import logo from './logo.svg';
+// External libraries
 import React, { useState } from "react"
 import axios from "axios";
 import { useDropzone } from "react-dropzone" 
-import './App.css';
 import L from "leaflet"
-import "leaflet/dist/leaflet.css";
+
+// Two main sections of app
 import FormSection from './components/FormSection';
 import MapSection from './components/MapSection';
+
+// Styling sheets
+import './App.css';
+import "leaflet/dist/leaflet.css";
 import './components/backendStats.css';
 import './components/mapMatchInput.css';
 import './components/formSteps.css';
