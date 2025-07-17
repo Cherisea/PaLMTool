@@ -53,12 +53,14 @@ function FormSection({
 
   return (
     <div className="form-box">
+      {/* Popup window of backend statistics */}
       <StatisticsPopup
         isOpen={showStats}
         onClose={() => setShowStats(false)}
         stats={stats}
       />
 
+      {/* Notification banner */}
       {notification && (
         <div className={`notification-banner ${notification.type}`}>
           {notification.message}
@@ -92,7 +94,8 @@ function FormSection({
           );
         })}
       </div>
-
+      
+      {/* Main form content */}
       <div className="form-content">
         <form onSubmit={e => handleUnifiedSubmit(e, currentStep)} encType='multipart/form-data'>
           <FormSteps 
@@ -114,6 +117,7 @@ function FormSection({
         </form>
       </div>
 
+      {/* Footer area */}
       <DocLinks />
     </div>
   );
