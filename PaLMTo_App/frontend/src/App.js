@@ -1,6 +1,5 @@
 // External libraries
 import React, { useState } from "react"
-import axios from "axios";
 import { useDropzone } from "react-dropzone" 
 import L from "leaflet"
 
@@ -50,14 +49,6 @@ function App() {
 
   // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
-
-  // Create an axios instance for communicating with backend API
-  const api = axios.create({
-    baseURL: '/trajectory/generate/',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
 
   // Handler for text and standard file upload
   const handleChange = (e) => {
@@ -110,7 +101,7 @@ function App() {
          isDragActive: isSampleDragActive} = useDropzone({
     onDrop: handleSampleFileDrop,
     multiple: false,
-    accept: {"application/json": [".json"], "text/csv": [".csv"]},
+    accept: {"text/csv": [".csv"]},
   });
 
   // Second drag zone instance for ngram files
@@ -120,7 +111,7 @@ function App() {
   } = useDropzone({
     onDrop: handleNgramFileDrop,
     multiple: false,
-    accept: {"application/json": [".json"], "text/csv": [".csv"]},
+    accept: {"application/json": [".json"]},
   });
 
   // Handler for updating cooridinates by dropping a marker on map
@@ -144,47 +135,47 @@ function App() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    // Construct request payload
-    const payload = new FormData();
-    payload.append("cell_size", formData.cell_size);
-    payload.append("num_trajectories", formData.num_trajectories);
-    payload.append("generation_method", formData.generation_method);
+  //   // Construct request payload
+  //   const payload = new FormData();
+  //   payload.append("cell_size", formData.cell_size);
+  //   payload.append("num_trajectories", formData.num_trajectories);
+  //   payload.append("generation_method", formData.generation_method);
 
-    if (formData.file) {
-      payload.append("file", formData.file);
-    }
+  //   if (formData.file) {
+  //     payload.append("file", formData.file);
+  //   }
 
-    if (formData.ngram_file) {
-      payload.append("ngram_file", formData.ngram_file);
-    }
+  //   if (formData.ngram_file) {
+  //     payload.append("ngram_file", formData.ngram_file);
+  //   }
 
-    if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
-      payload.append("trajectory_len", formData.trajectory_len);
-    }
+  //   if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
+  //     payload.append("trajectory_len", formData.trajectory_len);
+  //   }
 
-    try {
-      const response = await api.post('', payload);
+  //   try {
+  //     const response = await api.post('', payload);
 
-      // Extract download link from response sent from backend
-      const generatedFile = response.data.generated_file;
+  //     // Extract download link from response sent from backend
+  //     const generatedFile = response.data.generated_file;
 
-      // Store file name of generated trajectories
-      setGeneratedFileName(generatedFile);
+  //     // Store file name of generated trajectories
+  //     setGeneratedFileName(generatedFile);
       
-      // Extract backend statistics
-      setStatsData(response.data.stats)
+  //     // Extract backend statistics
+  //     setStatsData(response.data.stats)
 
-      // Extract GeoJSON feature collection from backend response
-      setVisualData(response.data.visualization)
-      setHeatmapData(response.data.heatmap)
-    } catch (error) {
-      console.error("Configuration not set:", error.response?.data || error.message);
-      throw error;
-    }
-  }
+  //     // Extract GeoJSON feature collection from backend response
+  //     setVisualData(response.data.visualization)
+  //     setHeatmapData(response.data.heatmap)
+  //   } catch (error) {
+  //     console.error("Configuration not set:", error.response?.data || error.message);
+  //     throw error;
+  //   }
+  // }
 
   return (
     <div className="App">
@@ -200,6 +191,9 @@ function App() {
           isNgramDragActive={isNgramDragActive}
           stats={statsData}
           setStatsData={setStatsData}
+          setGeneratedFileName={setGeneratedFileName}
+          setVisualData={setVisualData}
+          setHeatmapData={setHeatmapData}
         />
         
         <MapSection
