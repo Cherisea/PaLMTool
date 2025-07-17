@@ -192,7 +192,6 @@ function App() {
         <FormSection
           formData={formData}
           handleChange={handleChange}
-          handleSubmit={handleSubmit}
           getSampleRootProps={getSampleRootProps}
           getSampleInputProps={getSampleInputProps}
           isSampleDragActive={isSampleDragActive}
@@ -200,6 +199,7 @@ function App() {
           getNgramInputProps={getNgramInputProps}
           isNgramDragActive={isNgramDragActive}
           stats={statsData}
+          setStatsData={setStatsData}
         />
         
         <MapSection
