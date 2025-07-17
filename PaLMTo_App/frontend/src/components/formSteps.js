@@ -143,6 +143,11 @@ function FormSteps({
                 disabled={!formData.ngram_file && (!formData.file || !formData.cell_size) }
         >
           {formData.ngram_file ? 'Load' : 'Train'}
+          {isLoading && (
+            <div className="progress-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+          )}
         </button>
       </div>
     </div>
