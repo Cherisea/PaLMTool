@@ -18,17 +18,14 @@ __pycache__/
 **/migrations/*.py
 !**/migrations/__init__.py
 
-# Exclude directory containing user-uploaded files
-**/media/uploads
-
 # Ignore .env file
 **/.env
-
-# Ignore generated trajectory files
-**/media/generated*
 
 # Ignore genrated geojson files
 **/static/*.geojson
 
-# Ignore map-matched files generated from synthetic trajectories
-**/media/matched*
+# Ignore derivative sub-folders in media
+**/media/matched
+**/media/generated
+**/media/uploads
+**/media/ngrams
