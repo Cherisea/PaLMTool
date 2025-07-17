@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import StatisticsPopup from "./backendStats";
 import DocLinks from "./docLinks";
 import FormSteps from "./formSteps";
+import axios from 'axios';
 
 function FormSection({ 
   formData, 
@@ -116,7 +117,7 @@ function FormSection({
         payload.append("file", formData.file);
       }
 
-      const response = await window.axios.post('/trajectory/generate/ngrams', payload, {
+      const response = await axios.post('/trajectory/generate/ngrams', payload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
