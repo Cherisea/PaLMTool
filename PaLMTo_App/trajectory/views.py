@@ -33,16 +33,26 @@ STATS = {}
 class GenerationConfigView(APIView):
     """
         A class for processing frontend form and sending back data related to trajectory generation 
-        using PaLMTo_gen library
+        using PaLMTo_gen library.
     """
      # Specify parser of HMTL forms and file uploads for Django REST Framework
     parser_classes = [MultiPartParser, FormParser]
 
-    def process_request(self, data):
-        """
+    def process_file(self, request):
+        """Handle file upload field in frontend form.
+
+        Inject demo trajectory file into request if value of file field is empty. Otherwise, return
+        request data unchanged. 
+
+        Args:
+            data(django.QueryDict): object containing frontend form data.
+
+        Returns:
+            data(django.QueryDict): same as input or a modified object with demo file inserted.
         
         """
-        file = data.get('file')
+        data_copy = request.data.copy()
+        file = data_copy.get('file')
 
         # Construct default file if it's missing
         if not file:
@@ -50,15 +60,22 @@ class GenerationConfigView(APIView):
             # Read file content
             with open(demo_filepath, "rb") as f:
                 file_content = f.read()
-                data['file'] = SimpleUploadedFile(
+                data_copy['file'] = SimpleUploadedFile(
                     'demo.csv', file_content, 'text/csv'
                 )
 
-        return data
+        return data_copy
 
     def post(self, request):
-        data_copy = request.data.copy()
-        data = self.process_request(data_copy)
+        """Handler of processing the entire two-stage trajectory generation process.
+
+        Args:
+            request():
+
+        Returns:
+
+        """
+        data = self.process_file(request)
 
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
@@ -78,6 +95,17 @@ class GenerationConfigView(APIView):
                              'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
+    def post_ngrams(self, request):
+        """Handler for processing the first step of building ngram dictionary.
+
+        Args:
+            request:
+        
+        Returns:
+
+        
+        """
+        data = request.data
 
     def _process_to_ngrams(self, data):
         """Execute trajectory generation process up to creation of ngram dictionaries.
