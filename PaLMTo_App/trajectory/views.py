@@ -38,8 +38,10 @@ class GenerationConfigView(APIView):
      # Specify parser of HMTL forms and file uploads for Django REST Framework
     parser_classes = [MultiPartParser, FormParser]
 
-    def post(self, request):
-        data = request.data.copy()
+    def process_request(self, data):
+        """
+        
+        """
         file = data.get('file')
 
         # Construct default file if it's missing
@@ -51,6 +53,12 @@ class GenerationConfigView(APIView):
                 data['file'] = SimpleUploadedFile(
                     'demo.csv', file_content, 'text/csv'
                 )
+
+        return data
+
+    def post(self, request):
+        data_copy = request.data.copy()
+        data = self.process_request(data_copy)
 
         serializer = GenerationConfigSerializer(data=data)
         if serializer.is_valid():
@@ -69,7 +77,67 @@ class GenerationConfigView(APIView):
                              'heatmap': heatmap_data,
                              'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-        
+
+
+    def _process_to_ngrams(self, data):
+        """Execute trajectory generation process up to creation of ngram dictionaries.
+
+        This is the first step of a two-stage trajectory generation process, allowing a user to optionally 
+        build ngrams dictionary without executing the entire program and to skip this time-consuming step 
+        if a JSON file storing a previously built ngrams is provided. 
+
+        Args:
+            data(django.QueryDict): dictionary-like object containing keys and values from frontend form.
+
+        Returns:
+
+        """
+        global STATS
+
+        # Cast value of integer fields as Python integer
+        cell_size = int(data['cell_size'])
+
+        # Reset file pointer
+        data['file'].seek(0)
+        df = pd.read_csv(data["file"])
+        # Convert geometry column to Python list
+        df['geometry'] = df['geometry'].apply(ast.literal_eval)
+        study_area = extract_boundary(df)
+
+        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
+
+        # Capture stdout from create_tokens method
+        f = StringIO()
+        with redirect_stdout(f):
+            grid, sentence_df = TokenCreator.create_tokens()
+        content = f.getvalue()
+        STATS["cellsCreated"] = int(content.strip().split(":")[1])
+
+        ngram_model = NgramGenerator(sentence_df)
+
+        # Capture stdout from create_ngrams method
+        f.seek(0)
+        with redirect_stdout(f):
+            ngrams, start_end_points = ngram_model.create_ngrams()
+        content = f.getvalue()
+        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
+    
+    def _process_traj_generation(self, data):
+        num_trajs = int(data["num_trajectories"])
+        ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data)
+
+        if data["generation_method"] == "length_constrained":
+            traj_len = int(data["trajectory_len"])
+            traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
+            new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
+        else:
+            traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
+            new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+        return sentence_df, study_area, new_trajs, new_trajs_gdf
+
     def _process_config(self, data):
         """
             Process data sent from frontend form.
