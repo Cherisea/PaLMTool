@@ -17,6 +17,7 @@ from contextlib import redirect_stdout
 
 # Third-party libraries
 import ast
+import json
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
@@ -105,7 +106,25 @@ class GenerationConfigView(APIView):
 
         
         """
-        data = request.data
+        data = self.process_file(request)
+        cell_size = int(data['cell_size'])
+        ngrams, start_end_points, _, _, _ = self._process_to_ngrams(data)
+        cached_data = {
+            'ngrams': ngrams,
+            'start_end_points': start_end_points,
+            'cell_size': cell_size,
+            'created_at': datetime.now().isoformat()
+        }
+
+        filename = f'ngrams_{cell_size}.json'
+        subdir = os.path.join(settings.MEDIA_ROOT, "ngrams")
+        os.makedirs(subdir, exist_ok=True)
+
+        file_path = os.path.join(subdir, filename)
+        with open(file_path, "w") as f:
+            json.dump(cached_data, f, indent=4)
+
+        return Response({"cache_file": filename}, status=status.HTTP_200_OK)
 
     def _process_to_ngrams(self, data):
         """Execute trajectory generation process up to creation of ngram dictionaries.
