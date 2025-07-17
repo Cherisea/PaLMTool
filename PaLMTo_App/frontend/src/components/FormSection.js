@@ -43,6 +43,12 @@ function FormSection({
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    if (currentStep === 2) {
+      await handleNgramSubmit(e);
+      setCurrentStep(currentStep + 1);
+      return;
+    }
+
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
       return;
@@ -84,6 +90,59 @@ function FormSection({
       setIsLoading(false);
     }
   };
+
+  const handleNgramSubmit = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+    setProgress(0);
+
+    // Simulate progress update
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prevProgress + 10;
+      })
+    }, 1100);
+
+    try {
+      // Construct request payload
+      const payload = new FormData();   //??? What's FormData()?
+      payload.append("cell_size", formData.cell_size);
+      if (formData.file) {
+        payload.append("file", formData.file);
+      }
+
+      const response = await window.axios.post('/trajectory/generate/ngrams', payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const data = response.data;
+
+      setNotification({
+        type: 'success',
+        message: 'Ngram dictionaries created successfully!'
+      })
+
+      setProgress(100);
+      setShowStats(true);
+    } catch (error) {
+      setNotification({
+        type: 'error',
+        message: 'Failed to create ngram dictionaries. Please try agin.'
+      })
+    } finally {
+      clearInterval(progressInterval);
+      setIsLoading(false);
+    }
+
+    
+  }
 
   const handleDotClick = (stepNum) => {
     if (stepNum < currentStep) {
