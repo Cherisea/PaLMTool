@@ -17,6 +17,9 @@ function FormSection({
   isNgramDragActive,
   stats,
   setStatsData,
+  setGeneratedFileName,
+  setVisualData,
+  setHeatmapData,
 }) {
   // State variable for stats popup window
   const [showStats, setShowStats] = useState(false);
@@ -104,6 +107,9 @@ function FormSection({
             isNgramDragActive={isNgramDragActive}
             isLoading={isLoading}
             progress={progress}
+            setGeneratedFileName={setGeneratedFileName}
+            setVisualData={setVisualData}
+            setHeatmapData={setHeatmapData}
           />
         </form>
       </div>
