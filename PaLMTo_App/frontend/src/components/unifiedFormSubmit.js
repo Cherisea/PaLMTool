@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 
-function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData) {
+function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
+    setGeneratedFileName, setVisualData, setHeatmapData,) {
     // State variable for notification message
   const [notification, setNotification] = useState(null);
 
@@ -77,6 +78,11 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData)
                 setShowStats(true);
                 setCurrentStep(3);
             } else if (currentStep === 3) {
+                const generatedFile = response.data.generated_file;
+                setGeneratedFileName(generatedFile);
+                setVisualData(response.data.visualization);
+                setHeatmapData(response.data.heatmap);
+
                 setTimeout(() => {
                     setNotification({
                         type: 'success',
