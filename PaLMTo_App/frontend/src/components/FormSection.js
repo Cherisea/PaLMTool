@@ -1,35 +1,36 @@
 import { useState, useEffect } from "react";
+
+// Components import
 import StatisticsPopup from "./backendStats";
 import DocLinks from "./docLinks";
 import FormSteps from "./formSteps";
-import axios from 'axios';
+import UnifiedFormSubmit from "./unifiedFormSubmit";
 
 function FormSection({ 
   formData, 
   handleChange, 
-  handleSubmit,
   getSampleRootProps,
   getSampleInputProps,
   isSampleDragActive,
   getNgramRootProps,
   getNgramInputProps,
   isNgramDragActive,
-  stats
+  stats,
+  setStatsData,
 }) {
   // State variable for stats popup window
   const [showStats, setShowStats] = useState(false);
 
-  // State variable for notification message
-  const [notification, setNotification] = useState(null);
-
-  // State variable for loading status
-  const [isLoading, setIsLoading] = useState(false);
-
-  // State variable for current progress
-  const [progress, setProgress] = useState(0);
-
   // State variable for current step 
   const [currentStep, setCurrentStep] = useState(1);
+
+  const {
+    handleUnifiedSubmit,
+    notification,
+    isLoading,
+    progress,
+    setNotification
+  } = UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData);
 
   // Auto-hide notification after 5 seconds
   useEffect(() => {
@@ -39,111 +40,7 @@ function FormSection({
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [notification]);
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-
-    if (currentStep === 2) {
-      await handleNgramSubmit(e);
-      setCurrentStep(currentStep + 1);
-      return;
-    }
-
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-      return;
-    }
-
-    setIsLoading(true);
-    setProgress(0);
-
-    // Simulate progress update
-    const progressInterval = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prevProgress + 10;
-      })
-    }, 1100);
-
-    try {
-      await handleSubmit(e);
-      setProgress(100);
-      setShowStats(true);
-
-      setTimeout(() => {
-        setNotification({
-          type: 'success',
-          message: 'Trajectories generated successfully!'
-        })
-      }, 1000);
-    } catch (error) {
-      console.error("Form submission error: ", error);
-      setNotification({
-        type: 'error',
-        message: 'Failed to generate trajectories. Please try again.'
-      });
-    } finally {
-      clearInterval(progressInterval);
-      setIsLoading(false);
-    }
-  };
-
-  const handleNgramSubmit = async (e) => {
-    e.preventDefault();
-
-    setIsLoading(true);
-    setProgress(0);
-
-    // Simulate progress update
-    const progressInterval = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prevProgress + 10;
-      })
-    }, 1100);
-
-    try {
-      // Construct request payload
-      const payload = new FormData();   //??? What's FormData()?
-      payload.append("cell_size", formData.cell_size);
-      if (formData.file) {
-        payload.append("file", formData.file);
-      }
-
-      const response = await axios.post('/trajectory/generate/ngrams', payload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      const data = response.data;
-
-      setNotification({
-        type: 'success',
-        message: 'Ngram dictionaries created successfully!'
-      })
-
-      setProgress(100);
-      setShowStats(true);
-    } catch (error) {
-      setNotification({
-        type: 'error',
-        message: 'Failed to create ngram dictionaries. Please try agin.'
-      })
-    } finally {
-      clearInterval(progressInterval);
-      setIsLoading(false);
-    }
-
-    
-  }
+  }, [notification, setNotification]);
 
   const handleDotClick = (stepNum) => {
     if (stepNum < currentStep) {
@@ -168,7 +65,6 @@ function FormSection({
       {/* Step indicator */}
       <div className="step-indicator">
         {[1, 2, 3].map((stepNum) => {
-          const isStepThree = currentStep === 3;
           const canGoToStep = stepNum < currentStep;
 
           return (
@@ -195,7 +91,7 @@ function FormSection({
       </div>
 
       <div className="form-content">
-        <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
+        <form onSubmit={e => handleUnifiedSubmit(e, currentStep)} encType='multipart/form-data'>
           <FormSteps 
             currentStep={currentStep}
             formData={formData}
