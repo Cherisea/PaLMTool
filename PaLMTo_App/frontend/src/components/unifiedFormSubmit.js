@@ -21,6 +21,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     });
   };
 
+  // Main entry for processing form and response
   const handleUnifiedSubmit = async (e, currentStep) => {
     e.preventDefault();
 
