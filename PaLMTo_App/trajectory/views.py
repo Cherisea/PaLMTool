@@ -216,6 +216,10 @@ class NgramGenerationView(APIView):
         data = _process_file(request)
         cell_size = int(data['cell_size'])
         ngrams, start_end_points, _, _, _ = _process_to_ngrams(data)
+
+        # Convert tuple keys in ngrams to str type
+        ngrams = convert_keys_to_str(ngrams)
+        
         cached_data = {
             'ngrams': ngrams,
             'start_end_points': start_end_points,
@@ -498,3 +502,20 @@ def _process_to_ngrams(data):
         STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
 
         return ngrams, start_end_points, grid, sentence_df, study_area
+
+def convert_keys_to_str(input_dict):
+    """Recursively convert tuple keys in a dictionary to a string.
+
+    Args:
+        input_dict(dict): an object that may contain nested dictionaries.
+
+    Returns:
+        input_dict(dict): a transformed object whose keys are now of str type.
+    
+    """
+    if isinstance(input_dict, dict):
+        return {str(k): convert_keys_to_str(v) for k, v in input_dict.items()}
+    elif isinstance(input_dict, list):
+        return [convert_keys_to_str(i) for i in input_dict]
+    else:
+        return input_dict
