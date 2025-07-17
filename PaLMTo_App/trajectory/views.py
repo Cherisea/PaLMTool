@@ -235,7 +235,10 @@ class NgramGenerationView(APIView):
         with open(file_path, "w") as f:
             json.dump(cached_data, f, indent=4)
 
-        return Response({"cache_file": filename}, status=status.HTTP_200_OK)
+        return Response({
+                "cache_file": filename,
+                'stats': STATS,
+            }, status=status.HTTP_200_OK)
     
 
 class Trajectory3DView(APIView):
