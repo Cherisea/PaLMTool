@@ -134,49 +134,6 @@ function App() {
     }
   };
 
-  // Handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   // Construct request payload
-  //   const payload = new FormData();
-  //   payload.append("cell_size", formData.cell_size);
-  //   payload.append("num_trajectories", formData.num_trajectories);
-  //   payload.append("generation_method", formData.generation_method);
-
-  //   if (formData.file) {
-  //     payload.append("file", formData.file);
-  //   }
-
-  //   if (formData.ngram_file) {
-  //     payload.append("ngram_file", formData.ngram_file);
-  //   }
-
-  //   if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
-  //     payload.append("trajectory_len", formData.trajectory_len);
-  //   }
-
-  //   try {
-  //     const response = await api.post('', payload);
-
-  //     // Extract download link from response sent from backend
-  //     const generatedFile = response.data.generated_file;
-
-  //     // Store file name of generated trajectories
-  //     setGeneratedFileName(generatedFile);
-      
-  //     // Extract backend statistics
-  //     setStatsData(response.data.stats)
-
-  //     // Extract GeoJSON feature collection from backend response
-  //     setVisualData(response.data.visualization)
-  //     setHeatmapData(response.data.heatmap)
-  //   } catch (error) {
-  //     console.error("Configuration not set:", error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // }
-
   return (
     <div className="App">
       <div className="layout">
