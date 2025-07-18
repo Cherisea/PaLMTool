@@ -43,7 +43,7 @@ class GenerationConfigView(APIView):
         """Handler of processing the entire two-stage trajectory generation process.
 
         Args:
-            request():
+            request(rest_framework.request.Request): an object containing cache_file field.
 
         Returns:
 
@@ -67,6 +67,40 @@ class GenerationConfigView(APIView):
                              'heatmap': heatmap_data,
                              'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
+    def process_ngram_file(self, request):
+        """Read cached ngram file and return original ngrams and start_end_points.
+
+        Args:
+            request(rest_framework.request.Request): an object containing cache_file field.
+
+        Returns:
+             tuple: (ngrams, start_end_points) where keys are converted back to tuples.
+        
+        """
+        data_copy = request.data.copy()
+        cache_file = data_copy.get('cache_file')
+
+        if not cache_file:
+            raise ValueError("No ngram file provided.")
+        
+        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", cache_file)
+
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"Ngram file {cache_file} not found.")
+        
+        # Read JSON file
+        with open(full_path, 'r') as f:
+            cached_data = json.load(f)
+
+        # Extract ngrams and start_end_points
+        ngrams_str = cached_data.get('ngrams', {})
+        start_end_points = cached_data.get('start_end_points', {})
+
+        # Convert str keys back to tuples
+        ngrams = convert_keys_to_tuple(ngrams_str)
+
+        return ngrams, start_end_points
     
     def _process_traj_generation(self, data):
         num_trajs = int(data["num_trajectories"])
@@ -215,7 +249,7 @@ class NgramGenerationView(APIView):
         """
         data = _process_file(request)
         cell_size = int(data['cell_size'])
-        ngrams, start_end_points, _, _, _ = _process_to_ngrams(data)
+        ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
 
         # Convert tuple keys in ngrams to str type
         ngrams = convert_keys_to_str(ngrams)
@@ -235,8 +269,29 @@ class NgramGenerationView(APIView):
         with open(file_path, "w") as f:
             json.dump(cached_data, f, indent=4)
 
+        # Save GeoDataFrame and DataFrame to separate files
+        base_filename = f'ngrams_{cell_size}'
+
+        # Save grid GeoDataFrame
+        grid_filename = f'{base_filename}_grid.geojson'
+        grid_path = os.path.join(subdir, grid_filename)
+        grid.to_file(grid_path, driver='GeoJSON')
+
+        # Save study_area GeoDataFrame
+        study_area_filename = f'{base_filename}_study_area.geojson'
+        study_area_path = os.path.join(subdir, study_area_filename)
+        study_area.to_file(study_area_path, driver='GeoJSON')
+
+        # Save sentence_df DataFrame
+        sentence_df_filename = f'{base_filename}_sentence_df.csv'
+        sentence_df_path = os.path.join(subdir, sentence_df_filename)
+        sentence_df.to_csv(sentence_df_path, index=False)
+
         return Response({
                 "cache_file": filename,
+                "grid_file": grid_filename,
+                "study_area_file": study_area_filename,
+                "sentence_df_file": sentence_df_filename,
                 'stats': STATS,
             }, status=status.HTTP_200_OK)
     
