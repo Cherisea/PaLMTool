@@ -13,9 +13,9 @@ function FormSection({
   getSampleRootProps,
   getSampleInputProps,
   isSampleDragActive,
-  getNgramRootProps,
-  getNgramInputProps,
-  isNgramDragActive,
+  getCacheRootProps,
+  getCacheInputProps,
+  isCacheDragActive,
   setStatsData,
   setGeneratedFileName,
   setVisualData,
@@ -114,9 +114,9 @@ function FormSection({
             getSampleRootProps={getSampleRootProps}
             getSampleInputProps={getSampleInputProps}
             isSampleDragActive={isSampleDragActive}
-            getNgramRootProps={getNgramRootProps}
-            getNgramInputProps={getNgramInputProps}
-            isNgramDragActive={isNgramDragActive}
+            getCacheRootProps={getCacheRootProps}
+            getCacheInputProps={getCacheInputProps}
+            isCacheDragActive={isCacheDragActive}
             isLoading={isLoading}
             progress={progress}
           />
