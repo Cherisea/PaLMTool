@@ -20,6 +20,7 @@ import ast
 import json
 import requests
 import pandas as pd
+import geopandas as gpd
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 
@@ -68,7 +69,7 @@ class GenerationConfigView(APIView):
                              'stats': STATS}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
-    def process_ngram_file(self, request):
+    def process_files(self, request):
         """Read cached ngram file and return original ngrams and start_end_points.
 
         Args:
@@ -100,14 +101,24 @@ class GenerationConfigView(APIView):
         # Convert str keys back to tuples
         ngrams = convert_keys_to_tuple(ngrams_str)
 
-        return ngrams, start_end_points
-    
-    def _process_traj_generation(self, data):
-        num_trajs = int(data["num_trajectories"])
-        ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data)
+        # Load grid, sentence_df and study_area
+        grid_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('grid_file'))
+        study_area_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('study_area_file'))
+        sentence_df_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('sentence_df_file'))
 
-        if data["generation_method"] == "length_constrained":
-            traj_len = int(data["trajectory_len"])
+        grid = gpd.read_file(grid_path)
+        study_area = gpd.read_file(study_area_path)
+        sentence_df = pd.read_csv(sentence_df_path)
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
+    
+    def _process_traj_generation(self, request):
+        num_trajs = int(request.data.get("num_trajectories"))
+        ngrams, start_end_points, grid, sentence_df, study_area = self.process_files(request)
+
+
+        if request.data.get("generation_method") == "length_constrained":
+            traj_len = int(request.data.get("trajectory_len"))
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
         else:
