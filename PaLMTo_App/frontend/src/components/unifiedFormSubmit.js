@@ -63,6 +63,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             payload.append("num_trajectories", formData.num_trajectories);
             payload.append("generation_method", formData.generation_method);
             payload.append("ngram_file", formData.ngram_file);
+            payload.append("grid_file", gridFile);
+            payload.append("study_area_file", areaFile);
+            payload.append("sentence_df_file", sentDfFile);
+
 
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
