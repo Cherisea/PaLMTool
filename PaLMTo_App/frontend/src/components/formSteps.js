@@ -108,7 +108,7 @@ function FormSteps({
                   (<p>Drop the file here ...</p>) : 
                   formData.cache_file ? 
                     (<p>{formData.cache_file.name}</p>) : 
-                    (<p>Cache</p>)
+                    (<p>Ngram Dictionary</p>)
               }
             </div>
           </div>
