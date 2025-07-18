@@ -49,27 +49,30 @@ class GenerationConfigView(APIView):
         Returns:
 
         """
-        data = _process_file(request)
+        data = request.data
 
-        serializer = GenerationConfigSerializer(data=data)
-        if serializer.is_valid():
-            uploaded = serializer.save()
-            global STATS
+        # serializer = GenerationConfigSerializer(data=data)
+        # if serializer.is_valid():
+        #     uploaded = serializer.save()
+        global STATS
 
-            sentence_df, study_area, new_trajs, new_trajs_gdf = self._process_config(data)
-            generated_file = self.save_trajectory(new_trajs, uploaded)
-            visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-            heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
-                                                      study_area, int(data["num_trajectories"]))
+        sentence_df, study_area, _, new_trajs_gdf = self. _process_traj_generation(data)
+        # generated_file = self.save_trajectory(new_trajs, uploaded)
+        visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
+        heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
+                                                    study_area, int(data["num_trajectories"]))
+        
+        return Response({'visualization': visual_data,
+                          'heatmap': heatmap_data,}, status=status.HTTP_201_CREATED)
 
-            return Response({'id': uploaded.id, 
-                             'generated_file': generated_file,
-                             'visualization': visual_data,
-                             'heatmap': heatmap_data,
-                             'stats': STATS}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        # return Response({'id': uploaded.id, 
+        #                     'generated_file': generated_file,
+        #                     'visualization': visual_data,
+        #                     'heatmap': heatmap_data,
+        #                     'stats': STATS}, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
-    def process_files(self, request):
+    def process_files(self, data):
         """Read cached ngram file and return original ngrams and start_end_points.
 
         Args:
@@ -79,16 +82,15 @@ class GenerationConfigView(APIView):
              tuple: (ngrams, start_end_points) where keys are converted back to tuples.
         
         """
-        data_copy = request.data.copy()
-        cache_file = data_copy.get('cache_file')
+        ngram_file = data.get('ngram_file')
 
-        if not cache_file:
+        if not ngram_file:
             raise ValueError("No ngram file provided.")
         
-        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", cache_file)
+        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", ngram_file)
 
         if not os.path.exists(full_path):
-            raise FileNotFoundError(f"Ngram file {cache_file} not found.")
+            raise FileNotFoundError(f"Ngram file {ngram_file} not found.")
         
         # Read JSON file
         with open(full_path, 'r') as f:
@@ -102,9 +104,9 @@ class GenerationConfigView(APIView):
         ngrams = convert_keys_to_tuple(ngrams_str)
 
         # Load grid, sentence_df and study_area
-        grid_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('grid_file'))
-        study_area_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('study_area_file'))
-        sentence_df_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data_copy.get('sentence_df_file'))
+        grid_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('grid_file'))
+        study_area_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('study_area_file'))
+        sentence_df_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('sentence_df_file'))
 
         grid = gpd.read_file(grid_path)
         study_area = gpd.read_file(study_area_path)
@@ -112,13 +114,13 @@ class GenerationConfigView(APIView):
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
-    def _process_traj_generation(self, request):
-        num_trajs = int(request.data.get("num_trajectories"))
-        ngrams, start_end_points, grid, sentence_df, study_area = self.process_files(request)
+    def _process_traj_generation(self, data):
+        num_trajs = int(data.get("num_trajectories"))
+        ngrams, start_end_points, grid, sentence_df, study_area = self.process_files(data)
 
 
-        if request.data.get("generation_method") == "length_constrained":
-            traj_len = int(request.data.get("trajectory_len"))
+        if data.get("generation_method") == "length_constrained":
+            traj_len = int(data.get("trajectory_len"))
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
         else:
@@ -299,7 +301,7 @@ class NgramGenerationView(APIView):
         sentence_df.to_csv(sentence_df_path, index=False)
 
         return Response({
-                "cache_file": filename,
+                "ngram_file": filename,
                 "grid_file": grid_filename,
                 "study_area_file": study_area_filename,
                 "sentence_df_file": sentence_df_filename,
