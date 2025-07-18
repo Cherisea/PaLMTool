@@ -221,7 +221,7 @@ class NgramGenerationView(APIView):
             with HTTP 200 status on success.
         
         """
-        data = _process_file(request)
+        data = request.data
         cell_size = int(data['cell_size'])
         ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
         
@@ -441,8 +441,6 @@ def download_files(request, filename):
     else:
         return HttpResponse("File not found", status=404)
     
-# Helper functions
-def _process_file(request):
         """Handle file upload field in frontend form.
 
         Inject demo trajectory file into request if value of file field is empty. Otherwise, return
