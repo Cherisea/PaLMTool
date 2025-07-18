@@ -72,7 +72,7 @@ class GenerationConfigView(APIView):
         #                     'stats': STATS}, status=status.HTTP_201_CREATED)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
-    def process_files(self, data):
+    def _process_cache(self, data):
         """Read cache file and extract pickled Python objects.
 
         Args:
@@ -126,7 +126,7 @@ class GenerationConfigView(APIView):
                 - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
         """
         num_trajs = int(data.get("num_trajectories"))
-        ngrams, start_end_points, grid, sentence_df, study_area = self.process_files(data)
+        ngrams, start_end_points, grid, sentence_df, study_area = self._process_cache(data)
 
 
         if data.get("generation_method") == "length_constrained":
