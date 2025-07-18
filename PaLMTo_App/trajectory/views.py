@@ -137,59 +137,7 @@ class GenerationConfigView(APIView):
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
         return sentence_df, study_area, new_trajs, new_trajs_gdf
-
-    def _process_config(self, data):
-        """
-            Process data sent from frontend form.
-        
-            data: QueryDict object containing form data
-            
-            Return a dataframe representing trajectory as a "sentence", a GeoDataFrame defining geographical boundary,
-            generated trajectories as a list of coordinate pairs and generated trajectories as Shapely point for 
-            visualization
-        """
-        global STATS
-
-        # Cast value of integer fields as Python integer
-        cell_size = int(data['cell_size'])
-        num_trajs = int(data["num_trajectories"])
-
-        # Reset file pointer
-        data['file'].seek(0)
-        df = pd.read_csv(data["file"])
-        # Convert geometry column to Python list
-        df['geometry'] = df['geometry'].apply(ast.literal_eval)
-        study_area = extract_boundary(df)
-
-        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
-
-        # Capture stdout from create_tokens method
-        f = StringIO()
-        with redirect_stdout(f):
-            grid, sentence_df = TokenCreator.create_tokens()
-        content = f.getvalue()
-        STATS["cellsCreated"] = int(content.strip().split(":")[1])
-        
-
-        ngram_model = NgramGenerator(sentence_df)
-
-        # Capture stdout from create_ngrams method
-        f.seek(0)
-        with redirect_stdout(f):
-            ngrams, start_end_points = ngram_model.create_ngrams()
-        content = f.getvalue()
-        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
-        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
-
-        if data["generation_method"] == "length_constrained":
-            traj_len = int(data["trajectory_len"])
-            traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-            new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
-        else:
-            traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
-            new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
-        return sentence_df, study_area, new_trajs, new_trajs_gdf
-        
+ 
     def save_trajectory(self, trajs, config_instance, save_dir="generated"):
         """
             Save generated trajectories to local machine as well as database table.
@@ -563,24 +511,6 @@ def _process_to_ngrams(data):
 
         return ngrams, start_end_points, grid, sentence_df, study_area
 
-def convert_keys_to_str(input_dict):
-    """Recursively convert tuple keys in a dictionary to a string.
-
-    Args:
-        input_dict(dict): an object that may contain nested dictionaries.
-
-    Returns:
-        input_dict(dict): a transformed object whose keys are now of str type.
-    
-    """
-    if isinstance(input_dict, dict):
-        return {str(k): convert_keys_to_str(v) for k, v in input_dict.items()}
-    elif isinstance(input_dict, list):
-        return [convert_keys_to_str(i) for i in input_dict]
-    else:
-        return input_dict
-    
-def convert_keys_to_tuple(input_dict):
     """Recursively convert string keys back to Python tuple.
 
     Args:
