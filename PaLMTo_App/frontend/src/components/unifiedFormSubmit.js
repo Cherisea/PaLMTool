@@ -46,16 +46,15 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
     try {
         let endpoint, payload;
+        payload = new FormData();
 
         // Build ngram dict only in step 2 and if csv file is uploaded
         if (currentStep === 2 && !!formData.file) {
             endpoint = '/trajectory/generate/ngrams';
-            payload = new FormData();
             payload.append("cell_size", formData.cell_size);
             payload.append("file", formData.file);
         } else if (currentStep === 3) {
             endpoint = '/trajectory/generate/';
-            payload = new FormData();
             payload.append("num_trajectories", formData.num_trajectories);
             payload.append("generation_method", formData.generation_method);
             payload.append("cache_file", formData.cache_file);
