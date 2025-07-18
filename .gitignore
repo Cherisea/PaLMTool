@@ -28,4 +28,4 @@ __pycache__/
 **/media/matched
 **/media/generated
 **/media/uploads
-**/media/ngrams
+**/media/cache
