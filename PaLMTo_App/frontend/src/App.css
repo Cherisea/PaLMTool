@@ -187,6 +187,7 @@ input:disabled {
 .dropzone-row {
   display: flex;
   gap: 1rem;
+  flex-direction: column;
 }
 
 .dropzone-content {
@@ -350,6 +351,12 @@ button:hover {
   }
 }
 
+/* Drop zone placed side by side on larger screens */
+@media (min-width: 1200px) {
+  .dropzone-row {
+    flex-direction: row; 
+  }
+}
 /* ========================== Map Section ========================== */
 .map-box {
   width: 70%;
