@@ -58,7 +58,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             payload = new FormData();
             payload.append("num_trajectories", formData.num_trajectories);
             payload.append("generation_method", formData.generation_method);
-            payload.append("cache_file", formData.ngram_file);
+            payload.append("cache_file", formData.cache_file);
 
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
@@ -78,10 +78,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 setStatsData(response.data.stats);
                 setShowStats(true);
 
-                // Update formData with the returned ngram file
+                // Update formData with the returned cache file
                 setFormData(prev => ({
                     ...prev,
-                    ngram_file: response.data.cache_file
+                    cace_file: response.data.cache_file
                 }));
 
                 setCurrentStep(3);
