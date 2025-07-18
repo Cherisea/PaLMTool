@@ -27,6 +27,7 @@ function FormSection({
   // State variable for current step 
   const [currentStep, setCurrentStep] = useState(1);
 
+  // The main form handling logic
   const {
     handleUnifiedSubmit,
     notification,
@@ -45,6 +46,7 @@ function FormSection({
     }
   }, [notification, setNotification]);
 
+  // Move backward via clicking on step dots
   const handleDotClick = (stepNum) => {
     if (stepNum < currentStep) {
       setCurrentStep(currentStep - 1)
