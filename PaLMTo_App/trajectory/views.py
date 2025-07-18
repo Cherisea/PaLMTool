@@ -7,7 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 # Django libraries
 from django.conf import settings
 from django.http import FileResponse
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
 
 # System libraries
 import os
@@ -87,14 +87,19 @@ class GenerationConfigView(APIView):
         if not cache_file:
             raise ValueError("No ngram file provided.")
         
-        full_path = os.path.join(settings.MEDIA_ROOT, "cache", cache_file)
-
-        if not os.path.exists(full_path):
-            raise FileNotFoundError(f"Ngram file {cache_file} not found.")
-        
-        # Read cache file
-        with open(full_path, 'rb') as f:
-            cached_data = pickle.load(f)
+        if isinstance(cache_file, str):
+            # Open from disk if it's a filename    
+            full_path = os.path.join(settings.MEDIA_ROOT, "cache", cache_file)
+            if not os.path.exists(full_path):
+                raise FileNotFoundError(f"Ngram file {cache_file} not found.")
+            # Read cache file
+            with open(full_path, 'rb') as f:
+                cached_data = pickle.load(f)
+        elif isinstance(cache_file, InMemoryUploadedFile):
+            # Read directly if it's an uploaded file
+            cached_data = pickle.load(cache_file)
+        else:
+            raise ValueError("Invalid cache file type.")
 
         # Extract all cached data
         ngrams = cached_data['ngrams']
