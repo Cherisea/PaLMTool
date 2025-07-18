@@ -510,28 +510,3 @@ def _process_to_ngrams(data):
         STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
 
         return ngrams, start_end_points, grid, sentence_df, study_area
-
-    """Recursively convert string keys back to Python tuple.
-
-    Args:
-
-    Returns:
-    
-    """
-    if isinstance(input_dict, dict):
-        new_dict = {}
-        for k, v in input_dict.items():
-            try:
-                tuple_key = ast.literal_eval(k)
-                if isinstance(tuple_key, tuple):
-                    new_key = tuple_key
-                else:
-                    new_key = k
-            except (ValueError, SyntaxError):
-                new_key = k
-            new_dict[new_key] = convert_keys_to_tuple(v)
-        return new_dict
-    elif isinstance(input_dict, list):
-        return [convert_keys_to_tuple(i) for i in input_dict]
-    else:
-        return input_dict
