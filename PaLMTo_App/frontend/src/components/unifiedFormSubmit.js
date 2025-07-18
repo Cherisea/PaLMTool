@@ -12,6 +12,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
   // State variable for current progress
   const [progress, setProgress] = useState(0);
 
+  const [gridFile, setGridFile] = useState('');
+  const [areaFile, setAreaFile] = useState('');
+  const [sentDfFile, setSentDfFile] = useState('');
+
   // Handler of API calls
   const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -84,6 +88,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     ngram_file: response.data.ngram_file
                 }));
 
+                setGridFile(response.data.grid_file);
+                setAreaFile(response.data.study_area_file);
+                setSentDfFile(response.data.sentence_df_file);
                 setCurrentStep(3);
             } else if (currentStep === 3) {
                 // const generatedFile = response.data.generated_file;
