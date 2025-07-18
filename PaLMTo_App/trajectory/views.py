@@ -73,13 +73,13 @@ class GenerationConfigView(APIView):
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
     def process_files(self, data):
-        """Read cached ngram file and return original ngrams and start_end_points.
+        """Read cache file and extract pickled Python objects.
 
         Args:
             request(rest_framework.request.Request): an object containing cache_file field.
 
         Returns:
-             tuple: (ngrams, start_end_points) where keys are converted back to tuples.
+             tuple: original Python objects required for the second step of trajectory generation.
         
         """
         cache_file = data.get('cache_file')
@@ -106,6 +106,25 @@ class GenerationConfigView(APIView):
         return ngrams, start_end_points, grid, sentence_df, study_area
     
     def _process_traj_generation(self, data):
+        """Generate new trajectories based on cached n-gram data and user-supplied parameters.
+
+        This method loads cached n-gram data and related objects and generate new trajectories 
+        based on parameters users specified in frontend form.
+
+        Args:
+            data (dict): Dictionary containing user-specified parameters, including:
+                - "num_trajectories" (str or int): Number of trajectories to generate.
+                - "generation_method" (str): Method for trajectory generation ("length_constrained" or other).
+                - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
+                - "cache_file" (str): Filename of the cached n-gram data.
+        
+        Returns:
+            tuple:
+                - sentence_df (pandas.DataFrame): DataFrame of original trajectories as sentences.
+                - study_area (geopandas.GeoDataFrame): GeoDataFrame defining the study area's boundary.
+                - new_trajs (pandas.DataFrame): an object of generated trajectories.
+                - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
+        """
         num_trajs = int(data.get("num_trajectories"))
         ngrams, start_end_points, grid, sentence_df, study_area = self.process_files(data)
 
