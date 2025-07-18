@@ -12,10 +12,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
   // State variable for current progress
   const [progress, setProgress] = useState(0);
 
-  const [gridFile, setGridFile] = useState('');
-  const [areaFile, setAreaFile] = useState('');
-  const [sentDfFile, setSentDfFile] = useState('');
-
   // Handler of API calls
   const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -62,11 +58,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             payload = new FormData();
             payload.append("num_trajectories", formData.num_trajectories);
             payload.append("generation_method", formData.generation_method);
-            payload.append("ngram_file", formData.ngram_file);
-            payload.append("grid_file", gridFile);
-            payload.append("study_area_file", areaFile);
-            payload.append("sentence_df_file", sentDfFile);
-
+            payload.append("cache_file", formData.ngram_file);
 
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
@@ -89,12 +81,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 // Update formData with the returned ngram file
                 setFormData(prev => ({
                     ...prev,
-                    ngram_file: response.data.ngram_file
+                    ngram_file: response.data.cache_file
                 }));
 
-                setGridFile(response.data.grid_file);
-                setAreaFile(response.data.study_area_file);
-                setSentDfFile(response.data.sentence_df_file);
                 setCurrentStep(3);
             } else if (currentStep === 3) {
                 // const generatedFile = response.data.generated_file;
