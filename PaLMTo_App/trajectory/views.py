@@ -82,33 +82,26 @@ class GenerationConfigView(APIView):
              tuple: (ngrams, start_end_points) where keys are converted back to tuples.
         
         """
-        ngram_file = data.get('ngram_file')
+        cache_file = data.get('cache_file')
 
-        if not ngram_file:
+        if not cache_file:
             raise ValueError("No ngram file provided.")
         
-        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", ngram_file)
+        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", cache_file)
 
         if not os.path.exists(full_path):
-            raise FileNotFoundError(f"Ngram file {ngram_file} not found.")
+            raise FileNotFoundError(f"Ngram file {cache_file} not found.")
         
-        # Read JSON file
+        # Read cache file
         with open(full_path, 'rb') as f:
             cached_data = pickle.load(f)
 
-        # Extract ngrams and start_end_points
+        # Extract all cached data
         ngrams = cached_data['ngrams']
         start_end_points = cached_data['start_end_points']
-        
-
-        # Load grid, sentence_df and study_area
-        grid_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('grid_file'))
-        study_area_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('study_area_file'))
-        sentence_df_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('sentence_df_file'))
-
-        grid = gpd.read_file(grid_path)
-        study_area = gpd.read_file(study_area_path)
-        sentence_df = pd.read_csv(sentence_df_path)
+        grid = cached_data['grid']
+        sentence_df = cached_data['sentence_df']
+        study_area = cached_data['study_area']
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
