@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
-    setGeneratedFileName, setVisualData, setHeatmapData,) {
+    setGeneratedFileName, setVisualData, setHeatmapData, setFormData) {
     // State variable for notification message
   const [notification, setNotification] = useState(null);
 
@@ -77,7 +77,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                   });
                 setStatsData(response.data.stats);
                 setShowStats(true);
-                setCurrentStep(3);
+
+                // Update formData with the returned ngram file
+                setFormData(prev => ({
+                    ...prev,
+                    ngram_file: response.data.cache_file
+                }));
+
+                // setCurrentStep(3);
             } else if (currentStep === 3) {
                 const generatedFile = response.data.generated_file;
                 setGeneratedFileName(generatedFile);
