@@ -98,7 +98,8 @@ class GenerationConfigView(APIView):
 
         # Extract ngrams and start_end_points
         ngrams_str = cached_data.get('ngrams', {})
-        start_end_points = cached_data.get('start_end_points', {})
+        start_end_points_str = cached_data.get('start_end_points', {})
+        start_end_points = convert_keys_to_tuple(start_end_points_str)
 
         # Convert str keys back to tuples
         ngrams = convert_keys_to_tuple(ngrams_str)
@@ -266,6 +267,7 @@ class NgramGenerationView(APIView):
 
         # Convert tuple keys in ngrams to str type
         ngrams = convert_keys_to_str(ngrams)
+        start_end_points = convert_keys_to_str(start_end_points)
         
         cached_data = {
             'ngrams': ngrams,
