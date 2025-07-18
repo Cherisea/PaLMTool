@@ -81,13 +81,13 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 // Update formData with the returned ngram file
                 setFormData(prev => ({
                     ...prev,
-                    ngram_file: response.data.cache_file
+                    ngram_file: response.data.ngram_file
                 }));
 
-                // setCurrentStep(3);
+                setCurrentStep(3);
             } else if (currentStep === 3) {
-                const generatedFile = response.data.generated_file;
-                setGeneratedFileName(generatedFile);
+                // const generatedFile = response.data.generated_file;
+                // setGeneratedFileName(generatedFile);
                 setVisualData(response.data.visualization);
                 setHeatmapData(response.data.heatmap);
 
