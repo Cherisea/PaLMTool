@@ -44,7 +44,7 @@ function App() {
     generation_method: "",
     locationCoordinates: null,  
     file: null,
-    ngram_file: null,
+    cache_file: null,
   })
 
   // Declare a state variable for center of map
@@ -80,7 +80,7 @@ function App() {
   };
 
   // Handler for the second drop zone files
-  const handleNgramFileDrop = (acceptedFiles) => {
+  const handleCacheFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
     const maxSize = 500 * 1024 * 1024;
 
@@ -91,7 +91,7 @@ function App() {
 
     setFormData((prev) => ({
       ...prev,
-      ngram_file: file,
+      cache_file: file,
     }));
   }
 
@@ -104,12 +104,12 @@ function App() {
     accept: {"text/csv": [".csv"]},
   });
 
-  // Second drag zone instance for ngram files
-  const {getRootProps: getNgramRootProps,
-         getInputProps: getNgramInputProps,
-         isDragActive: isNgramDragActive
+  // Second drag zone instance for cache files
+  const {getRootProps: getCacheRootProps,
+         getInputProps: getCacheInputProps,
+         isDragActive: isCacheDragActive
   } = useDropzone({
-    onDrop: handleNgramFileDrop,
+    onDrop: handleCacheFileDrop,
     multiple: false,
     accept: {"application/json": [".json"]},
   });
@@ -144,9 +144,9 @@ function App() {
           getSampleRootProps={getSampleRootProps}
           getSampleInputProps={getSampleInputProps}
           isSampleDragActive={isSampleDragActive}
-          getNgramRootProps={getNgramRootProps}
-          getNgramInputProps={getNgramInputProps}
-          isNgramDragActive={isNgramDragActive}
+          getCacheRootProps={getCacheRootProps}
+          getCacheInputProps={getCacheInputProps}
+          isCacheDragActive={isCacheDragActive}
           stats={statsData}
           setStatsData={setStatsData}
           setGeneratedFileName={setGeneratedFileName}
