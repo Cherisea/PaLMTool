@@ -116,7 +116,7 @@ function FormSteps({
         <p className="note">
           <i>
             Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a>
-             {' '}or <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo ngram file</a>
+             {' '}or <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo_cache.pkl`} download>demo ngram file</a>
              {' '}to jump start.
           </i>
         </p>
