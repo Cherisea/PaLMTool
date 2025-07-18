@@ -81,7 +81,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 // Update formData with the returned cache file
                 setFormData(prev => ({
                     ...prev,
-                    cace_file: response.data.cache_file
+                    cache_file: response.data.cache_file
                 }));
 
                 setCurrentStep(3);
