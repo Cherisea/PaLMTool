@@ -111,7 +111,7 @@ function App() {
   } = useDropzone({
     onDrop: handleCacheFileDrop,
     multiple: false,
-    accept: {"application/json": [".json"]},
+    accept: {"application/octet-stream": [".pkl"]},
   });
 
   // Handler for updating cooridinates by dropping a marker on map
