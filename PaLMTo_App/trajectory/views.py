@@ -210,12 +210,10 @@ class NgramGenerationView(APIView):
 
     def post(self, request):
         """Handler for processing the first step of building ngram dictionary.
-
-        Args:
-            request:
         
         Returns:
-
+            rest_framework.response.Response: A response containing the cache file name and statistics, 
+            with HTTP 200 status on success.
         
         """
         data = _process_file(request)
@@ -245,7 +243,6 @@ class NgramGenerationView(APIView):
                 'stats': STATS,
             }, status=status.HTTP_200_OK)
     
-
 class Trajectory3DView(APIView):
     """
         A class for handling frontend request that renders 3D visualization 
