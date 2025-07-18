@@ -139,6 +139,7 @@ function App() {
       <div className="layout">
         <FormSection
           formData={formData}
+          setFormData={setFormData}
           handleChange={handleChange}
           getSampleRootProps={getSampleRootProps}
           getSampleInputProps={getSampleInputProps}
