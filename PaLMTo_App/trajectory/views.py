@@ -87,7 +87,7 @@ class GenerationConfigView(APIView):
         if not cache_file:
             raise ValueError("No ngram file provided.")
         
-        full_path = os.path.join(settings.MEDIA_ROOT, "ngrams", cache_file)
+        full_path = os.path.join(settings.MEDIA_ROOT, "cache", cache_file)
 
         if not os.path.exists(full_path):
             raise FileNotFoundError(f"Ngram file {cache_file} not found.")
