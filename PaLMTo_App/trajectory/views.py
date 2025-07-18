@@ -109,6 +109,7 @@ class GenerationConfigView(APIView):
         grid = gpd.read_file(grid_path)
         study_area = gpd.read_file(study_area_path)
         sentence_df = pd.read_csv(sentence_df_path)
+        sentence_df['geometry'] = sentence_df['geometry'].apply(ast.literal_eval)
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
