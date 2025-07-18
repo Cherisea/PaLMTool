@@ -7,9 +7,9 @@ function FormSteps({
   getSampleRootProps,
   getSampleInputProps,
   isSampleDragActive,
-  getNgramRootProps,
-  getNgramInputProps,
-  isNgramDragActive,
+  getCacheRootProps,
+  getCacheInputProps,
+  isCacheDragActive,
   isLoading,
   progress
 }) {
@@ -69,13 +69,13 @@ function FormSteps({
           {/* Dropzone for sample trajectory file  */}
           <div 
             {...getSampleRootProps({ 
-                className: `dropzone${formData.ngram_file ? ' disabled-dropzone' : ''}`,
-                tabIndex: formData.ngram_file ? -1 : 0 
+                className: `dropzone${formData.cache_file ? ' disabled-dropzone' : ''}`,
+                tabIndex: formData.cache_file ? -1 : 0 
             })}
-            aria-disabled={!!formData.ngram_file}  
+            aria-disabled={!!formData.cache_file}  
           >
             <input {...getSampleInputProps()} 
-              disabled={!!formData.ngram_file}
+              disabled={!!formData.cache_file}
             />
             <div className="dropzone-content">
               <FiFileText className="dropzone-icon" />
@@ -89,26 +89,26 @@ function FormSteps({
             </div>
           </div>
           
-          {/* Dropzone for ngram dictionary file */}
+          {/* Dropzone for cache file */}
           <div 
-            {...getNgramRootProps({ 
+            {...getCacheRootProps({ 
               className: `dropzone${formData.file ? ' disabled-dropzone' : ''}`,
               tabIndex: formData.file ? -1 : 0
             })}
             aria-disabled={!!formData.file}
           >
             <input 
-              {...getNgramInputProps()} 
+              {...getCacheInputProps()} 
               disabled={!!formData.file}
             />
             <div className="dropzone-content">
               <FiBook className="dropzone-icon" />
               {
-                isNgramDragActive ? 
+                isCacheDragActive ? 
                   (<p>Drop the file here ...</p>) : 
-                  formData.ngram_file ? 
-                    (<p>{formData.ngram_file.name}</p>) : 
-                    (<p>Ngram Dictionary</p>)
+                  formData.cache_file ? 
+                    (<p>{formData.cache_file.name}</p>) : 
+                    (<p>Cache</p>)
               }
             </div>
           </div>
@@ -134,15 +134,15 @@ function FormSteps({
           step="50"
           min="50"
           required 
-          disabled={!!formData.ngram_file}
+          disabled={!!formData.cache_file}
         />
       </div>
 
       <div className="button-container">
         <button type="submit" 
-                disabled={!formData.ngram_file && (!formData.file || !formData.cell_size) }
+                disabled={!formData.cache_file && (!formData.file || !formData.cell_size) }
         >
-          {formData.ngram_file ? 'Load' : 'Train'}
+          {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (
             <div className="progress-container">
               <div className="progress-bar" style={{ width: `${progress}%` }} />
