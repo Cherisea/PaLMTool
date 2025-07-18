@@ -17,7 +17,7 @@ from contextlib import redirect_stdout
 
 # Third-party libraries
 import ast
-import json
+import pickle
 import requests
 import pandas as pd
 import geopandas as gpd
@@ -93,16 +93,13 @@ class GenerationConfigView(APIView):
             raise FileNotFoundError(f"Ngram file {ngram_file} not found.")
         
         # Read JSON file
-        with open(full_path, 'r') as f:
-            cached_data = json.load(f)
+        with open(full_path, 'rb') as f:
+            cached_data = pickle.load(f)
 
         # Extract ngrams and start_end_points
-        ngrams_str = cached_data.get('ngrams', {})
-        start_end_points_str = cached_data.get('start_end_points', {})
-        start_end_points = convert_keys_to_tuple(start_end_points_str)
-
-        # Convert str keys back to tuples
-        ngrams = convert_keys_to_tuple(ngrams_str)
+        ngrams = cached_data['ngrams']
+        start_end_points = cached_data['start_end_points']
+        
 
         # Load grid, sentence_df and study_area
         grid_path = os.path.join(settings.MEDIA_ROOT, "ngrams", data.get('grid_file'))
@@ -264,10 +261,6 @@ class NgramGenerationView(APIView):
         data = _process_file(request)
         cell_size = int(data['cell_size'])
         ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
-
-        # Convert tuple keys in ngrams to str type
-        ngrams = convert_keys_to_str(ngrams)
-        start_end_points = convert_keys_to_str(start_end_points)
         
         cached_data = {
             'ngrams': ngrams,
@@ -276,13 +269,13 @@ class NgramGenerationView(APIView):
             'created_at': datetime.now().isoformat()
         }
 
-        filename = f'ngrams_{cell_size}.json'
+        filename = f'ngrams_{cell_size}.pkl'
         subdir = os.path.join(settings.MEDIA_ROOT, "ngrams")
         os.makedirs(subdir, exist_ok=True)
 
         file_path = os.path.join(subdir, filename)
-        with open(file_path, "w") as f:
-            json.dump(cached_data, f, indent=4)
+        with open(file_path, "wb") as f:
+            pickle.dump(cached_data, f)
 
         # Save GeoDataFrame and DataFrame to separate files
         base_filename = f'ngrams_{cell_size}'
