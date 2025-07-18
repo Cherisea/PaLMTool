@@ -7,6 +7,7 @@ import FormSteps from "./formSteps";
 import UnifiedFormSubmit from "./unifiedFormSubmit";
 
 function FormSection({ 
+  stats,
   formData, 
   handleChange, 
   getSampleRootProps,
@@ -15,11 +16,11 @@ function FormSection({
   getNgramRootProps,
   getNgramInputProps,
   isNgramDragActive,
-  stats,
   setStatsData,
   setGeneratedFileName,
   setVisualData,
   setHeatmapData,
+  setFormData,
 }) {
   // State variable for stats popup window
   const [showStats, setShowStats] = useState(false);
@@ -34,7 +35,13 @@ function FormSection({
     isLoading,
     progress,
     setNotification
-  } = UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData);
+  } = UnifiedFormSubmit(
+    formData, setCurrentStep, 
+    setShowStats, setStatsData,
+    setGeneratedFileName,
+    setVisualData,
+    setHeatmapData,
+    setFormData);
 
   // Auto-hide notification after 5 seconds
   useEffect(() => {
@@ -112,9 +119,6 @@ function FormSection({
             isNgramDragActive={isNgramDragActive}
             isLoading={isLoading}
             progress={progress}
-            setGeneratedFileName={setGeneratedFileName}
-            setVisualData={setVisualData}
-            setHeatmapData={setHeatmapData}
           />
         </form>
       </div>
