@@ -109,7 +109,6 @@ class GenerationConfigView(APIView):
         grid = gpd.read_file(grid_path)
         study_area = gpd.read_file(study_area_path)
         sentence_df = pd.read_csv(sentence_df_path)
-        sentence_df['geometry'] = sentence_df['geometry'].apply(ast.literal_eval)
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
@@ -266,41 +265,23 @@ class NgramGenerationView(APIView):
         cached_data = {
             'ngrams': ngrams,
             'start_end_points': start_end_points,
+            'grid': grid,
+            'sentence_df': sentence_df,
+            'study_area': study_area,
             'cell_size': cell_size,
             'created_at': datetime.now().isoformat()
         }
 
-        filename = f'ngrams_{cell_size}.pkl'
-        subdir = os.path.join(settings.MEDIA_ROOT, "ngrams")
+        filename = f'cache_{cell_size}.pkl'
+        subdir = os.path.join(settings.MEDIA_ROOT, "cache")
         os.makedirs(subdir, exist_ok=True)
 
         file_path = os.path.join(subdir, filename)
         with open(file_path, "wb") as f:
             pickle.dump(cached_data, f)
 
-        # Save GeoDataFrame and DataFrame to separate files
-        base_filename = f'ngrams_{cell_size}'
-
-        # Save grid GeoDataFrame
-        grid_filename = f'{base_filename}_grid.geojson'
-        grid_path = os.path.join(subdir, grid_filename)
-        grid.to_file(grid_path, driver='GeoJSON')
-
-        # Save study_area GeoDataFrame
-        study_area_filename = f'{base_filename}_study_area.geojson'
-        study_area_path = os.path.join(subdir, study_area_filename)
-        study_area.to_file(study_area_path, driver='GeoJSON')
-
-        # Save sentence_df DataFrame
-        sentence_df_filename = f'{base_filename}_sentence_df.csv'
-        sentence_df_path = os.path.join(subdir, sentence_df_filename)
-        sentence_df.to_csv(sentence_df_path, index=False)
-
         return Response({
-                "ngram_file": filename,
-                "grid_file": grid_filename,
-                "study_area_file": study_area_filename,
-                "sentence_df_file": sentence_df_filename,
+                "cache_file": filename,
                 'stats': STATS,
             }, status=status.HTTP_200_OK)
     
