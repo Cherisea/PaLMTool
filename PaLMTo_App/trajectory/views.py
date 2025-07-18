@@ -6,7 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 # Django libraries
 from django.conf import settings
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
 
 # System libraries
@@ -422,13 +422,16 @@ def download_files(request, filename):
 
         filename: name of file to be downloaded
     """
-    # A list of subdirs under media where generated files are stored
-    subdirs = ["generated", "matched"]
+    # Check if files existly directly in root folder
+    full_path = os.path.join(settings.MEDIA_ROOT, filename)
 
-    for subdir in subdirs:
-        full_path = os.path.join(settings.MEDIA_ROOT, subdir, filename)
-        if os.path.exists(full_path):
-            break
+    if not os.path.exists(full_path):
+        # Go to sub-dir if not found in root
+        subdirs = ["generated", "matched", "cache"]
+        for subdir in subdirs:
+            full_path = os.path.join(settings.MEDIA_ROOT, subdir, filename)
+            if os.path.exists(full_path):
+                break
 
     if os.path.exists(full_path):
         response = FileResponse(open(full_path, "rb"))
@@ -436,7 +439,7 @@ def download_files(request, filename):
         response['Content-Type'] = 'text/csv'
         return response
     else:
-        return Response("File not found", status=status.HTTP_404_NOT_FOUND)
+        return HttpResponse("File not found", status=404)
     
 # Helper functions
 def _process_file(request):
