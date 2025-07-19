@@ -64,25 +64,6 @@ class GenerationConfigView(APIView):
                          'heatmap': heatmap_data,
                          'generated_file': generated_file,}, status=status.HTTP_201_CREATED)
     
-    def save_record(self, data):
-        model_data = {}
-        model_data['file'] = data['file']
-        model_data['cell_size'] = data['cell_size']
-        model_data["num_trajectories"] = data["num_trajectories"]
-
-        if data.get("generation_method") == "length_constrained":
-            model_data['generation_method'] = "length_constrained"
-            model_data["trajectory_len"] = int(data["trajectory_len"])
-        else:
-            model_data['generation_method'] = "point_to_point"
-        
-        serializer = GenerationConfigSerializer(data=model_data)
-        if serializer.is_valid():
-            uploaded = serializer.save()
-        
-        return uploaded
-
-
     def _process_cache(self, data):
         """Read cache file and extract pickled Python objects.
 
@@ -90,7 +71,7 @@ class GenerationConfigView(APIView):
             data(QueryDict):
 
         Returns:
-             tuple: original Python objects required for the second step of trajectory generation.
+                tuple: original Python objects required for the second step of trajectory generation.
         
         """
         cache_file = data.get('cache_file')
@@ -111,8 +92,30 @@ class GenerationConfigView(APIView):
             cached_data = pickle.load(cache_file)
         else:
             raise ValueError("Invalid cache file type.")
+        
+        return cached_data
 
-        # Extract all cached data
+    def save_record(self, data):
+        cached_data = self._process_cache(data)
+        model_data = {}
+        model_data['file'] = cached_data['file']
+        model_data['cell_size'] = cached_data['cell_size']
+        model_data["num_trajectories"] = cached_data["num_trajectories"]
+
+        if cached_data.get("generation_method") == "length_constrained":
+            model_data['generation_method'] = "length_constrained"
+            model_data["trajectory_len"] = cached_data["trajectory_len"]
+        else:
+            model_data['generation_method'] = "point_to_point"
+        
+        serializer = GenerationConfigSerializer(data=model_data)
+        if serializer.is_valid():
+            uploaded = serializer.save()
+        
+        return uploaded
+
+    def _extract_ngrams(self, data):
+        cached_data = self._process_cache(data)
         ngrams = cached_data['ngrams']
         start_end_points = cached_data['start_end_points']
         grid = cached_data['grid']
@@ -142,7 +145,7 @@ class GenerationConfigView(APIView):
                 - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
         """
         num_trajs = int(data.get("num_trajectories"))
-        ngrams, start_end_points, grid, sentence_df, study_area = self._process_cache(data)
+        ngrams, start_end_points, grid, sentence_df, study_area = self._extract_ngrams(data)
 
 
         if data.get("generation_method") == "length_constrained":
