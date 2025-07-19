@@ -50,6 +50,7 @@ class GenerationConfigView(APIView):
 
         """
         data = request.data
+        uploaded = self.save_record(data)
 
         # serializer = GenerationConfigSerializer(data=data)
         # if serializer.is_valid():
@@ -72,11 +73,30 @@ class GenerationConfigView(APIView):
         #                     'stats': STATS}, status=status.HTTP_201_CREATED)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
+    def save_record(self, data):
+        model_data = {}
+        model_data['file'] = data['file']
+        model_data['cell_size'] = data['cell_size']
+        model_data["num_trajectories"] = data["num_trajectories"]
+
+        if data.get("generation_method") == "length_constrained":
+            model_data['generation_method'] = "length_constrained"
+            model_data["trajectory_len"] = int(data["trajectory_len"])
+        else:
+            model_data['generation_method'] = "point_to_point"
+        
+        serializer = GenerationConfigSerializer(data=model_data)
+        if serializer.is_valid():
+            uploaded = serializer.save()
+        
+        return uploaded
+
+
     def _process_cache(self, data):
         """Read cache file and extract pickled Python objects.
 
         Args:
-            request(rest_framework.request.Request): an object containing cache_file field.
+            data(QueryDict):
 
         Returns:
              tuple: original Python objects required for the second step of trajectory generation.
