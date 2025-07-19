@@ -49,29 +49,20 @@ class GenerationConfigView(APIView):
         Returns:
 
         """
+        global STATS
         data = request.data
         uploaded = self.save_record(data)
 
-        # serializer = GenerationConfigSerializer(data=data)
-        # if serializer.is_valid():
-        #     uploaded = serializer.save()
-        global STATS
-
-        sentence_df, study_area, _, new_trajs_gdf = self. _process_traj_generation(data)
-        # generated_file = self.save_trajectory(new_trajs, uploaded)
+        sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
+        generated_file = self.save_trajectory(new_trajs, uploaded)
         visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
         heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
                                                     study_area, int(data["num_trajectories"]))
         
-        return Response({'visualization': visual_data,
-                          'heatmap': heatmap_data,}, status=status.HTTP_201_CREATED)
-
-        # return Response({'id': uploaded.id, 
-        #                     'generated_file': generated_file,
-        #                     'visualization': visual_data,
-        #                     'heatmap': heatmap_data,
-        #                     'stats': STATS}, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return Response({'id': uploaded.id,
+                         'visualization': visual_data,
+                         'heatmap': heatmap_data,
+                         'generated_file': generated_file,}, status=status.HTTP_201_CREATED)
     
     def save_record(self, data):
         model_data = {}
