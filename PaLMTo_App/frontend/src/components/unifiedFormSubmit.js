@@ -90,8 +90,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
                 setCurrentStep(3);
             } else if (currentStep === 3) {
-                // const generatedFile = response.data.generated_file;
-                // setGeneratedFileName(generatedFile);
+                const generatedFile = response.data.generated_file;
+                setGeneratedFileName(generatedFile);
                 setVisualData(response.data.visualization);
                 setHeatmapData(response.data.heatmap);
 
