@@ -550,33 +550,6 @@ def download_files(request, filename):
         return response
     else:
         return HttpResponse("File not found", status=404)
-    
-        """Handle file upload field in frontend form.
-
-        Inject demo trajectory file into request if value of file field is empty. Otherwise, return
-        request data unchanged. 
-
-        Args:
-            request(rest_framework.request.Request): not the same as HttpRequest.
-
-        Returns:
-            data(django.QueryDict): same as input or a modified object with demo file inserted.
-        
-        """
-        data_copy = request.data.copy()
-        file = data_copy.get('file')
-
-        # Construct default file if it's missing
-        if not file:
-            demo_filepath = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
-            # Read file content
-            with open(demo_filepath, "rb") as f:
-                file_content = f.read()
-                data_copy['file'] = SimpleUploadedFile(
-                    'demo.csv', file_content, 'text/csv'
-                )
-
-        return data_copy
 
 def _process_to_ngrams(data):
         """Execute trajectory generation process up to creation of ngram dictionaries.
