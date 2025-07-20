@@ -12,7 +12,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedF
 # System libraries
 import os
 import uuid
-from io import StringIO
+from io import StringIO, BytesIO
 from contextlib import redirect_stdout
 
 # Third-party libraries
@@ -127,7 +127,19 @@ class GenerationConfigView(APIView):
 
         # Extract data compressed in cache
         cached_data = self._process_cache(data)
-        model_data['file'] = cached_data['uploaded_file']
+        file_content = cached_data['file_content']
+        file_stream = BytesIO(file_content)
+
+        recreated_file = InMemoryUploadedFile(
+            file=file_stream,
+            field_name = 'file',
+            name=cached_data['file_name'],
+            content_type=cached_data['file_content_type'],
+            size=len(file_content),
+            charset=None
+        )
+        
+        model_data['file'] = recreated_file
         model_data['cell_size'] = cached_data['cell_size']
         
         # Extract data sent along with request
