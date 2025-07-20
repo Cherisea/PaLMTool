@@ -47,7 +47,8 @@ class GenerationConfigView(APIView):
             request(rest_framework.request.Request): an object containing cache_file field.
 
         Returns:
-
+            response(rest.Response): a tuple consisting of database record id, visualization data,
+                heatmap data and name of generated file.
         """
         global STATS
         data = request.data
@@ -68,10 +69,10 @@ class GenerationConfigView(APIView):
         """Read cache file and extract pickled Python objects.
 
         Args:
-            data(QueryDict):
+            data(QueryDict): an object sent from frontend request
 
         Returns:
-            tuple: original Python objects required for the second step of trajectory generation.
+            cached_data(dict): unpickled data
         
         """
         cache_file = data.get('cache_file')
@@ -96,6 +97,9 @@ class GenerationConfigView(APIView):
         return cached_data
     
     def _extract_ngrams(self, data):
+        """Extract ngrams related data from cache file
+        
+        """
         cached_data = self._process_cache(data)
         ngrams = cached_data['ngrams']
         start_end_points = cached_data['start_end_points']
@@ -107,9 +111,6 @@ class GenerationConfigView(APIView):
 
     def _extract_extra_config(self, data):
         """Retrieve user-supplied configurations in step three of form
-
-        Args:
-            data(QueryDict):
         
         """
         traj_len = 0
@@ -123,6 +124,9 @@ class GenerationConfigView(APIView):
         return gen_method, num_trajs, traj_len
 
     def save_to_record(self, data):
+        """Save configurations for trajectory generation to local sql database.
+        
+        """
         model_data = {}
 
         # Extract data compressed in cache
@@ -164,7 +168,7 @@ class GenerationConfigView(APIView):
         based on parameters users specified in frontend form.
 
         Args:
-            data (dict): Dictionary containing user-specified parameters, including:
+            data (QueryDict): Dictionary containing user-specified parameters, including:
                 - "num_trajectories" (str or int): Number of trajectories to generate.
                 - "generation_method" (str): Method for trajectory generation ("length_constrained" or other).
                 - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
