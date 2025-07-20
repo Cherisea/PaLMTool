@@ -6,7 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 # Django libraries
 from django.conf import settings
-from django.http import FileResponse, HttpResponse
+from django.http import FileResponse, HttpResponse, StreamingHttpResponse
 from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
 
 # System libraries
@@ -18,9 +18,10 @@ from contextlib import redirect_stdout
 # Third-party libraries
 import ast
 import pickle
+import json
 import requests
 import pandas as pd
-import geopandas as gpd
+from queue import Queue
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 
@@ -31,6 +32,7 @@ from .geo_process import extract_boundary, traj_to_geojson, extract_area_center,
 
 # Holds statistics related to trajectory generation
 STATS = {}
+PROGRESS_QUEUES = {}
 
 class GenerationConfigView(APIView):
     """
@@ -472,6 +474,56 @@ class MapMatchingView(APIView):
         df.to_csv(full_path, index=False)
 
         return out_filename
+
+class ProgressView(APIView):
+    """
+        A class for handling Server-Sent Events(SSE) to stream progress updates
+    """
+    def get(self, request):
+        task_id = request.GET.get('task_id')
+
+        if not task_id:
+            return Response({"error": "No task_id provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        def event_stream():
+            if task_id not in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id] = Queue()
+            
+            queue = PROGRESS_QUEUES[task_id]
+
+            try:
+                while True:
+                    try:
+                        progress_data = queue.get(timeout=30)
+
+                        if progress_data.get('type') == 'complete':
+                            yield f"data: {json.dumps(progress_data)}\n\n"
+                            break
+                        elif progress_data.get('type') == 'error':
+                            yield f"data: {json.dumps(progress_data)}\n\n"
+                            break
+                        else:
+                            yield f"data: {json.dumps(progress_data)}\n\n"
+                    
+                    except Queue.Empty:
+                        yield f"data: {json.dumps({'type': 'keepalive'})}\n\n"
+            
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+            finally:
+                # Clean up queue
+                if task_id in PROGRESS_QUEUES:
+                    del PROGRESS_QUEUES[task_id]
+        
+        response = StreamingHttpResponse(
+            event_stream(),
+            content_type='text/event-stream'
+        )
+        # Don't cache live updates
+        response['Cache-Control'] = 'no-cache'
+        response['X-Accel-Buffering'] = 'no'
+        return response
+
 
 # Function-based view
 def download_files(request, filename):
