@@ -1,5 +1,5 @@
 # REST API
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -154,6 +154,8 @@ class GenerationConfigView(APIView):
         if serializer.is_valid():
             uploaded = serializer.save()
             return uploaded
+        else:
+            raise serializers.ValidationError(serializer.errors)
     
     def _process_traj_generation(self, data):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
