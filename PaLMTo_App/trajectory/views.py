@@ -255,7 +255,10 @@ class NgramGenerationView(APIView):
         """
         data = request.data
         cell_size = int(data['cell_size'])
-        uploaded_file = data['file']
+        uploaded_file = data['file']    # InMemoryUploadedFile
+        file_content = uploaded_file.read()
+        uploaded_file.seek(0)
+
         ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
         
         cached_data = {
@@ -265,7 +268,9 @@ class NgramGenerationView(APIView):
             'sentence_df': sentence_df,
             'study_area': study_area,
             'cell_size': cell_size,
-            'uploaded_file': uploaded_file,
+            'file_content': file_content,
+            'file_name': uploaded_file.name,
+            'file_content_type': uploaded_file.content_type,
             'created_at': datetime.now().isoformat()
         }
 
