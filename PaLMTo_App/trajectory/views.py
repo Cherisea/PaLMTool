@@ -519,9 +519,10 @@ class ProgressView(APIView):
             event_stream(),
             content_type='text/event-stream'
         )
+        
         # Don't cache live updates
         response['Cache-Control'] = 'no-cache'
-        response['X-Accel-Buffering'] = 'no'
+
         return response
 
 
