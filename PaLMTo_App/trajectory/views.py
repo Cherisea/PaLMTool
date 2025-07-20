@@ -71,7 +71,7 @@ class GenerationConfigView(APIView):
             data(QueryDict):
 
         Returns:
-                tuple: original Python objects required for the second step of trajectory generation.
+            tuple: original Python objects required for the second step of trajectory generation.
         
         """
         cache_file = data.get('cache_file')
@@ -95,18 +95,38 @@ class GenerationConfigView(APIView):
         
         return cached_data
 
+    def extract_extra_config(self, data):
+        """Retrieve user-supplied configurations in step three of form
+
+        Args:
+            data(QueryDict):
+        
+        """
+        traj_len = 0
+        num_trajs = int(data.get("num_trajectories"))
+        if data.get("generation_method") == "length_constrained":
+            gen_method = "length_constrained"
+            traj_len = int(data.get("trajectory_len"))
+        else:
+            gen_method = "point_to_point"
+        
+        return gen_method, num_trajs, traj_len
+
     def save_record(self, data):
-        cached_data = self._process_cache(data)
         model_data = {}
+
+        # Extract data compressed in cache
+        cached_data = self._process_cache(data)
         model_data['file'] = cached_data['file']
         model_data['cell_size'] = cached_data['cell_size']
-        model_data["num_trajectories"] = cached_data["num_trajectories"]
+        
+        # Extract data sent along with request
+        gen_method, num_trajs, traj_len = self.extract_extra_config(data)
+        model_data['generation_method'] = gen_method
+        model_data['num_trajectories'] = num_trajs
 
-        if cached_data.get("generation_method") == "length_constrained":
-            model_data['generation_method'] = "length_constrained"
-            model_data["trajectory_len"] = cached_data["trajectory_len"]
-        else:
-            model_data['generation_method'] = "point_to_point"
+        if gen_method == "length_constrained":
+            model_data['trajectory_len'] = traj_len
         
         serializer = GenerationConfigSerializer(data=model_data)
         if serializer.is_valid():
