@@ -90,6 +90,7 @@ class GenerationConfigView(APIView):
                 cached_data = pickle.load(f)
         elif isinstance(cache_file, InMemoryUploadedFile):
             # Read directly if it's an uploaded file
+            cache_file.seek(0)
             cached_data = pickle.load(cache_file)
         else:
             raise ValueError("Invalid cache file type.")
