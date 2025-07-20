@@ -51,7 +51,7 @@ class GenerationConfigView(APIView):
         """
         global STATS
         data = request.data
-        uploaded = self.save_record(data)
+        uploaded = self.save_to_record(data)
 
         sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
         generated_file = self.save_trajectory(new_trajs, uploaded)
@@ -94,8 +94,18 @@ class GenerationConfigView(APIView):
             raise ValueError("Invalid cache file type.")
         
         return cached_data
+    
+    def _extract_ngrams(self, data):
+        cached_data = self._process_cache(data)
+        ngrams = cached_data['ngrams']
+        start_end_points = cached_data['start_end_points']
+        grid = cached_data['grid']
+        sentence_df = cached_data['sentence_df']
+        study_area = cached_data['study_area']
 
-    def extract_extra_config(self, data):
+        return ngrams, start_end_points, grid, sentence_df, study_area
+
+    def _extract_extra_config(self, data):
         """Retrieve user-supplied configurations in step three of form
 
         Args:
@@ -112,16 +122,16 @@ class GenerationConfigView(APIView):
         
         return gen_method, num_trajs, traj_len
 
-    def save_record(self, data):
+    def save_to_record(self, data):
         model_data = {}
 
         # Extract data compressed in cache
         cached_data = self._process_cache(data)
-        model_data['file'] = cached_data['file']
+        model_data['file'] = cached_data['uploaded_file']
         model_data['cell_size'] = cached_data['cell_size']
         
         # Extract data sent along with request
-        gen_method, num_trajs, traj_len = self.extract_extra_config(data)
+        gen_method, num_trajs, traj_len = self._extract_extra_config(data)
         model_data['generation_method'] = gen_method
         model_data['num_trajectories'] = num_trajs
 
@@ -131,18 +141,7 @@ class GenerationConfigView(APIView):
         serializer = GenerationConfigSerializer(data=model_data)
         if serializer.is_valid():
             uploaded = serializer.save()
-        
-        return uploaded
-
-    def _extract_ngrams(self, data):
-        cached_data = self._process_cache(data)
-        ngrams = cached_data['ngrams']
-        start_end_points = cached_data['start_end_points']
-        grid = cached_data['grid']
-        sentence_df = cached_data['sentence_df']
-        study_area = cached_data['study_area']
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
+            return uploaded
     
     def _process_traj_generation(self, data):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
@@ -164,12 +163,11 @@ class GenerationConfigView(APIView):
                 - new_trajs (pandas.DataFrame): an object of generated trajectories.
                 - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
         """
-        num_trajs = int(data.get("num_trajectories"))
+        gen_method, num_trajs, traj_len = self._extract_extra_config(data)
         ngrams, start_end_points, grid, sentence_df, study_area = self._extract_ngrams(data)
 
 
-        if data.get("generation_method") == "length_constrained":
-            traj_len = int(data.get("trajectory_len"))
+        if gen_method == "length_constrained":
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin(traj_len, seed=None)
         else:
