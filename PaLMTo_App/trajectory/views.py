@@ -15,7 +15,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 # System libraries
 import os
 import uuid
-from io import StringIO, BytesIO
+from io import StringIO
 from contextlib import redirect_stdout
 
 # Third-party libraries
