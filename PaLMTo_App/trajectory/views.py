@@ -19,6 +19,7 @@ from contextlib import redirect_stdout
 import ast
 import pickle
 import json
+import threading
 import requests
 import pandas as pd
 from queue import Queue
@@ -267,6 +268,32 @@ class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        """Handler for building ngram dictionary with live updates posted to a client.
+
+        Returns:
+            rest_framework.response.Response: a dict containing task id and sever message to client
+        """
+        data = request.data
+
+        # A unique identifier for client to track progress
+        task_id = str(uuid.uuid4())
+
+        # Start processing in backend thread
+        thread = threading.Thread(
+            target=self._process_ngrams_with_progress,
+            args=(data, task_id)
+        )
+
+        thread.daemon = True
+        thread.start()
+
+        return Response({
+            "task_id": task_id,
+            "message": "Processing started"
+        }, status=status.HTTP_202_ACCEPTED)
+
+
+    def post_2(self, request):
         """Handler for processing the first step of building ngram dictionary.
         
         Returns:
