@@ -6,7 +6,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 # Django libraries
 from django.conf import settings
-from django.http import FileResponse, HttpResponse, StreamingHttpResponse
+from django.http import FileResponse, HttpResponse
+from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
 
 # System libraries
@@ -134,17 +135,10 @@ class GenerationConfigView(APIView):
 
         # Extract data compressed in cache
         cached_data = self._process_cache(data)
-        file_content = cached_data['file_content']
-        file_stream = BytesIO(file_content)
+        file_path = cached_data['file_path']
 
-        recreated_file = InMemoryUploadedFile(
-            file=file_stream,
-            field_name = 'file',
-            name=cached_data['file_name'],
-            content_type=cached_data['file_content_type'],
-            size=len(file_content),
-            charset=None
-        )
+        file_obj = open(file_path, "rb")
+        recreated_file = File(file_obj, name=cached_data['file_name'])
         
         model_data['file'] = recreated_file
         model_data['cell_size'] = cached_data['cell_size']
