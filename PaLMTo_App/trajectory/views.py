@@ -284,6 +284,7 @@ class NgramGenerationView(APIView):
             args=(data, task_id)
         )
 
+        # Allows main process to exit without waiting
         thread.daemon = True
         thread.start()
 
@@ -291,6 +292,85 @@ class NgramGenerationView(APIView):
             "task_id": task_id,
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
+    
+    def _process_ngrams_with_progress(self, data, task_id):
+        try:
+            if task_id not in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id] = Queue()
+
+            queue = PROGRESS_QUEUES[task_id]
+
+            # Send initial response
+            queue.put({
+                'type': 'progress',
+                'message': 'Starting ngram generation...',
+                'progress': 10
+            })
+
+            # Process reading uploaded file
+            queue.put({
+                'type': 'progress',
+                'message': 'Reading trajectory file...',
+                'progress': 20
+            })
+
+            cell_size = int(data['cell_size'])
+            uploaded_file = data['file']    # InMemoryUploadedFile
+            file_content = uploaded_file.read()
+            uploaded_file.seek(0)
+
+            # Process token creation
+            queue.put({
+                'type': 'progress',
+                'message': 'Creating tokens and grid...',
+                'progress': 40
+            })
+
+            ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data, queue)
+
+            # Save cache file
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving cache file...',
+                'progress': 90
+            })
+
+            cached_data = {
+                'ngrams': ngrams,
+                'start_end_points': start_end_points,
+                'grid': grid,
+                'sentence_df': sentence_df,
+                'study_area': study_area,
+                'cell_size': cell_size,
+                'file_content': file_content,
+                'file_name': uploaded_file.name,
+                'file_content_type': uploaded_file.content_type,
+                'created_at': datetime.now().isoformat()
+            }
+
+            filename = f'cache_{cell_size}.pkl'
+            subdir = os.path.join(settings.MEDIA_ROOT, "cache")
+            os.makedirs(subdir, exist_ok=True)
+
+            file_path = os.path.join(subdir, filename)
+            with open(file_path, "wb") as f:
+                pickle.dump(cached_data, f)
+
+            # Send message of completing ngram creation
+            queue.put({
+                'type': 'complete',
+                'message': 'Ngram generation completed successfully!',
+                'progress': 100,
+                'cache_file': filename,
+                'stats': STATS
+            })
+        except Exception as e:
+            if task_id in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id].put({
+                    'type': 'error',
+                    'message': f'Error during processing: {str(e)}'
+                })
+            
 
 
     def post_2(self, request):
