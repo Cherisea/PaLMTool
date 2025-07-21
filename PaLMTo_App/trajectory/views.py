@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
 # Django libraries
+from django.views import View
 from django.conf import settings
 from django.http import FileResponse, HttpResponse, StreamingHttpResponse
 from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
@@ -638,7 +639,7 @@ class MapMatchingView(APIView):
 
         return out_filename
 
-class ProgressView(APIView):
+class ProgressView(View):
     """
         A class for handling Server-Sent Events(SSE) to stream progress updates
     """
