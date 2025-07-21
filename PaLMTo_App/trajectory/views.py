@@ -294,6 +294,9 @@ class NgramGenerationView(APIView):
         }, status=status.HTTP_202_ACCEPTED)
     
     def _process_with_progress(self, data, task_id):
+        """Send live progress updates while orchestrating operations involved in ngram creation.
+
+        """
         try:
             if task_id not in PROGRESS_QUEUES:
                 PROGRESS_QUEUES[task_id] = Queue()
@@ -426,47 +429,47 @@ class NgramGenerationView(APIView):
 
 
 
-    def post_2(self, request):
-        """Handler for processing the first step of building ngram dictionary.
+    # def post_2(self, request):
+    #     """Handler for processing the first step of building ngram dictionary.
         
-        Returns:
-            rest_framework.response.Response: A response containing the cache file name and statistics, 
-            with HTTP 200 status on success.
+    #     Returns:
+    #         rest_framework.response.Response: A response containing the cache file name and statistics, 
+    #         with HTTP 200 status on success.
         
-        """
-        data = request.data
-        cell_size = int(data['cell_size'])
-        uploaded_file = data['file']    # InMemoryUploadedFile
-        file_content = uploaded_file.read()
-        uploaded_file.seek(0)
+    #     """
+    #     data = request.data
+    #     cell_size = int(data['cell_size'])
+    #     uploaded_file = data['file']    # InMemoryUploadedFile
+    #     file_content = uploaded_file.read()
+    #     uploaded_file.seek(0)
 
-        ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
+    #     ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
         
-        cached_data = {
-            'ngrams': ngrams,
-            'start_end_points': start_end_points,
-            'grid': grid,
-            'sentence_df': sentence_df,
-            'study_area': study_area,
-            'cell_size': cell_size,
-            'file_content': file_content,
-            'file_name': uploaded_file.name,
-            'file_content_type': uploaded_file.content_type,
-            'created_at': datetime.now().isoformat()
-        }
+    #     cached_data = {
+    #         'ngrams': ngrams,
+    #         'start_end_points': start_end_points,
+    #         'grid': grid,
+    #         'sentence_df': sentence_df,
+    #         'study_area': study_area,
+    #         'cell_size': cell_size,
+    #         'file_content': file_content,
+    #         'file_name': uploaded_file.name,
+    #         'file_content_type': uploaded_file.content_type,
+    #         'created_at': datetime.now().isoformat()
+    #     }
 
-        filename = f'cache_{cell_size}.pkl'
-        subdir = os.path.join(settings.MEDIA_ROOT, "cache")
-        os.makedirs(subdir, exist_ok=True)
+    #     filename = f'cache_{cell_size}.pkl'
+    #     subdir = os.path.join(settings.MEDIA_ROOT, "cache")
+    #     os.makedirs(subdir, exist_ok=True)
 
-        file_path = os.path.join(subdir, filename)
-        with open(file_path, "wb") as f:
-            pickle.dump(cached_data, f)
+    #     file_path = os.path.join(subdir, filename)
+    #     with open(file_path, "wb") as f:
+    #         pickle.dump(cached_data, f)
 
-        return Response({
-                "cache_file": filename,
-                'stats': STATS,
-            }, status=status.HTTP_200_OK)
+    #     return Response({
+    #             "cache_file": filename,
+    #             'stats': STATS,
+    #         }, status=status.HTTP_200_OK)
     
 class Trajectory3DView(APIView):
     """
