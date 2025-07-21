@@ -11,7 +11,8 @@ function FormSteps({
   getCacheInputProps,
   isCacheDragActive,
   isLoading,
-  progress
+  progress,
+  progressMessage
 }) {
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (

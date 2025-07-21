@@ -26,7 +26,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
   // Function to handle SSE progress updates
   const handleProgressUpdates = (taskId) => {
-    const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/process/?task_id=${taskId}`);
+    const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
 
     // Listen for messages
     eventSource.onmessage = (event) => {
