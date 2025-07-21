@@ -280,7 +280,7 @@ class NgramGenerationView(APIView):
 
         # Start processing in backend thread
         thread = threading.Thread(
-            target=self._process_ngrams_with_progress,
+            target=self._process_with_progress,
             args=(data, task_id)
         )
 
@@ -293,7 +293,7 @@ class NgramGenerationView(APIView):
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
     
-    def _process_ngrams_with_progress(self, data, task_id):
+    def _process_with_progress(self, data, task_id):
         try:
             if task_id not in PROGRESS_QUEUES:
                 PROGRESS_QUEUES[task_id] = Queue()
@@ -326,7 +326,7 @@ class NgramGenerationView(APIView):
                 'progress': 40
             })
 
-            ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data, queue)
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue)
 
             # Save cache file
             queue.put({
@@ -371,6 +371,59 @@ class NgramGenerationView(APIView):
                     'message': f'Error during processing: {str(e)}'
                 })
             
+    def _process_to_ngrams(self, data, queue):
+        """Generate ngram dictionaries with progress updates
+        
+        """
+        global STATS
+
+        cell_size = int(data['cell_size'])
+
+        data['file'].seek(0)
+        df = pd.read_csv(data["file"])
+        # Convert geometry column to Python list
+        df['geometry'] = df['geometry'].apply(ast.literal_eval)
+        study_area = extract_boundary(df)
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Creating token converter...',
+            'progress': 50
+        })
+
+        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
+
+        # Capture stdout from create_tokens method
+        f = StringIO()
+        with redirect_stdout(f):
+            grid, sentence_df = TokenCreator.create_tokens()
+        content = f.getvalue()
+        STATS["cellsCreated"] = int(content.strip().split(":")[1])
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Generating ngrams...',
+            'progress': 70
+        })
+
+        ngram_model = NgramGenerator(sentence_df)
+
+        # Capture stdout from create_ngrams method
+        f.seek(0)
+        with redirect_stdout(f):
+            ngrams, start_end_points = ngram_model.create_ngrams()
+        content = f.getvalue()
+        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Ngrams generation completed!',
+            'progress': 85
+        })
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
+
 
 
     def post_2(self, request):
