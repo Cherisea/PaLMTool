@@ -34,6 +34,7 @@ function FormSection({
     notification,
     isLoading,
     progress,
+    progressMessage,
     setNotification
   } = UnifiedFormSubmit(
     formData, setCurrentStep, 
@@ -119,6 +120,7 @@ function FormSection({
             isCacheDragActive={isCacheDragActive}
             isLoading={isLoading}
             progress={progress}
+            progressMessage={progressMessage}
           />
         </form>
       </div>
