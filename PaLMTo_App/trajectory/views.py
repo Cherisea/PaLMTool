@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.views import View
 from django.conf import settings
 from django.http import FileResponse, HttpResponse, StreamingHttpResponse
-from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # System libraries
 import os
@@ -439,50 +439,6 @@ class NgramGenerationView(APIView):
         })
 
         return ngrams, start_end_points, grid, sentence_df, study_area
-
-
-
-    # def post_2(self, request):
-    #     """Handler for processing the first step of building ngram dictionary.
-        
-    #     Returns:
-    #         rest_framework.response.Response: A response containing the cache file name and statistics, 
-    #         with HTTP 200 status on success.
-        
-    #     """
-    #     data = request.data
-    #     cell_size = int(data['cell_size'])
-    #     uploaded_file = data['file']    # InMemoryUploadedFile
-    #     file_content = uploaded_file.read()
-    #     uploaded_file.seek(0)
-
-    #     ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
-        
-    #     cached_data = {
-    #         'ngrams': ngrams,
-    #         'start_end_points': start_end_points,
-    #         'grid': grid,
-    #         'sentence_df': sentence_df,
-    #         'study_area': study_area,
-    #         'cell_size': cell_size,
-    #         'file_content': file_content,
-    #         'file_name': uploaded_file.name,
-    #         'file_content_type': uploaded_file.content_type,
-    #         'created_at': datetime.now().isoformat()
-    #     }
-
-    #     filename = f'cache_{cell_size}.pkl'
-    #     subdir = os.path.join(settings.MEDIA_ROOT, "cache")
-    #     os.makedirs(subdir, exist_ok=True)
-
-    #     file_path = os.path.join(subdir, filename)
-    #     with open(file_path, "wb") as f:
-    #         pickle.dump(cached_data, f)
-
-    #     return Response({
-    #             "cache_file": filename,
-    #             'stats': STATS,
-    #         }, status=status.HTTP_200_OK)
     
 class Trajectory3DView(APIView):
     """
@@ -727,49 +683,3 @@ def download_files(request, filename):
         return response
     else:
         return HttpResponse("File not found", status=404)
-
-def _process_to_ngrams(data):
-        """Execute trajectory generation process up to creation of ngram dictionaries.
-
-        This is the first step of a two-stage trajectory generation process, allowing a user to optionally 
-        build ngrams dictionary without executing the entire program and to skip this time-consuming step 
-        if a JSON file storing a previously built ngrams is provided. 
-
-        Args:
-            data(django.QueryDict): dictionary-like object containing keys and values from frontend form.
-
-        Returns:
-
-        """
-        global STATS
-
-        # Cast value of integer fields as Python integer
-        cell_size = int(data['cell_size'])
-
-        # Reset file pointer
-        data['file'].seek(0)
-        df = pd.read_csv(data["file"])
-        # Convert geometry column to Python list
-        df['geometry'] = df['geometry'].apply(ast.literal_eval)
-        study_area = extract_boundary(df)
-
-        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
-
-        # Capture stdout from create_tokens method
-        f = StringIO()
-        with redirect_stdout(f):
-            grid, sentence_df = TokenCreator.create_tokens()
-        content = f.getvalue()
-        STATS["cellsCreated"] = int(content.strip().split(":")[1])
-
-        ngram_model = NgramGenerator(sentence_df)
-
-        # Capture stdout from create_ngrams method
-        f.seek(0)
-        with redirect_stdout(f):
-            ngrams, start_end_points = ngram_model.create_ngrams()
-        content = f.getvalue()
-        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
-        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
