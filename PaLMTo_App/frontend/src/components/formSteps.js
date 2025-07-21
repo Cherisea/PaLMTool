@@ -147,7 +147,16 @@ function FormSteps({
           {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (
             <div className="progress-container">
-              <div className="progress-bar" style={{ width: `${progress}%` }} />
+              <div className="progress-bar" >
+                <div 
+                  className="progress-fill"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+
+              <div className="progress-text">
+                {progress}% - {progressMessage || 'Processing...'}
+              </div>
             </div>
           )}
         </button>
