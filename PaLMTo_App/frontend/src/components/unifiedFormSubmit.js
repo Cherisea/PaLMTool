@@ -94,17 +94,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
     setIsLoading(true);
     setProgress(0);
-  
-    // Simulate progress update
-    const progressInterval = setInterval(() => {
-        setProgress((prevProgress) => {
-        if (prevProgress >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-        }
-        return prevProgress + 10;
-        })
-    }, 1100);
 
     try {
         let endpoint, payload;
@@ -114,6 +103,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (currentStep === 2) {
             if (!!formData.cache_file) {
                 setCurrentStep(3);
+                setIsLoading(false);
+                return;
             } else {
                 endpoint = '/trajectory/generate/ngrams';
                 payload.append("cell_size", formData.cell_size);
@@ -134,24 +125,12 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (endpoint && payload) {
             const response = await submitFormData(endpoint, payload);
 
-            setProgress(100);
-
             if (currentStep === 2) {
-                setNotification({
-                    type: 'success',
-                    message: 'Ngram dictionaries created successfully!'
-                  });
-                setStatsData(response.data.stats);
-                setShowStats(true);
-
-                // Update formData with the returned cache file
-                setFormData(prev => ({
-                    ...prev,
-                    cache_file: response.data.cache_file
-                }));
-
-                setCurrentStep(3);
+                // Initiate progress updates listener
+                const taskId = response.data.task_id;
+                handleProgressUpdates(taskId);
             } else if (currentStep === 3) {
+                setProgress(100);
                 const generatedFile = response.data.generated_file;
                 setGeneratedFileName(generatedFile);
                 setVisualData(response.data.visualization);
@@ -172,8 +151,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
               ? 'Failed to create ngram dictionaries. Please try again.'
               : 'Failed to generate trajectories. Please try again.'
         });
-    } finally {
-        clearInterval(progressInterval);
         setIsLoading(false);
     }
 
@@ -184,6 +161,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     notification,
     isLoading,
     progress,
+    progressMessage,
     setNotification
    };
 
