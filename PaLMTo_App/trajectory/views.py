@@ -277,8 +277,16 @@ class NgramGenerationView(APIView):
         data = request.data
         cell_size = int(data['cell_size'])
         uploaded_file = data['file']    # InMemoryUploadedFile
-        file_content = uploaded_file.read()
-        uploaded_file.seek(0)
+        
+        # Save uploaded file to disk 
+        cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
+        os.makedirs(cache_dir, exist_ok=True)
+        file_path = os.path.join(cache_dir, uploaded_file.name)
+
+        # Process in chunks to avoid memory issues
+        with open(file_path, "wb") as out_file:
+            for chunk in uploaded_file.chunks():
+                out_file.write(chunk)
 
         ngrams, start_end_points, grid, sentence_df, study_area = _process_to_ngrams(data)
         
@@ -289,7 +297,7 @@ class NgramGenerationView(APIView):
             'sentence_df': sentence_df,
             'study_area': study_area,
             'cell_size': cell_size,
-            'file_content': file_content,
+            'file_path': file_path,
             'file_name': uploaded_file.name,
             'file_content_type': uploaded_file.content_type,
             'created_at': datetime.now().isoformat()
