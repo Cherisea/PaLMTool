@@ -1,46 +1,46 @@
-  .step-content {
-    margin-top: 0;
-  }
-  
-  .formsteps-title {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .overview-section {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .overview-description {
-    font-size: 1.1rem;
-    padding-bottom: 1rem;
-    text-align: center;
-  }
-  
-  .process-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .process-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .step-content h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-  }
-  
-  .step-content p {
-    margin: 0.5rem 0 0 0;
-    text-align: justify;
-    color: #333;
-    line-height: 1.3;
-  }
+.step-content {
+  margin-top: 0;
+}
+
+.formsteps-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.overview-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.overview-description {
+  font-size: 1.1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.process-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.step-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.step-content p {
+  margin: 0.5rem 0 0 0;
+  text-align: justify;
+  color: #333;
+  line-height: 1.3;
+}
 
   /* Progress container as overlay */
 .progress-container {
