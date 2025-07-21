@@ -274,7 +274,18 @@ class NgramGenerationView(APIView):
         Returns:
             rest_framework.response.Response: a dict containing task id and sever message to client
         """
-        data = request.data
+        # Read content of uploaded file into memory before it's closed
+        data_copy = request.data.copy()
+        uploaded_file = data_copy['file']
+        file_content = uploaded_file.read()
+        uploaded_file.seek(0)
+
+        data_copy['file_content'] = file_content
+        data_copy['file_name'] = uploaded_file.name
+        data_copy['file_content_type'] = uploaded_file.content_type
+
+        # Remove the file object as it will be closed in background thread
+        del data_copy['file']
 
         # A unique identifier for client to track progress
         task_id = str(uuid.uuid4())
@@ -282,7 +293,7 @@ class NgramGenerationView(APIView):
         # Start processing in backend thread
         thread = threading.Thread(
             target=self._process_with_progress,
-            args=(data, task_id)
+            args=(data_copy, task_id)
         )
 
         # Allows main process to exit without waiting
@@ -319,9 +330,9 @@ class NgramGenerationView(APIView):
             })
 
             cell_size = int(data['cell_size'])
-            uploaded_file = data['file']    # InMemoryUploadedFile
-            file_content = uploaded_file.read()
-            uploaded_file.seek(0)
+            file_content = data['file_content']
+            file_name = data['file_name']
+            file_content_type = data['file_content_type']
 
             # Process token creation
             queue.put({
@@ -347,8 +358,8 @@ class NgramGenerationView(APIView):
                 'study_area': study_area,
                 'cell_size': cell_size,
                 'file_content': file_content,
-                'file_name': uploaded_file.name,
-                'file_content_type': uploaded_file.content_type,
+                'file_name': file_name,
+                'file_content_type': file_content_type,
                 'created_at': datetime.now().isoformat()
             }
 
@@ -383,8 +394,9 @@ class NgramGenerationView(APIView):
 
         cell_size = int(data['cell_size'])
 
-        data['file'].seek(0)
-        df = pd.read_csv(data["file"])
+        file_content = data['file_content']
+        file_stream = BytesIO(file_content)
+        df = pd.read_csv(file_stream)
         # Convert geometry column to Python list
         df['geometry'] = df['geometry'].apply(ast.literal_eval)
         study_area = extract_boundary(df)
