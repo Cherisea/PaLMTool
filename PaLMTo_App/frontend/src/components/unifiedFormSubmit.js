@@ -12,6 +12,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
   // State variable for current progress
   const [progress, setProgress] = useState(0);
 
+  // State variable for progress message
+  const [progressMessage, setProgressMessage] = useState(''); 
+
   // Handler of API calls
   const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -20,6 +23,65 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         }
     });
   };
+
+  // Function to handle SSE progress updates
+  const handleProgressUpdates = (taskId) => {
+    const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/process/?task_id=${taskId}`);
+
+    // Listen for messages
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+            case 'progress':
+                setProgress(data.progress);
+                setProgressMessage(data.message);
+                break;
+            case 'complete':
+                setProgress(100);
+                setProgressMessage(data.message);
+                setStatsData(data.stats);
+                setShowStats(true);
+
+                // Update form data with returned cache file
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: data.cache_file
+                }));
+
+                setCurrentStep(3);
+                setNotification({
+                    type: 'success',
+                    message: 'Ngram dictionaries created successfully!'
+                });
+                eventSource.close();
+                break;
+            case 'error':
+                setNotification({
+                    type: 'error',
+                    message: data.message
+                });
+                eventSource.close();
+                break;
+            case 'keepalive':
+                break;
+            default:
+                console.log('Unknown event type:', data.type);
+        }
+    };
+
+    // Listen for errors 
+    eventSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        setNotification({
+            type: 'error',
+            message: 'Connection to progress stream failed'
+        });
+        eventSource.close();
+    };
+
+    return eventSource;
+  }
 
   // Main entry for processing form and response
   const handleUnifiedSubmit = async (e, currentStep) => {
