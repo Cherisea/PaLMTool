@@ -224,8 +224,10 @@ button:hover {
 }
 
 .progress-text {
-  font-size: 14px;
-  color: #666;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  color: #222;
   text-align: center;
   margin-top: 8px;
   position: static;
