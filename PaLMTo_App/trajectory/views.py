@@ -271,11 +271,12 @@ class NgramGenerationView(APIView):
         # Read content of uploaded file into memory before it's closed
         data = request.data
         uploaded_file = data['file']
+        file_name = uploaded_file.name
 
         # Save uploaded file to disk 
         cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
         os.makedirs(cache_dir, exist_ok=True)
-        file_path = os.path.join(cache_dir, uploaded_file.name)
+        file_path = os.path.join(cache_dir, file_name)
 
         # Process in chunks to avoid memory issues
         with open(file_path, "wb") as out_file:
@@ -288,7 +289,7 @@ class NgramGenerationView(APIView):
         # Start processing in backend thread
         thread = threading.Thread(
             target=self._process_with_progress,
-            args=(data, task_id, file_path)
+            args=(data, task_id, file_path, file_name)
         )
 
         # Allows main process to exit without waiting
