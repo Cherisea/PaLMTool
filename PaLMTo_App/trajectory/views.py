@@ -321,7 +321,7 @@ class NgramGenerationView(APIView):
             # Send initial response
             queue.put({
                 'type': 'progress',
-                'message': 'Starting ngram generation...',
+                'message': 'Starting ngram generation',
                 'progress': 10
             })
             time.sleep(1)
@@ -345,7 +345,7 @@ class NgramGenerationView(APIView):
             # Save cache file
             queue.put({
                 'type': 'progress',
-                'message': 'Saving cache file...',
+                'message': 'Saving cache file',
                 'progress': 90
             })
 
@@ -379,7 +379,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
                 'type': 'progress',
-                'message': 'Reading trajectory file...',
+                'message': 'Reading trajectory file',
                 'progress': 20
             })
         
@@ -391,7 +391,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Creating tokens and grid...',
+            'message': 'Creating tokens and grid',
             'progress': 40
         })
      
@@ -406,7 +406,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Generating ngrams...',
+            'message': 'Generating ngrams',
             'progress': 70
         })
 
@@ -422,7 +422,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Ngrams generation completed!',
+            'message': 'Ngrams generation completed',
             'progress': 85
         })
         time.sleep(1)
