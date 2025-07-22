@@ -130,23 +130,6 @@
   animation: slideOut 0.3s ease-in forwards;
 }
 
-button {
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 40%;
-  margin: 2rem auto;
-  display: block;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
