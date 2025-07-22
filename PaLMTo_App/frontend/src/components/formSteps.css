@@ -192,6 +192,9 @@ button:hover {
 
   /* Progress container as overlay */
 .progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   position: absolute;
   top: 0;
   left: 0;
@@ -205,16 +208,20 @@ button:hover {
 
 /* Progress bar styling */
 .progress-bar {
-  height: 100%;
+  height: 20px;
   background-color: rgb(98, 111, 71, 0.8);
   transition: width 0.3s ease;
   position: relative;
+  width: 100%;
 }
 
 .progress-text {
   font-size: 14px;
   color: #666;
   text-align: center;
+  margin-top: 8px;
+  position: static;
+  z-index: 1;
 }
 
 .progress-bar::after {
