@@ -106,6 +106,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 endpoint = '/trajectory/generate/ngrams';
                 payload.append("cell_size", formData.cell_size);
                 payload.append("file", formData.file);
+                setIsLoading(true);
             }
             
         } else if (currentStep === 3) {
