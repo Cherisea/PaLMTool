@@ -120,6 +120,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
             }
+            setIsLoading(true);
         }
 
         if (endpoint && payload) {
@@ -142,6 +143,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         message: 'Trajectories generated successfully!'
                       });
                 }, 1000);
+                setIsLoading(false);
             }
         }
     } catch (error) {
