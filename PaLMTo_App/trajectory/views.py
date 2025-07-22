@@ -383,9 +383,6 @@ class NgramGenerationView(APIView):
             
     def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
-        
-        Args:
-            uploaded_file_path(str): path of uploaded trajectory file saved in disk
         """
         global STATS
 
