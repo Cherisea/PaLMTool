@@ -130,37 +130,6 @@
   animation: slideOut 0.3s ease-in forwards;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center; 
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.required-mark {
-  color: #ff0000;
-  margin: 0 2px;
-}
-
-.info-icon {
-  color: #888;
-  cursor: pointer;
-  vertical-align: middle;
-  margin-left: 3px;
-  transition: color 0.2s, transform 0.2s;
-}
-
-.info-icon:hover {
-  color: #007bff; /* Change color on hover */
-  transform: scale(1.1); /* Slightly enlarge the icon on hover */
-}
-
 input[type="text"],
 input[type="number"],
 select {
