@@ -211,9 +211,16 @@ button:hover {
 /* Progress bar styling */
 .progress-bar {
   background-color: rgb(98, 111, 71, 0.8);
-  transition: width 0.3s ease;
   position: relative;
+  height: 40px;
   width: 100%;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #bada55; 
+  transition: width 0.3s ease;
+  border-radius: 6px 0 0 6px;
 }
 
 .progress-text {
