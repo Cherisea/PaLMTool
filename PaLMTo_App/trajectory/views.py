@@ -382,17 +382,16 @@ class NgramGenerationView(APIView):
                     'message': f'Error during processing: {str(e)}'
                 })
             
-    def _process_to_ngrams(self, data, queue):
+    def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
         
+        Args:
+            uploaded_file_path(str): path of uploaded trajectory file saved in disk
         """
         global STATS
 
         cell_size = int(data['cell_size'])
-
-        file_content = data['file_content']
-        file_stream = BytesIO(file_content)
-        df = pd.read_csv(file_stream)
+        df = pd.read_csv(uploaded_file_path)
         # Convert geometry column to Python list
         df['geometry'] = df['geometry'].apply(ast.literal_eval)
         study_area = extract_boundary(df)
