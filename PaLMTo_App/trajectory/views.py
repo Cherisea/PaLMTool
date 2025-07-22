@@ -20,6 +20,7 @@ from contextlib import redirect_stdout
 
 # Third-party libraries
 import ast
+import time
 import pickle
 import json
 import threading
@@ -320,34 +321,14 @@ class NgramGenerationView(APIView):
             # Send initial response
             queue.put({
                 'type': 'progress',
-                'message': 'Starting ngram generation...',
+                'message': 'Starting ngram generation',
                 'progress': 10
             })
-
-            # Process reading uploaded file
-            queue.put({
-                'type': 'progress',
-                'message': 'Reading trajectory file...',
-                'progress': 20
-            })
+            time.sleep(1)
 
             cell_size = int(data['cell_size'])
 
-            # Process token creation
-            queue.put({
-                'type': 'progress',
-                'message': 'Creating tokens and grid...',
-                'progress': 40
-            })
-
             ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
-
-            # Save cache file
-            queue.put({
-                'type': 'progress',
-                'message': 'Saving cache file...',
-                'progress': 90
-            })
 
             cached_data = {
                 'ngrams': ngrams,
@@ -360,6 +341,13 @@ class NgramGenerationView(APIView):
                 'file_name': uploaded_file_name,
                 'created_at': datetime.now().isoformat()
             }
+
+            # Save cache file
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving cache file',
+                'progress': 90
+            })
 
             filename = f'cache_{cell_size}.pkl'
             subdir = os.path.join(settings.MEDIA_ROOT, "cache")
@@ -389,6 +377,12 @@ class NgramGenerationView(APIView):
         """
         global STATS
 
+        queue.put({
+                'type': 'progress',
+                'message': 'Reading trajectory file',
+                'progress': 20
+            })
+        
         cell_size = int(data['cell_size'])
         df = pd.read_csv(uploaded_file_path)
         # Convert geometry column to Python list
@@ -397,11 +391,10 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Creating token converter...',
-            'progress': 50
+            'message': 'Creating tokens and grid',
+            'progress': 40
         })
      
-
         TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
 
         # Capture stdout from create_tokens method
@@ -413,7 +406,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Generating ngrams...',
+            'message': 'Generating ngrams',
             'progress': 70
         })
 
@@ -429,58 +422,12 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': 'Ngrams generation completed!',
+            'message': 'Ngrams generation completed',
             'progress': 85
         })
+        time.sleep(1)
 
         return ngrams, start_end_points, grid, sentence_df, study_area
-    
-    def _process_to_ngrams(self, data):
-        """Execute trajectory generation process up to creation of ngram dictionaries.
-
-        This is the first step of a two-stage trajectory generation process, allowing a user to optionally 
-        build ngrams dictionary without executing the entire program and to skip this time-consuming step 
-        if a JSON file storing a previously built ngrams is provided. 
-
-        Args:
-            data(django.QueryDict): dictionary-like object containing keys and values from frontend form.
-
-        Returns:
-
-        """
-        global STATS
-
-        # Cast value of integer fields as Python integer
-        cell_size = int(data['cell_size'])
-
-        # Reset file pointer
-        data['file'].seek(0)
-        df = pd.read_csv(data["file"])
-        # Convert geometry column to Python list
-        df['geometry'] = df['geometry'].apply(ast.literal_eval)
-        study_area = extract_boundary(df)
-
-        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
-
-        # Capture stdout from create_tokens method
-        f = StringIO()
-        with redirect_stdout(f):
-            grid, sentence_df = TokenCreator.create_tokens()
-        content = f.getvalue()
-        STATS["cellsCreated"] = int(content.strip().split(":")[1])
-
-        ngram_model = NgramGenerator(sentence_df)
-
-        # Capture stdout from create_ngrams method
-        f.seek(0)
-        with redirect_stdout(f):
-            ngrams, start_end_points = ngram_model.create_ngrams()
-        content = f.getvalue()
-        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
-        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
-
     
 class Trajectory3DView(APIView):
     """
