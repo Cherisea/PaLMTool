@@ -236,31 +236,6 @@ input:disabled {
   margin-top: 5px; /* Space above the note */
 }
 
-/* Make the button container relative for positioning */
-.button-container {
-  position: relative;
-  width: 100%;
-  margin: 2rem 0;
-  display: flex;
-  justify-content: center;
-}
-
-/* Style the submit button to take full width of its container */
-.button-container button[type='submit'] {
-  width: fit-content;
-  margin: 0;
-  min-width: 0;
-  display: inline-block;
-  position: relative;
-  z-index: 1;
-}
-
-/* Ensure button text remains visible during loading */
-.button-container button[type='submit']:disabled {
-  background-color: #4CAF50; /* Keep the original color */
-  opacity: 0.6;
-}
-
 button {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
