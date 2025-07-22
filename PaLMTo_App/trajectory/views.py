@@ -330,13 +330,6 @@ class NgramGenerationView(APIView):
 
             ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
 
-            # Save cache file
-            queue.put({
-                'type': 'progress',
-                'message': 'Saving cache file...',
-                'progress': 90
-            })
-
             cached_data = {
                 'ngrams': ngrams,
                 'start_end_points': start_end_points,
@@ -348,6 +341,13 @@ class NgramGenerationView(APIView):
                 'file_name': uploaded_file_name,
                 'created_at': datetime.now().isoformat()
             }
+
+            # Save cache file
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving cache file...',
+                'progress': 90
+            })
 
             filename = f'cache_{cell_size}.pkl'
             subdir = os.path.join(settings.MEDIA_ROOT, "cache")
@@ -425,6 +425,7 @@ class NgramGenerationView(APIView):
             'message': 'Ngrams generation completed!',
             'progress': 85
         })
+        time.sleep(1)
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
