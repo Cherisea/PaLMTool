@@ -92,9 +92,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         return;
     }
 
-    setIsLoading(true);
-    setProgress(0);
-
     try {
         let endpoint, payload;
         payload = new FormData();
