@@ -39,7 +39,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 break;
             case 'complete':
                 setProgress(100);
-                setProgressMessage(data.message);
                 setStatsData(data.stats);
                 setShowStats(true);
 
@@ -52,7 +51,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 setCurrentStep(3);
                 setNotification({
                     type: 'success',
-                    message: 'Ngram dictionaries created successfully!'
+                    message: data.message
                 });
 
                 setIsLoading(false);
