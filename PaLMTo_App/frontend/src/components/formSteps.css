@@ -233,3 +233,19 @@ button:hover {
   );
   animation: shimmer 1.5s infinite;
 }
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Drop zone placed side by side on larger screens */
+@media (min-width: 1200px) {
+  .dropzone-row {
+    flex-direction: row; 
+  }
+}
