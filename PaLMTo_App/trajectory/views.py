@@ -301,9 +301,12 @@ class NgramGenerationView(APIView):
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
     
-    def _process_with_progress(self, data, task_id, uploaded_file_path):
+    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name):
         """Send live progress updates while orchestrating operations involved in ngram creation.
 
+        Args:
+            uploaded_file_path(str): path of uploaded trajectory file saved in disk
+            uploaded_file_name(str): name of saved trajectory file
         """
         try:
             if task_id not in PROGRESS_QUEUES:
@@ -351,6 +354,7 @@ class NgramGenerationView(APIView):
                 'study_area': study_area,
                 'cell_size': cell_size,
                 'file_path': uploaded_file_path,
+                'file_name': uploaded_file_name,
                 'created_at': datetime.now().isoformat()
             }
 
