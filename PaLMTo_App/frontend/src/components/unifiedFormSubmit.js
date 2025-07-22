@@ -54,6 +54,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     type: 'success',
                     message: 'Ngram dictionaries created successfully!'
                 });
+
+                setIsLoading(false);
                 eventSource.close();
                 break;
             case 'error':
