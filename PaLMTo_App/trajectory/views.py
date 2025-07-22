@@ -342,7 +342,6 @@ class NgramGenerationView(APIView):
                 'created_at': datetime.now().isoformat()
             }
 
-            # Save cache file
             queue.put({
                 'type': 'progress',
                 'message': 'Saving cache file',
@@ -374,6 +373,10 @@ class NgramGenerationView(APIView):
             
     def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
+
+        Args:
+            queue(queue.Queue): thread-safe FIFO queue object for passing info between background 
+                thread and SSE view.
         """
         global STATS
 
