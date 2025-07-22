@@ -157,10 +157,10 @@ function FormSteps({
             </div>
           )}
         </button>
-        
+
         {isLoading && (
           <div className="progress-text">
-          {progress}% - {progressMessage || 'Processing...'}
+          {progress}% -- {progressMessage || 'Processing...'}
         </div>
         )}
       </div>
