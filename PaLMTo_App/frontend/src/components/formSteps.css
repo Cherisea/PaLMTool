@@ -96,6 +96,58 @@ input:disabled {
   color: #666;
 }
 
+.dropzone-row {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row;
+}
+
+.dropzone-content {
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dropzone-icon {
+  font-size: 3rem;
+  color: #007bff;
+}
+
+.dropzone {
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #222;
+  background-color: #ECFAE5;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  flex: 1;
+  max-height: fit-content;
+}
+
+.dropzone:hover {
+  border-color: #333;
+}
+
+.disabled-dropzone {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+}
+
+.note {
+  font-size: 0.9em; /* Slightly smaller font size */
+  color: #666; /* Gray color for less emphasis */
+  margin-top: 5px; /* Space above the note */
+}
+
 /* Make the button container relative for positioning */
 .button-container {
   position: relative;
