@@ -288,16 +288,6 @@ class NgramGenerationView(APIView):
             for chunk in uploaded_file.chunks():
                 out_file.write(chunk)
 
-        # file_content = uploaded_file.read()
-        # uploaded_file.seek(0)
-
-        # data_copy['file_content'] = file_content
-        # data_copy['file_name'] = uploaded_file.name
-        # data_copy['file_content_type'] = uploaded_file.content_type
-
-        # # Remove the file object as it will be closed in background thread
-        # del data_copy['file']
-
         # A unique identifier for client to track progress
         task_id = str(uuid.uuid4())
 
@@ -316,7 +306,7 @@ class NgramGenerationView(APIView):
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
     
-    def _process_with_progress(self, data, task_id):
+    def _process_with_progress(self, data, task_id, uploaded_file_path):
         """Send live progress updates while orchestrating operations involved in ngram creation.
 
         """
@@ -341,9 +331,6 @@ class NgramGenerationView(APIView):
             })
 
             cell_size = int(data['cell_size'])
-            file_content = data['file_content']
-            file_name = data['file_name']
-            file_content_type = data['file_content_type']
 
             # Process token creation
             queue.put({
@@ -352,7 +339,7 @@ class NgramGenerationView(APIView):
                 'progress': 40
             })
 
-            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue)
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
 
             # Save cache file
             queue.put({
@@ -368,9 +355,7 @@ class NgramGenerationView(APIView):
                 'sentence_df': sentence_df,
                 'study_area': study_area,
                 'cell_size': cell_size,
-                'file_content': file_content,
-                'file_name': file_name,
-                'file_content_type': file_content_type,
+                'file_path': uploaded_file_path,
                 'created_at': datetime.now().isoformat()
             }
 
