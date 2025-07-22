@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GenerationConfigView, download_files, Trajectory3DView, MapMatchingView, NgramGenerationView
+from .views import GenerationConfigView, download_files, Trajectory3DView, MapMatchingView, NgramGenerationView, ProgressView
 
 
 urlpatterns = [
@@ -7,6 +7,7 @@ urlpatterns = [
     path('generate/ngrams', NgramGenerationView.as_view(), name='generate_ngrams'),
     path('download/<str:filename>', download_files, name='download_files'),
     path('analyze/', Trajectory3DView.as_view(), name="analyze"),
-    path('map-match/', MapMatchingView.as_view(), name="map_match")
+    path('map-match/', MapMatchingView.as_view(), name="map_match"),
+    path('progress/', ProgressView.as_view(), name='progress')
 ]
 

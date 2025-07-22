@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
 # Django libraries
+from django.views import View
 from django.conf import settings
-from django.http import FileResponse, HttpResponse
+
 from django.core.files import File
-from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
+from django.http import FileResponse, HttpResponse, StreamingHttpResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # System libraries
 import os
@@ -20,6 +22,7 @@ from contextlib import redirect_stdout
 import ast
 import pickle
 import json
+import threading
 import requests
 import pandas as pd
 from queue import Queue
@@ -261,54 +264,176 @@ class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        """Handler for processing the first step of building ngram dictionary.
-        
+        """Handler for building ngram dictionary with live updates posted to a client.
+
         Returns:
-            rest_framework.response.Response: A response containing the cache file name and statistics, 
-            with HTTP 200 status on success.
-        
+            rest_framework.response.Response: a dict containing task id and sever message to client
         """
+        # Read content of uploaded file into memory before it's closed
         data = request.data
-        cell_size = int(data['cell_size'])
-        uploaded_file = data['file']    # InMemoryUploadedFile
-        
+        uploaded_file = data['file']
+        file_name = uploaded_file.name
+
         # Save uploaded file to disk 
         cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
         os.makedirs(cache_dir, exist_ok=True)
-        file_path = os.path.join(cache_dir, uploaded_file.name)
+        file_path = os.path.join(cache_dir, file_name)
 
         # Process in chunks to avoid memory issues
         with open(file_path, "wb") as out_file:
             for chunk in uploaded_file.chunks():
                 out_file.write(chunk)
 
-        ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data)
-        
-        cached_data = {
-            'ngrams': ngrams,
-            'start_end_points': start_end_points,
-            'grid': grid,
-            'sentence_df': sentence_df,
-            'study_area': study_area,
-            'cell_size': cell_size,
-            'file_path': file_path,
-            'file_name': uploaded_file.name,
-            'file_content_type': uploaded_file.content_type,
-            'created_at': datetime.now().isoformat()
-        }
+        # A unique identifier for client to track progress
+        task_id = str(uuid.uuid4())
 
-        filename = f'cache_{cell_size}.pkl'
-        subdir = os.path.join(settings.MEDIA_ROOT, "cache")
-        os.makedirs(subdir, exist_ok=True)
+        # Start processing in backend thread
+        thread = threading.Thread(
+            target=self._process_with_progress,
+            args=(data, task_id, file_path, file_name)
+        )
 
-        file_path = os.path.join(subdir, filename)
-        with open(file_path, "wb") as f:
-            pickle.dump(cached_data, f)
+        # Allows main process to exit without waiting
+        thread.daemon = True
+        thread.start()
 
         return Response({
-                "cache_file": filename,
-                'stats': STATS,
-            }, status=status.HTTP_200_OK)
+            "task_id": task_id,
+            "message": "Processing started"
+        }, status=status.HTTP_202_ACCEPTED)
+    
+    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name):
+        """Send live progress updates while orchestrating operations involved in ngram creation.
+
+        Args:
+            data(QueryDict): request data containing "cell_size" and "file" fields
+            task_id(str): a unique identifier for frontend to track progress updates
+            uploaded_file_path(str): path of uploaded trajectory file saved in disk
+            uploaded_file_name(str): name of saved trajectory file
+        """
+        try:
+            if task_id not in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id] = Queue()
+
+            queue = PROGRESS_QUEUES[task_id]
+
+            # Send initial response
+            queue.put({
+                'type': 'progress',
+                'message': 'Starting ngram generation...',
+                'progress': 10
+            })
+
+            # Process reading uploaded file
+            queue.put({
+                'type': 'progress',
+                'message': 'Reading trajectory file...',
+                'progress': 20
+            })
+
+            cell_size = int(data['cell_size'])
+
+            # Process token creation
+            queue.put({
+                'type': 'progress',
+                'message': 'Creating tokens and grid...',
+                'progress': 40
+            })
+
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
+
+            # Save cache file
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving cache file...',
+                'progress': 90
+            })
+
+            cached_data = {
+                'ngrams': ngrams,
+                'start_end_points': start_end_points,
+                'grid': grid,
+                'sentence_df': sentence_df,
+                'study_area': study_area,
+                'cell_size': cell_size,
+                'file_path': uploaded_file_path,
+                'file_name': uploaded_file_name,
+                'created_at': datetime.now().isoformat()
+            }
+
+            filename = f'cache_{cell_size}.pkl'
+            subdir = os.path.join(settings.MEDIA_ROOT, "cache")
+            os.makedirs(subdir, exist_ok=True)
+
+            file_path = os.path.join(subdir, filename)
+            with open(file_path, "wb") as f:
+                pickle.dump(cached_data, f)
+
+            # Send message of completing ngram creation
+            queue.put({
+                'type': 'complete',
+                'message': 'Ngram generation completed successfully!',
+                'progress': 100,
+                'cache_file': filename,
+                'stats': STATS
+            })
+        except Exception as e:
+            if task_id in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id].put({
+                    'type': 'error',
+                    'message': f'Error during processing: {str(e)}'
+                })
+            
+    def _process_to_ngrams(self, data, queue, uploaded_file_path):
+        """Generate ngram dictionaries with progress updates
+        """
+        global STATS
+
+        cell_size = int(data['cell_size'])
+        df = pd.read_csv(uploaded_file_path)
+        # Convert geometry column to Python list
+        df['geometry'] = df['geometry'].apply(ast.literal_eval)
+        study_area = extract_boundary(df)
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Creating token converter...',
+            'progress': 50
+        })
+     
+
+        TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
+
+        # Capture stdout from create_tokens method
+        f = StringIO()
+        with redirect_stdout(f):
+            grid, sentence_df = TokenCreator.create_tokens()
+        content = f.getvalue()
+        STATS["cellsCreated"] = int(content.strip().split(":")[1])
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Generating ngrams...',
+            'progress': 70
+        })
+
+        ngram_model = NgramGenerator(sentence_df)
+
+        # Capture stdout from create_ngrams method
+        f.seek(0)
+        with redirect_stdout(f):
+            ngrams, start_end_points = ngram_model.create_ngrams()
+        content = f.getvalue()
+        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Ngrams generation completed!',
+            'progress': 85
+        })
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
     
     def _process_to_ngrams(self, data):
         """Execute trajectory generation process up to creation of ngram dictionaries.
@@ -524,7 +649,7 @@ class MapMatchingView(APIView):
 
         return out_filename
 
-class ProgressView(APIView):
+class ProgressView(View):
     """
         A class for handling Server-Sent Events(SSE) to stream progress updates
     """

@@ -11,7 +11,8 @@ function FormSteps({
   getCacheInputProps,
   isCacheDragActive,
   isLoading,
-  progress
+  progress,
+  progressMessage
 }) {
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
@@ -147,7 +148,16 @@ function FormSteps({
           {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (
             <div className="progress-container">
-              <div className="progress-bar" style={{ width: `${progress}%` }} />
+              <div className="progress-bar" >
+                <div 
+                  className="progress-fill"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+
+              <div className="progress-text">
+                {progress}% - {progressMessage || 'Processing...'}
+              </div>
             </div>
           )}
         </button>

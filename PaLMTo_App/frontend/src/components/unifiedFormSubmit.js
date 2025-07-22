@@ -12,6 +12,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
   // State variable for current progress
   const [progress, setProgress] = useState(0);
 
+  // State variable for progress message
+  const [progressMessage, setProgressMessage] = useState(''); 
+
   // Handler of API calls
   const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -20,6 +23,67 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         }
     });
   };
+
+  // Function to handle SSE progress updates
+  const handleProgressUpdates = (taskId) => {
+    const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
+
+    // Listen for messages
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+            case 'progress':
+                setProgress(data.progress);
+                setProgressMessage(data.message);
+                break;
+            case 'complete':
+                setProgress(100);
+                setProgressMessage(data.message);
+                setStatsData(data.stats);
+                setShowStats(true);
+
+                // Update form data with returned cache file
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: data.cache_file
+                }));
+
+                setCurrentStep(3);
+                setNotification({
+                    type: 'success',
+                    message: 'Ngram dictionaries created successfully!'
+                });
+
+                setIsLoading(false);
+                eventSource.close();
+                break;
+            case 'error':
+                setNotification({
+                    type: 'error',
+                    message: data.message
+                });
+                eventSource.close();
+                break;
+            case 'keepalive':
+                break;
+            default:
+                console.log('Unknown event type:', data.type);
+        }
+    };
+
+    // Listen for errors 
+    eventSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        setNotification({
+            type: 'error',
+            message: 'Connection to progress stream failed'
+        });
+        eventSource.close();
+    };
+
+    return eventSource;
+  }
 
   // Main entry for processing form and response
   const handleUnifiedSubmit = async (e, currentStep) => {
@@ -30,20 +94,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         return;
     }
 
-    setIsLoading(true);
-    setProgress(0);
-  
-    // Simulate progress update
-    const progressInterval = setInterval(() => {
-        setProgress((prevProgress) => {
-        if (prevProgress >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-        }
-        return prevProgress + 10;
-        })
-    }, 1100);
-
     try {
         let endpoint, payload;
         payload = new FormData();
@@ -52,10 +102,13 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (currentStep === 2) {
             if (!!formData.cache_file) {
                 setCurrentStep(3);
+                setIsLoading(false);
+                return;
             } else {
                 endpoint = '/trajectory/generate/ngrams';
                 payload.append("cell_size", formData.cell_size);
                 payload.append("file", formData.file);
+                setIsLoading(true);
             }
             
         } else if (currentStep === 3) {
@@ -67,29 +120,18 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
             }
+            setIsLoading(true);
         }
 
         if (endpoint && payload) {
             const response = await submitFormData(endpoint, payload);
 
-            setProgress(100);
-
             if (currentStep === 2) {
-                setNotification({
-                    type: 'success',
-                    message: 'Ngram dictionaries created successfully!'
-                  });
-                setStatsData(response.data.stats);
-                setShowStats(true);
-
-                // Update formData with the returned cache file
-                setFormData(prev => ({
-                    ...prev,
-                    cache_file: response.data.cache_file
-                }));
-
-                setCurrentStep(3);
+                // Initiate progress updates listener
+                const taskId = response.data.task_id;
+                handleProgressUpdates(taskId);
             } else if (currentStep === 3) {
+                setProgress(100);
                 const generatedFile = response.data.generated_file;
                 setGeneratedFileName(generatedFile);
                 setVisualData(response.data.visualization);
@@ -101,6 +143,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         message: 'Trajectories generated successfully!'
                       });
                 }, 1000);
+                setIsLoading(false);
             }
         }
     } catch (error) {
@@ -110,8 +153,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
               ? 'Failed to create ngram dictionaries. Please try again.'
               : 'Failed to generate trajectories. Please try again.'
         });
-    } finally {
-        clearInterval(progressInterval);
         setIsLoading(false);
     }
 
@@ -122,6 +163,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     notification,
     isLoading,
     progress,
+    progressMessage,
     setNotification
    };
 
