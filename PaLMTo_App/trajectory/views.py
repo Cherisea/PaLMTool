@@ -275,17 +275,28 @@ class NgramGenerationView(APIView):
             rest_framework.response.Response: a dict containing task id and sever message to client
         """
         # Read content of uploaded file into memory before it's closed
-        data_copy = request.data.copy()
-        uploaded_file = data_copy['file']
-        file_content = uploaded_file.read()
-        uploaded_file.seek(0)
+        data = request.data
+        uploaded_file = data['file']
 
-        data_copy['file_content'] = file_content
-        data_copy['file_name'] = uploaded_file.name
-        data_copy['file_content_type'] = uploaded_file.content_type
+        # Save uploaded file to disk 
+        cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
+        os.makedirs(cache_dir, exist_ok=True)
+        file_path = os.path.join(cache_dir, uploaded_file.name)
 
-        # Remove the file object as it will be closed in background thread
-        del data_copy['file']
+        # Process in chunks to avoid memory issues
+        with open(file_path, "wb") as out_file:
+            for chunk in uploaded_file.chunks():
+                out_file.write(chunk)
+
+        # file_content = uploaded_file.read()
+        # uploaded_file.seek(0)
+
+        # data_copy['file_content'] = file_content
+        # data_copy['file_name'] = uploaded_file.name
+        # data_copy['file_content_type'] = uploaded_file.content_type
+
+        # # Remove the file object as it will be closed in background thread
+        # del data_copy['file']
 
         # A unique identifier for client to track progress
         task_id = str(uuid.uuid4())
@@ -293,7 +304,7 @@ class NgramGenerationView(APIView):
         # Start processing in backend thread
         thread = threading.Thread(
             target=self._process_with_progress,
-            args=(data_copy, task_id)
+            args=(data, task_id, file_path)
         )
 
         # Allows main process to exit without waiting
