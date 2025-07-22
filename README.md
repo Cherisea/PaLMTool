@@ -8,7 +8,7 @@ There are various ways to generate realistic trajectory data, with PaLMTo[^1] be
 
 Note that value of this field applies to generated trajectories only. Value of the same parameter in creating a matching heatmap, which defaults to 200, can be found in [geo_process](PaLMTo_App/trajectory/geo_process.py).
 
-| ![Earth](asset/earth.png) | ![Cell Size](asset/cell_size.png) |
+| ![Earth](asset/earth.png) | ![Cell Size](asset/cell_side.png) |
 |:---:|:---:|
 | *Earth representation* | *Cell size visualization* |
 
