@@ -305,6 +305,8 @@ class NgramGenerationView(APIView):
         """Send live progress updates while orchestrating operations involved in ngram creation.
 
         Args:
+            data(QueryDict): request data containing "cell_size" and "file" fields
+            task_id(str): a unique identifier for frontend to track progress updates
             uploaded_file_path(str): path of uploaded trajectory file saved in disk
             uploaded_file_name(str): name of saved trajectory file
         """
