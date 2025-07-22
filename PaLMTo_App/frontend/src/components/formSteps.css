@@ -155,6 +155,8 @@ input:disabled {
   margin: 2rem 0;
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Style the submit button to take full width of its container */
@@ -208,7 +210,6 @@ button:hover {
 
 /* Progress bar styling */
 .progress-bar {
-  height: 20px;
   background-color: rgb(98, 111, 71, 0.8);
   transition: width 0.3s ease;
   position: relative;

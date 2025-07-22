@@ -154,13 +154,15 @@ function FormSteps({
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
-
-              <div className="progress-text">
-                {progress}% - {progressMessage || 'Processing...'}
-              </div>
             </div>
           )}
         </button>
+        
+        {isLoading && (
+          <div className="progress-text">
+          {progress}% - {progressMessage || 'Processing...'}
+        </div>
+        )}
       </div>
     </div>
   );
