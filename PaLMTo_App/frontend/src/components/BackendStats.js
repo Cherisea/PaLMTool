@@ -29,6 +29,10 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
             <span className="stat-value">{stats.uniqueTrigrams.toLocaleString()}</span>
           </div>
 
+          <div className="stat-item">
+            <span className="stat-label">Total Coordinate Pairs:</span>
+            <span className="stat-value">{stats.totalPairs.toLocaleString()}</span>
+          </div>
         </div>
       </div>
     </div>
