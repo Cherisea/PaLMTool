@@ -85,7 +85,7 @@ function FormSteps({
                   (<p>Drop the file here ...</p>) : 
                   formData.file ? 
                     (<p>{formData.file.name}</p>) : 
-                    (<p>Sample Trajectory</p>)
+                    (<p>Sample Trajectories</p>)
               }
             </div>
           </div>
@@ -109,14 +109,14 @@ function FormSteps({
                   (<p>Drop the file here ...</p>) : 
                   formData.cache_file ? 
                     (<p>{formData.cache_file.name}</p>) : 
-                    (<p>Ngram Dictionary</p>)
+                    (<p>Ngram Dictionaries</p>)
               }
             </div>
           </div>
         </div>
         <p className="note">
           <i>
-            Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a>
+            Note: Download <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a>
              {' '}or <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo_cache.pkl`} download>demo ngram file</a>
              {' '}to jump start.
           </i>
