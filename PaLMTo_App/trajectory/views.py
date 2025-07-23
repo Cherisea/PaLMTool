@@ -26,7 +26,7 @@ import json
 import threading
 import requests
 import pandas as pd
-from queue import Queue
+from queue import Queue, Empty
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 
@@ -406,6 +406,7 @@ class NgramGenerationView(APIView):
             grid, sentence_df = TokenCreator.create_tokens()
         content = f.getvalue()
         STATS["cellsCreated"] = int(content.strip().split(":")[1])
+        STATS["totalPairs"] = df['geometry'].apply(len).sum()
 
         queue.put({
             'type': 'progress',
@@ -629,7 +630,7 @@ class ProgressView(View):
                         else:
                             yield f"data: {json.dumps(progress_data)}\n\n"
                     
-                    except Queue.Empty:
+                    except Empty:
                         yield f"data: {json.dumps({'type': 'keepalive'})}\n\n"
             
             except Exception as e:
