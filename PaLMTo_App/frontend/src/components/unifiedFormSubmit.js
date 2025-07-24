@@ -38,7 +38,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
             if (newName != defaultCacheFile) {
-                await axios.post('trajectory/rename_cache/', {
+                await axios.post('trajectory/rename-cache/', {
                     old_name: defaultCacheFile,
                     new_name: newName
                 });
