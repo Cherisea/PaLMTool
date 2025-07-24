@@ -677,3 +677,30 @@ def download_files(request, filename):
     else:
         return HttpResponse("File not found", status=404)
 
+def rename_cache(request, old_name, new_name):
+    """Rename a cache file in the cache subdir.
+
+    Args:
+        request(rest_framework.request.Request): required for Django view
+        old_name: default system_assigned cache file name
+        new_name: user-specified cache file name
+
+    Returns:
+        HttpResponse: 200 if successful, 404 if file not found, 400 if errors.
+    
+    """
+    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
+    old_path = os.path.join(cache_dir, old_name)
+    new_path = os.path.join(cache_dir, new_name)
+
+    if not os.path.exists(old_path):
+        return HttpResponse(f"File {old_name} not found.", status=404)
+    
+    if os.path.exists(new_path):
+        return HttpResponse(f"File {new_name} already exists.", status=400)
+    
+    try:
+        os.rename(old_path, new_path)
+        return HttpResponse(f"Renamed {old_name} to {new_name}.", status=200)
+    except Exception as e:
+        return HttpResponse(f"Error renaming file: {str(e)}", status=400)
