@@ -18,6 +18,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
   // State variable for showing cache popup window
   const [showPopUp, setShowCachePopup] = useState(false);
 
+  // State variable for cache file name
+  const [cacheFileName, setCacheFileName] = useState('');
+
   // Handler of API calls
   const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -169,7 +172,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     progress,
     progressMessage,
     setNotification,
-    showPopUp
+    showPopUp,
+    setCacheFileName,
+    handleSaveCache
    };
 
 }
