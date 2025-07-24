@@ -38,15 +38,29 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
             if (newName != defaultCacheFile) {
-                await axios.post('trajectory/rename-cache/', {
+                const response = await axios.post('trajectory/rename-cache/', {
                     old_name: defaultCacheFile,
                     new_name: newName
                 });
 
-                setFormData(prev => ({
-                    ...prev,
-                    cache_file: newName
-                }));
+                if (response.status == 200) {
+                    setNotification({
+                        type: 'success',
+                        message: response.data
+                    })
+
+                    setFormData(prev => ({
+                        ...prev,
+                        cache_file: newName
+                    }))
+                } else {
+                    setNotification({
+                        type: 'error',
+                        message: response.data
+                    })
+                }
+
+                ;
             } else {
                 setFormData(prev => ({
                     ...prev,
