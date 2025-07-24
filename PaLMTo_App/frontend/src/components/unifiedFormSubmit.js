@@ -24,6 +24,25 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     // State variable for default cache file from backend
     const [defaultCacheFile, setDefaultCacheFile] = useState('');
 
+    // Get CSRF token from a session
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+
+            for (let i=0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    }
+
+
     // Handler of API calls
     const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -38,9 +57,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
             if (newName != defaultCacheFile) {
+                const csrftoken = getCookie('csrftoken');
                 const response = await axios.post('trajectory/rename-cache/', {
                     old_name: defaultCacheFile,
                     new_name: newName
+                }, {
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
                 });
 
                 if (response.status == 200) {
