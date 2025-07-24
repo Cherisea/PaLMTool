@@ -186,7 +186,7 @@ function FormSteps({
               </label>
             </div>
 
-            <div>
+            <div className="popup-actions">
               <button onClick={() => handleSaveCache(true)}>Save</button>
               <button onClick={() => handleSaveCache(false)}>Delete</button>
             </div>
