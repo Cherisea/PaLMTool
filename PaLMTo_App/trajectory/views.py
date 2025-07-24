@@ -677,7 +677,7 @@ def download_files(request, filename):
     else:
         return HttpResponse("File not found", status=404)
 
-def rename_cache(request, old_name, new_name):
+def rename_cache(request):
     """Rename a cache file in the cache subdir.
 
     Args:
@@ -686,12 +686,14 @@ def rename_cache(request, old_name, new_name):
         new_name: user-specified cache file name
 
     Returns:
-        HttpResponse: 200 if successful, 404 if file not found, 400 if errors.
+        HttpResponse: 200 if successful, 404 if file not found, 400 if errors, 405 if method not allowed.
     
     """
-    if request.method == "POST": 
-        old_name = request.POST.get('old_name')
-        new_name = request.POST.get('new_name')
+    if request.method != "POST": 
+        return HttpResponse(f"Request method {request.method} not supported.", status=405)
+
+    old_name = request.POST.get('old_name')
+    new_name = request.POST.get('new_name')
 
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
     old_path = os.path.join(cache_dir, old_name)
