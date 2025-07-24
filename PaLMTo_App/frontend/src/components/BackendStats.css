@@ -65,6 +65,10 @@
   gap: 2px;
 }
 
+.popup-actions button {
+  width: auto;
+}
+
 .stat-item {
   display: flex;
   justify-content: space-between;
