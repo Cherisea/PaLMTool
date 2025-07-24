@@ -12,7 +12,9 @@ function FormSteps({
   isCacheDragActive,
   isLoading,
   progress,
-  progressMessage
+  progressMessage,
+  showPopUp,
+  setCacheFileName
 }) {
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
@@ -164,6 +166,27 @@ function FormSteps({
         </div>
         )}
       </div>
+
+      {showPopUp && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Cache File Options</h3>
+            <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
+          </div>
+
+          <div>
+            <label>
+              Save as:&nbsp;
+              <input
+                type="text"
+                onChange={e => setCacheFileName(e.target.value)}
+                placeholder=""
+              ></input>
+            </label>
+          </div>
+          
+        </div>
+      )}
     </div>
   );
 
