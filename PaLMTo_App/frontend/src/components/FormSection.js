@@ -36,7 +36,7 @@ function FormSection({
     progress,
     progressMessage,
     setNotification,
-    showPopUp,
+    showCachePopUp,
     setCacheFileName,
     handleSaveCache,
     defaultCacheFile,
@@ -73,7 +73,7 @@ function FormSection({
         isOpen={showStats}
         onClose={() => {
           setShowStats(false);
-          if (defaultCacheFile && !showPopUp) {
+          if (defaultCacheFile && !showCachePopUp) {
             setShowCachePopup(true);
           }
         }}
@@ -131,7 +131,7 @@ function FormSection({
             isLoading={isLoading}
             progress={progress}
             progressMessage={progressMessage}
-            showPopUp={showPopUp}
+            showCachePopUp={showCachePopUp}
             setCacheFileName={setCacheFileName}
             handleSaveCache={handleSaveCache}
             defaultCacheFile={defaultCacheFile}

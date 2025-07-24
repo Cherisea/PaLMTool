@@ -16,7 +16,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     const [progressMessage, setProgressMessage] = useState(''); 
 
     // State variable for showing cache popup window
-    const [showPopUp, setShowCachePopup] = useState(false);
+    const [showCachePopUp, setShowCachePopup] = useState(false);
 
     // State variable for cache file name
     const [cacheFileName, setCacheFileName] = useState('');
@@ -199,7 +199,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     progress,
     progressMessage,
     setNotification,
-    showPopUp,
+    showCachePopUp,
     setCacheFileName,
     handleSaveCache,
     defaultCacheFile,
