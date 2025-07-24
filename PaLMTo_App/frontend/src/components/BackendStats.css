@@ -59,6 +59,7 @@
 }
 
 .popup-actions {
+  margin-top: 6px;
   display: flex;
   flex-direction: row;
   gap: 2px;
