@@ -14,7 +14,7 @@ function FormSteps({
   isLoading,
   progress,
   progressMessage,
-  showPopUp,
+  showCachePopUp,
   setCacheFileName,
   handleSaveCache,
   defaultCacheFile
@@ -172,7 +172,7 @@ function FormSteps({
         )}
       </div>
 
-      {showPopUp && (
+      {showCachePopUp && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>Cache File Options</h3>
