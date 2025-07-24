@@ -171,7 +171,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     isLoading,
     progress,
     progressMessage,
-    setNotification
+    setNotification,
+    showPopUp
    };
 
 }
