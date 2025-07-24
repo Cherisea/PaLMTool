@@ -1,4 +1,5 @@
 import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
+import { useState } from "react";
 
 function FormSteps({ 
   currentStep,
@@ -18,6 +19,8 @@ function FormSteps({
   handleSaveCache,
   defaultCacheFile
 }) {
+  const [showSaveInput, setShowSaveInput] = useState(false);
+
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
     <div className="step-content">
@@ -175,21 +178,30 @@ function FormSteps({
             <h3>Cache File Options</h3>
             <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
 
-            <div>
-              <label>
-                Save as:&nbsp;
-                <input
-                  type="text"
-                  onChange={e => setCacheFileName(e.target.value)}
-                  placeholder={defaultCacheFile}
-                ></input>
-              </label>
-            </div>
+            {!showSaveInput ? (
+              <div className="popup-actions">
+                <button onClick={() => setShowSaveInput(true)}>Save</button>
+                <button onClick={() => handleSaveCache(false)}>Delete</button>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label>
+                    Save as:&nbsp;
+                    <input
+                      type="text"
+                      onChange={e => setCacheFileName(e.target.value)}
+                      placeholder={defaultCacheFile}
+                    ></input>
+                  </label>
+                </div>
 
-            <div className="popup-actions">
-              <button onClick={() => handleSaveCache(true)}>Save</button>
-              <button onClick={() => handleSaveCache(false)}>Delete</button>
-            </div>
+                <div className="popup-actions">
+                  <button onClick={() => handleSaveCache(true)}>Confirm</button>
+                  <button onClick={setShowSaveInput(false)} >Cancel</button>
+                </div>
+              </>
+            )}       
           </div>
         </div>
       )}
