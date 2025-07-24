@@ -406,7 +406,7 @@ class NgramGenerationView(APIView):
             grid, sentence_df = TokenCreator.create_tokens()
         content = f.getvalue()
         STATS["cellsCreated"] = int(content.strip().split(":")[1])
-        STATS["totalPairs"] = df['geometry'].apply(len).sum()
+        STATS["totalPairs"] = int(df['geometry'].apply(len).sum())
 
         queue.put({
             'type': 'progress',
