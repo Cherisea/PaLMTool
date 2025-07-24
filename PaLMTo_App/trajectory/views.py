@@ -689,10 +689,13 @@ def rename_cache(request, old_name, new_name):
         HttpResponse: 200 if successful, 404 if file not found, 400 if errors.
     
     """
-    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
+    if request.method == "POST": 
+        old_name = request.POST.get('old_name')
+        new_name = request.POST.get('new_name')
+
+    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
     old_path = os.path.join(cache_dir, old_name)
     new_path = os.path.join(cache_dir, new_name)
-
     if not os.path.exists(old_path):
         return HttpResponse(f"File {old_name} not found.", status=404)
     
