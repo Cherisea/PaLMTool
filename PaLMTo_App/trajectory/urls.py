@@ -10,6 +10,6 @@ urlpatterns = [
     path('analyze/', Trajectory3DView.as_view(), name="analyze"),
     path('map-match/', MapMatchingView.as_view(), name="map_match"),
     path('progress/', ProgressView.as_view(), name='progress'),
-    path('rename-cache', rename_cache, name='rename_cache')
+    path('rename-cache/', rename_cache, name='rename_cache')
 ]
 
