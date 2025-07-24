@@ -28,6 +28,9 @@ function FormSection({
   // State variable for current step 
   const [currentStep, setCurrentStep] = useState(1);
 
+  // State variable for cache file name
+  const [cacheFileName, setCacheFileName] = useState('');
+
   // The main form handling logic
   const {
     handleUnifiedSubmit,
@@ -35,7 +38,8 @@ function FormSection({
     isLoading,
     progress,
     progressMessage,
-    setNotification
+    setNotification,
+    showPopUp,
   } = UnifiedFormSubmit(
     formData, setCurrentStep, 
     setShowStats, setStatsData,
@@ -121,6 +125,8 @@ function FormSection({
             isLoading={isLoading}
             progress={progress}
             progressMessage={progressMessage}
+            showPopUp={showPopUp}
+            setCacheFileName={setCacheFileName}
           />
         </form>
       </div>
