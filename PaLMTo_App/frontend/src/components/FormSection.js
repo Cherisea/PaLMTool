@@ -39,7 +39,8 @@ function FormSection({
     showPopUp,
     setCacheFileName,
     handleSaveCache,
-    defaultCacheFile
+    defaultCacheFile,
+    setShowCachePopup
   } = UnifiedFormSubmit(
     formData, setCurrentStep, 
     setShowStats, setStatsData,
@@ -70,7 +71,12 @@ function FormSection({
       {/* Popup window of backend statistics */}
       <StatisticsPopup
         isOpen={showStats}
-        onClose={() => setShowStats(false)}
+        onClose={() => {
+          setShowStats(false);
+          if (defaultCacheFile && !showPopUp) {
+            setShowCachePopup(true);
+          }
+        }}
         stats={stats}
       />
 

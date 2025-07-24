@@ -82,7 +82,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 setStatsData(data.stats);
                 setShowStats(true);
 
-                setShowCachePopup(true);
                 setDefaultCacheFile(data.cache_file);
 
                 setNotification({
@@ -203,7 +202,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     showPopUp,
     setCacheFileName,
     handleSaveCache,
-    defaultCacheFile
+    defaultCacheFile,
+    setShowCachePopup
    };
 
 }
