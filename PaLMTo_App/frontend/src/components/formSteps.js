@@ -187,14 +187,12 @@ function FormSteps({
             ) : (
               <div className="popup-content">
                 <div>
-                  <label>
-                    Save as:&nbsp;
+                  <h3>Save As</h3>
                     <input
                       type="text"
                       onChange={e => setCacheFileName(e.target.value)}
                       placeholder={defaultCacheFile}
                     ></input>
-                  </label>
                 </div>
 
                 <div className="popup-actions">
