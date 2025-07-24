@@ -174,22 +174,22 @@ function FormSteps({
           <div className="popup-content">
             <h3>Cache File Options</h3>
             <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
-          </div>
 
-          <div>
-            <label>
-              Save as:&nbsp;
-              <input
-                type="text"
-                onChange={e => setCacheFileName(e.target.value)}
-                placeholder={defaultCacheFile}
-              ></input>
-            </label>
-          </div>
+            <div>
+              <label>
+                Save as:&nbsp;
+                <input
+                  type="text"
+                  onChange={e => setCacheFileName(e.target.value)}
+                  placeholder={defaultCacheFile}
+                ></input>
+              </label>
+            </div>
 
-          <div>
-            <button onClick={() => handleSaveCache(true)}>Save</button>
-            <button onClick={() => handleSaveCache(false)}>Save</button>
+            <div>
+              <button onClick={() => handleSaveCache(true)}>Save</button>
+              <button onClick={() => handleSaveCache(false)}>Delete</button>
+            </div>
           </div>
         </div>
       )}
