@@ -174,17 +174,18 @@ function FormSteps({
 
       {showCachePopUp && (
         <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>Cache File Options</h3>
-            <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
-
+    
             {!showSaveInput ? (
-              <div className="popup-actions">
-                <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
-                <button type="button" onClick={() => handleSaveCache(false)}>Delete</button>
+              <div className="popup-content">
+                <h3>Cache File Options</h3>
+                <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
+                <div className="popup-actions">
+                  <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
+                  <button type="button" onClick={() => handleSaveCache(false)}>Delete</button>
+                </div>
               </div>
             ) : (
-              <>
+              <div className="popup-content">
                 <div>
                   <label>
                     Save as:&nbsp;
@@ -200,9 +201,9 @@ function FormSteps({
                   <button type="button" onClick={() => handleSaveCache(true)}>Confirm</button>
                   <button type="button" onClick={() => setShowSaveInput(false)} >Cancel</button>
                 </div>
-              </>
+              </div>
             )}       
-          </div>
+          
         </div>
       )}
     </div>
