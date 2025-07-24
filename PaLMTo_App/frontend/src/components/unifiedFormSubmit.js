@@ -36,8 +36,32 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     // Handler of cache popup window
     const handleSaveCache = async (save) => {
         if (save) {
-            const newName = cacheFileName.trim() 
+            const newName = cacheFileName.trim() || defaultCacheFile
+            if (newName != defaultCacheFile) {
+                await axios.post('trajectory/rename_cache/', {
+                    old_name: defaultCacheFile,
+                    new_name: newName
+                });
+
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: newName
+                }));
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: defaultCacheFile
+                }));
+            }
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                cache_file: defaultCacheFile,
+                delete_cache_after: true
+            }));
         }
+        setShowCachePopup(false);
+        setCurrentStep(3);
     }
 
     // Function to handle SSE progress updates
@@ -60,12 +84,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
                 setShowCachePopup(true);
                 setDefaultCacheFile(data.cache_file);
-
-                // Update form data with returned cache file
-                setFormData(prev => ({
-                    ...prev,
-                    cache_file: data.cache_file
-                }));
 
                 setNotification({
                     type: 'success',
