@@ -180,8 +180,8 @@ function FormSteps({
 
             {!showSaveInput ? (
               <div className="popup-actions">
-                <button onClick={() => setShowSaveInput(true)}>Save</button>
-                <button onClick={() => handleSaveCache(false)}>Delete</button>
+                <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
+                <button type="button" onClick={() => handleSaveCache(false)}>Delete</button>
               </div>
             ) : (
               <>
@@ -197,8 +197,8 @@ function FormSteps({
                 </div>
 
                 <div className="popup-actions">
-                  <button onClick={() => handleSaveCache(true)}>Confirm</button>
-                  <button onClick={setShowSaveInput(false)} >Cancel</button>
+                  <button type="button" onClick={() => handleSaveCache(true)}>Confirm</button>
+                  <button type="button" onClick={setShowSaveInput(false)} >Cancel</button>
                 </div>
               </>
             )}       
