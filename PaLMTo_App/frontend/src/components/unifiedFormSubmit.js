@@ -4,34 +4,34 @@ import axios from "axios";
 function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     setGeneratedFileName, setVisualData, setHeatmapData, setFormData) {
     // State variable for notification message
-  const [notification, setNotification] = useState(null);
+    const [notification, setNotification] = useState(null);
 
-  // State variable for loading status
-  const [isLoading, setIsLoading] = useState(false);
+    // State variable for loading status
+    const [isLoading, setIsLoading] = useState(false);
 
-  // State variable for current progress
-  const [progress, setProgress] = useState(0);
+    // State variable for current progress
+    const [progress, setProgress] = useState(0);
 
-  // State variable for progress message
-  const [progressMessage, setProgressMessage] = useState(''); 
+    // State variable for progress message
+    const [progressMessage, setProgressMessage] = useState(''); 
 
-  // State variable for showing cache popup window
-  const [showPopUp, setShowCachePopup] = useState(false);
+    // State variable for showing cache popup window
+    const [showPopUp, setShowCachePopup] = useState(false);
 
-  // State variable for cache file name
-  const [cacheFileName, setCacheFileName] = useState('');
+    // State variable for cache file name
+    const [cacheFileName, setCacheFileName] = useState('');
 
-  // Handler of API calls
-  const submitFormData = async (endpoint, payload) => {
+    // Handler of API calls
+    const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
     });
-  };
+    };
 
-  // Function to handle SSE progress updates
-  const handleProgressUpdates = (taskId) => {
+    // Function to handle SSE progress updates
+    const handleProgressUpdates = (taskId) => {
     const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
 
     // Listen for messages
@@ -90,10 +90,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     };
 
     return eventSource;
-  }
+    }
 
-  // Main entry for processing form and response
-  const handleUnifiedSubmit = async (e, currentStep) => {
+    // Main entry for processing form and response
+    const handleUnifiedSubmit = async (e, currentStep) => {
     e.preventDefault();
 
     if (currentStep === 1) {
@@ -148,7 +148,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     setNotification({
                         type: 'success',
                         message: 'Trajectories generated successfully!'
-                      });
+                        });
                 }, 1000);
                 setIsLoading(false);
             }
@@ -157,15 +157,15 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         setNotification({
             type: 'error',
             message: currentStep === 2
-              ? 'Failed to create ngram dictionaries. Please try again.'
-              : 'Failed to generate trajectories. Please try again.'
+                ? 'Failed to create ngram dictionaries. Please try again.'
+                : 'Failed to generate trajectories. Please try again.'
         });
         setIsLoading(false);
     }
 
-   };
+    };
 
-   return {
+    return {
     handleUnifiedSubmit,
     notification,
     isLoading,
