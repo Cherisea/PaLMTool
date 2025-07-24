@@ -69,6 +69,15 @@
   width: auto;
 }
 
+.danger-button {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.danger-button:hover {
+  background-color: #c0392b;
+}
+
 .stat-item {
   display: flex;
   justify-content: space-between;

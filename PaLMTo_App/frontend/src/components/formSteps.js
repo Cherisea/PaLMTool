@@ -181,7 +181,7 @@ function FormSteps({
                 <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
                 <div className="popup-actions">
                   <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
-                  <button type="button" onClick={() => handleSaveCache(false)}>Delete</button>
+                  <button type="button" className="danger-button" onClick={() => handleSaveCache(false)}>Delete</button>
                 </div>
               </div>
             ) : (
@@ -197,7 +197,7 @@ function FormSteps({
 
                 <div className="popup-actions">
                   <button type="button" onClick={() => handleSaveCache(true)}>Confirm</button>
-                  <button type="button" onClick={() => setShowSaveInput(false)} >Cancel</button>
+                  <button type="button" className="danger-button" onClick={() => setShowSaveInput(false)} >Cancel</button>
                 </div>
               </div>
             )}       
