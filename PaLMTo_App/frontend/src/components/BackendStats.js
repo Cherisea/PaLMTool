@@ -30,7 +30,7 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
           </div>
 
           <div className="stat-item">
-            <span className="stat-label">Total Coordinate Pairs:</span>
+            <span className="stat-label">Coordinate Points Processed:</span>
             <span className="stat-value">{stats.totalPairs.toLocaleString()}</span>
           </div>
         </div>
