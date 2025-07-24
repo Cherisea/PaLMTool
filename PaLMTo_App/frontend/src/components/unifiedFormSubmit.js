@@ -67,7 +67,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     cache_file: data.cache_file
                 }));
 
-                setCurrentStep(3);
                 setNotification({
                     type: 'success',
                     message: data.message
@@ -185,7 +184,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     setNotification,
     showPopUp,
     setCacheFileName,
-    handleSaveCache
+    handleSaveCache,
+    defaultCacheFile
    };
 
 }

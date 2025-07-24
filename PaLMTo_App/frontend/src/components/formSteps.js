@@ -15,7 +15,8 @@ function FormSteps({
   progressMessage,
   showPopUp,
   setCacheFileName,
-  handleSaveCache
+  handleSaveCache,
+  defaultCacheFile
 }) {
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
@@ -181,7 +182,7 @@ function FormSteps({
               <input
                 type="text"
                 onChange={e => setCacheFileName(e.target.value)}
-                placeholder="Type name of file to save"
+                placeholder={defaultCacheFile}
               ></input>
             </label>
           </div>

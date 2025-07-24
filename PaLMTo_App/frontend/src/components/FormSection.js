@@ -38,7 +38,8 @@ function FormSection({
     setNotification,
     showPopUp,
     setCacheFileName,
-    handleSaveCache
+    handleSaveCache,
+    defaultCacheFile
   } = UnifiedFormSubmit(
     formData, setCurrentStep, 
     setShowStats, setStatsData,
@@ -127,6 +128,7 @@ function FormSection({
             showPopUp={showPopUp}
             setCacheFileName={setCacheFileName}
             handleSaveCache={handleSaveCache}
+            defaultCacheFile={defaultCacheFile}
           />
         </form>
       </div>
