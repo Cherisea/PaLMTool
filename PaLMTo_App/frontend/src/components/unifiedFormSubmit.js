@@ -21,6 +21,9 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     // State variable for cache file name
     const [cacheFileName, setCacheFileName] = useState('');
 
+    // State variable for default cache file from backend
+    const [defaultCacheFile, setDefaultCacheFile] = useState('');
+
     // Handler of API calls
     const submitFormData = async (endpoint, payload) => {
     return await axios.post(endpoint, payload, {
@@ -29,6 +32,13 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         }
     });
     };
+
+    // Handler of cache popup window
+    const handleSaveCache = async (save) => {
+        if (save) {
+            const newName = cacheFileName.trim() 
+        }
+    }
 
     // Function to handle SSE progress updates
     const handleProgressUpdates = (taskId) => {
@@ -49,6 +59,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 setShowStats(true);
 
                 setShowCachePopup(true);
+                setDefaultCacheFile(data.cache_file);
 
                 // Update form data with returned cache file
                 setFormData(prev => ({
