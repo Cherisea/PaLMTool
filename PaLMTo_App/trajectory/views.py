@@ -37,6 +37,8 @@ from .geo_process import extract_boundary, traj_to_geojson, extract_area_center,
 
 # Holds statistics related to trajectory generation
 STATS = {}
+
+# A global queue for holding progress messages
 PROGRESS_QUEUES = {}
 
 class GenerationConfigView(APIView):
