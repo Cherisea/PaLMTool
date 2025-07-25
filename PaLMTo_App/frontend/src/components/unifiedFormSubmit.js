@@ -57,15 +57,11 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
             if (newName != defaultCacheFile) {
-                const csrftoken = getCookie('csrftoken');
-                const response = await axios.post('trajectory/rename-cache/', {
-                    old_name: defaultCacheFile,
-                    new_name: newName
-                }, {
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    }
-                });
+                // const csrftoken = getCookie('csrftoken');
+                const formData = new FormData;
+                formData.append('old_name', defaultCacheFile);
+                formData.append('new_name', newName)
+                const response = await submitFormData('trajectory/rename-cache/', formData);
 
                 if (response.status == 200) {
                     setNotification({

@@ -692,12 +692,8 @@ def rename_cache(request):
     if request.method != "POST": 
         return HttpResponse(f"Request method {request.method} not supported.", status=405)
     
-    try:
-        data = json.loads(request.body)
-        old_name = data.get('old_name')
-        new_name = data.get('new_name') + '.pkl'
-    except Exception as e:
-        HttpResponse(f"Invalid request data: {str(e)}", status=400)
+    old_name = request.get('old_name')
+    new_name = request.get('new_name')
 
 
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
