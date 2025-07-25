@@ -189,6 +189,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
             }
+
+            if (formData.delete_cache_after) {
+                payload.append("delete_cache_after", "true")
+            }
             setIsLoading(true);
         }
 
