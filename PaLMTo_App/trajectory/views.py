@@ -67,6 +67,7 @@ class GenerationConfigView(APIView):
         heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
                                                     study_area, int(data["num_trajectories"]))
         
+        self.delete_cache_file(data)
         return Response({'id': uploaded.id,
                          'visualization': visual_data,
                          'heatmap': heatmap_data,
@@ -260,6 +261,23 @@ class GenerationConfigView(APIView):
                 'center': center,
                 'bounds': [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]  # [[miny, minx], [maxy, maxx]]
             }
+
+    def delete_cache_file(self, data):
+        """Handles cache file after session is over.
+        
+        Cache file is deleted is "delete_cache_after" flag is set. Otherwise, keep it in disk.
+        """
+        delete = data.get('delete_cache_after')
+        cache_file = data.get('cache_file')
+
+        if delete == "true" and cache_file:
+            cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
+            cache_path = os.path.join(cache_dir, cache_file)
+            if os.path.exists(cache_path):
+                try:
+                    os.remove(cache_path)
+                except Exception as e:
+                    pass
 
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
