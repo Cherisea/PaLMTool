@@ -113,7 +113,7 @@ const  MapMatchingMap = ({ title, data, center, onDownload, perc, bounce }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, onDownload, numTrajs }) 
+  heatmapData, generatedFileName, numTrajs }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -138,6 +138,16 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Declare a state variable for hovering state of a snapshot
   const [hovered, setHovered] = useState(null);
+
+  // Declare a state variable for showing "save as" window
+  const [showSaveAsModal, setShowSaveAsModal] = useState(false);
+  
+  // Declare a state variable for new file name
+  const [saveAsFilename, setSaveAsFilename] = useState('');
+
+  // Declare a state variable for current file name
+  const [pendingDownloadFile, setPendingDownloadFile] = useState('');
+
 
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
@@ -298,6 +308,30 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     layer.bindPopup(`Count: ${feature.properties.count}`);
   };
 
+  // Handle download requests with user-specified filenames
+  const handleSaveAsDownload = async () => {
+    if (!pendingDownloadFile) return;
+
+    const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${pendingDownloadFile}`
+    const response = await axios.get(downloadUrl, {responseType: 'blob'});
+
+    // Create a temporary browser url that points to blob file
+    const url = window.URL.createObjectURL(response.data);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = saveAsFilename || pendingDownloadFile;
+    document.body.appendChild(a)
+
+    // Start download
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    setShowSaveAsModal(false);
+
+  }
+
   // Show default view if a response hasn't been received 
   if (!visualData) {
     return (
@@ -370,7 +404,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               title="Map-matched Trajectories"
               data={mapMatchData}
               center={visualData.center}
-              onDownload={() => onDownload(matchedTrajFile)}
+              onDownload={() => {
+                setPendingDownloadFile(matchedTrajFile);
+                setSaveAsFilename(matchedTrajFile);
+                setShowSaveAsModal(true);
+              }}
               perc={mapMatchPerc}
               bounce={bounceDownload}
             />
@@ -401,12 +439,35 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="red"
             showDownload={true}
-            onDownload={() => onDownload(generatedFileName)}
+            onDownload={() => {
+              setPendingDownloadFile(generatedFileName);
+              setSaveAsFilename(generatedFileName);
+              setShowSaveAsModal(true);
+            }}
             bounce={bounceDownload}
           />
         </div>
       )}
       <ViewSnapshots />
+
+      {showSaveAsModal && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Save As</h3>
+            <input 
+              type='text'
+              value={saveAsFilename}
+              onChange={e => setSaveAsFilename(e.target.value)}
+              placeholder={pendingDownloadFile}
+            />
+
+            <div className="popup-actions">
+              <button type="button" onClick={handleSaveAsDownload}>Confirm</button>
+              <button type="button" className="danger-button" onClick={() => setShowSaveAsModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
