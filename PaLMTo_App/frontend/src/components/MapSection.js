@@ -401,7 +401,10 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               title="Map-matched Trajectories"
               data={mapMatchData}
               center={visualData.center}
-              onDownload={() => onDownload(matchedTrajFile)}
+              onDownload={() => {
+                setSaveAsFilename(matchedTrajFile);
+                setShowSaveAsModal(true);
+              }}
               perc={mapMatchPerc}
               bounce={bounceDownload}
             />
@@ -432,7 +435,10 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="red"
             showDownload={true}
-            onDownload={() => onDownload(generatedFileName)}
+            onDownload={() => {
+              setSaveAsFilename(generatedFileName);
+              setShowSaveAsModal(true);
+            }}
             bounce={bounceDownload}
           />
         </div>
