@@ -312,7 +312,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   const handleSaveAsDownload = async () => {
     if (!pendingDownloadFile) return;
 
-    const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${pendingFile}`
+    const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${pendingDownloadFile}`
     const response = await axios.get(downloadUrl, {responseType: 'blob'});
 
     // Create a temporary browser url that points to blob file
