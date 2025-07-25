@@ -45,6 +45,7 @@ function App() {
     locationCoordinates: null,  
     file: null,
     cache_file: null,
+    delete_cache_after: false
   })
 
   // Declare a state variable for center of map
