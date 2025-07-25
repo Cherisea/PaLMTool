@@ -444,6 +444,25 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         </div>
       )}
       <ViewSnapshots />
+
+      {showSaveAsModal && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Save As</h3>
+            <input 
+              type='text'
+              value={saveAsFilename}
+              onChange={e => setSaveAsFilename(e.target.value)}
+              placeholder=""
+            />
+
+            <div className="popup-actions">
+              <button type="button" onClick={handleSaveAsDownload}>Confirm</button>
+              <button type="button" className="danger-button" onClick={setShowSaveAsModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
