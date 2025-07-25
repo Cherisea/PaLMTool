@@ -44,10 +44,11 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
 
     // Handler of API calls
-    const submitFormData = async (endpoint, payload) => {
+    const submitFormData = async (endpoint, payload, csrftoken) => {
     return await axios.post(endpoint, payload, {
         headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrftoken
         }
     });
     };
@@ -57,11 +58,11 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
             if (newName != defaultCacheFile) {
-                // const csrftoken = getCookie('csrftoken');
+                const csrftoken = getCookie('csrftoken');
                 const formData = new FormData;
                 formData.append('old_name', defaultCacheFile);
                 formData.append('new_name', newName)
-                const response = await submitFormData('trajectory/rename-cache/', formData);
+                const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
 
                 if (response.status == 200) {
                     setNotification({
@@ -192,7 +193,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         }
 
         if (endpoint && payload) {
-            const response = await submitFormData(endpoint, payload);
+            const csrftoken = getCookie('csrftoken');
+            const response = await submitFormData(endpoint, payload, csrftoken);
 
             if (currentStep === 2) {
                 // Initiate progress updates listener
