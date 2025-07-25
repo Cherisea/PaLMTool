@@ -139,6 +139,13 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for hovering state of a snapshot
   const [hovered, setHovered] = useState(null);
 
+  // Declare a state variable for showing "save as" window
+  const [showSaveAsModal, setShowSaveAsModal] = useState(false);
+  
+  // Declare a state variable for new file name
+  const [saveAsFilename, setSaveAsFilename] = useState('');
+
+
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
     setMapMatchLoading(true);
@@ -297,6 +304,30 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   const onEachFeature = (feature, layer) => {
     layer.bindPopup(`Count: ${feature.properties.count}`);
   };
+
+  // Handle download requests with user-specified filenames
+  const handleSaveAsDownload = async (pendingFile) => {
+    if (!pendingFile) return;
+
+    const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${pendingFile}`
+    const response = await axios.get(downloadUrl, {responseType: 'blob'});
+
+    // Create a temporary browser url that points to blob file
+    const url = window.URL.createObjectURL(response.data);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = saveAsFilename || pendingFile;
+    document.body.appendChild(a)
+
+    // Start download
+    a.click();
+
+    a.remove;
+    window.URL.revokeObjectURL(url);
+    setShowSaveAsModal(false);
+
+  }
 
   // Show default view if a response hasn't been received 
   if (!visualData) {
