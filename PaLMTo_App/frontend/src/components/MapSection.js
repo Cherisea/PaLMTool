@@ -145,6 +145,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for new file name
   const [saveAsFilename, setSaveAsFilename] = useState('');
 
+  // Declare a state variable for current file name
+  const [pendingDownloadFile, setPendingDownloadFile] = useState('');
+
 
   // ? Consider moving data fetching logic to a separate script
   const fetchMapMatchingData = useCallback(async (percentage) => {
@@ -306,8 +309,8 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   };
 
   // Handle download requests with user-specified filenames
-  const handleSaveAsDownload = async (pendingFile) => {
-    if (!pendingFile) return;
+  const handleSaveAsDownload = async () => {
+    if (!pendingDownloadFile) return;
 
     const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${pendingFile}`
     const response = await axios.get(downloadUrl, {responseType: 'blob'});
@@ -317,7 +320,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     const a = document.createElement('a');
 
     a.href = url;
-    a.download = saveAsFilename || pendingFile;
+    a.download = saveAsFilename || pendingDownloadFile;
     document.body.appendChild(a)
 
     // Start download
@@ -402,6 +405,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               data={mapMatchData}
               center={visualData.center}
               onDownload={() => {
+                setPendingDownloadFile(matchedTrajFile);
                 setSaveAsFilename(matchedTrajFile);
                 setShowSaveAsModal(true);
               }}
@@ -436,6 +440,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             color="red"
             showDownload={true}
             onDownload={() => {
+              setPendingDownloadFile(generatedFileName);
               setSaveAsFilename(generatedFileName);
               setShowSaveAsModal(true);
             }}
@@ -453,7 +458,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
               type='text'
               value={saveAsFilename}
               onChange={e => setSaveAsFilename(e.target.value)}
-              placeholder=""
+              placeholder={pendingDownloadFile}
             />
 
             <div className="popup-actions">
