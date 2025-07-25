@@ -326,7 +326,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     // Start download
     a.click();
 
-    a.remove;
+    a.remove();
     window.URL.revokeObjectURL(url);
     setShowSaveAsModal(false);
 
