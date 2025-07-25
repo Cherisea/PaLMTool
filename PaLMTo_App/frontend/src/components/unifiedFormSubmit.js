@@ -42,15 +42,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         return cookieValue;
     }
 
-
     // Handler of API calls
     const submitFormData = async (endpoint, payload, csrftoken) => {
-    return await axios.post(endpoint, payload, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-            'X-CSRFToken': csrftoken
-        }
-    });
+        return await axios.post(endpoint, payload, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'X-CSRFToken': csrftoken
+            }
+        });
     };
 
     // Handler of cache popup window
@@ -73,15 +72,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     setFormData(prev => ({
                         ...prev,
                         cache_file: newName
-                    }))
+                    }));
                 } else {
                     setNotification({
                         type: 'error',
                         message: response.data
-                    })
+                    });
                 }
 
-                ;
             } else {
                 setFormData(prev => ({
                     ...prev,
@@ -101,149 +99,149 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
     // Function to handle SSE progress updates
     const handleProgressUpdates = (taskId) => {
-    const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
+        const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
 
-    // Listen for messages
-    eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+        // Listen for messages
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
 
-        switch (data.type) {
-            case 'progress':
-                setProgress(data.progress);
-                setProgressMessage(data.message);
-                break;
-            case 'complete':
-                setProgress(100);
-                setStatsData(data.stats);
-                setShowStats(true);
+            switch (data.type) {
+                case 'progress':
+                    setProgress(data.progress);
+                    setProgressMessage(data.message);
+                    break;
+                case 'complete':
+                    setProgress(100);
+                    setStatsData(data.stats);
+                    setShowStats(true);
 
-                setDefaultCacheFile(data.cache_file);
+                    setDefaultCacheFile(data.cache_file);
 
-                setNotification({
-                    type: 'success',
-                    message: data.message
-                });
+                    setNotification({
+                        type: 'success',
+                        message: data.message
+                    });
 
-                setIsLoading(false);
-                eventSource.close();
-                break;
-            case 'error':
-                setNotification({
-                    type: 'error',
-                    message: data.message
-                });
-                eventSource.close();
-                break;
-            case 'keepalive':
-                break;
-            default:
-                console.log('Unknown event type:', data.type);
-        }
-    };
+                    setIsLoading(false);
+                    eventSource.close();
+                    break;
+                case 'error':
+                    setNotification({
+                        type: 'error',
+                        message: data.message
+                    });
+                    eventSource.close();
+                    break;
+                case 'keepalive':
+                    break;
+                default:
+                    console.log('Unknown event type:', data.type);
+            }
+        };
 
-    // Listen for errors 
-    eventSource.onerror = (error) => {
-        console.error('EventSource failed:', error);
-        setNotification({
-            type: 'error',
-            message: 'Connection to progress stream failed'
-        });
-        eventSource.close();
-    };
+        // Listen for errors 
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            setNotification({
+                type: 'error',
+                message: 'Connection to progress stream failed'
+            });
+            eventSource.close();
+        };
 
-    return eventSource;
+        return eventSource;
     }
 
     // Main entry for processing form and response
     const handleUnifiedSubmit = async (e, currentStep) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    if (currentStep === 1) {
-        setCurrentStep(2)
-        return;
-    }
+        if (currentStep === 1) {
+            setCurrentStep(2)
+            return;
+        }
 
-    try {
-        let endpoint, payload;
-        payload = new FormData();
+        try {
+            let endpoint, payload;
+            payload = new FormData();
 
-        // Build ngram dict only in step 2 and if csv file is uploaded
-        if (currentStep === 2) {
-            if (!!formData.cache_file) {
-                setCurrentStep(3);
-                setIsLoading(false);
-                return;
-            } else {
-                endpoint = '/trajectory/generate/ngrams';
-                payload.append("cell_size", formData.cell_size);
-                payload.append("file", formData.file);
+            // Build ngram dict only in step 2 and if csv file is uploaded
+            if (currentStep === 2) {
+                if (!!formData.cache_file) {
+                    setCurrentStep(3);
+                    setIsLoading(false);
+                    return;
+                } else {
+                    endpoint = '/trajectory/generate/ngrams';
+                    payload.append("cell_size", formData.cell_size);
+                    payload.append("file", formData.file);
+                    setIsLoading(true);
+                }
+                
+            } else if (currentStep === 3) {
+                endpoint = '/trajectory/generate/';
+                payload.append("num_trajectories", formData.num_trajectories);
+                payload.append("generation_method", formData.generation_method);
+                payload.append("cache_file", formData.cache_file);
+
+                if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
+                    payload.append("trajectory_len", formData.trajectory_len);
+                }
+
+                if (formData.delete_cache_after) {
+                    payload.append("delete_cache_after", "true")
+                }
                 setIsLoading(true);
             }
-            
-        } else if (currentStep === 3) {
-            endpoint = '/trajectory/generate/';
-            payload.append("num_trajectories", formData.num_trajectories);
-            payload.append("generation_method", formData.generation_method);
-            payload.append("cache_file", formData.cache_file);
 
-            if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
-                payload.append("trajectory_len", formData.trajectory_len);
-            }
+            if (endpoint && payload) {
+                const csrftoken = getCookie('csrftoken');
+                const response = await submitFormData(endpoint, payload, csrftoken);
 
-            if (formData.delete_cache_after) {
-                payload.append("delete_cache_after", "true")
+                if (currentStep === 2) {
+                    // Initiate progress updates listener
+                    const taskId = response.data.task_id;
+                    handleProgressUpdates(taskId);
+                } else if (currentStep === 3) {
+                    setProgress(100);
+                    const generatedFile = response.data.generated_file;
+                    setGeneratedFileName(generatedFile);
+                    setVisualData(response.data.visualization);
+                    setHeatmapData(response.data.heatmap);
+
+                    setTimeout(() => {
+                        setNotification({
+                            type: 'success',
+                            message: 'Trajectories generated successfully!'
+                            });
+                    }, 1000);
+                    setIsLoading(false);
+                }
             }
-            setIsLoading(true);
+        } catch (error) {
+            setNotification({
+                type: 'error',
+                message: currentStep === 2
+                    ? 'Failed to create ngram dictionaries. Please try again.'
+                    : 'Failed to generate trajectories. Please try again.'
+            });
+            setIsLoading(false);
         }
-
-        if (endpoint && payload) {
-            const csrftoken = getCookie('csrftoken');
-            const response = await submitFormData(endpoint, payload, csrftoken);
-
-            if (currentStep === 2) {
-                // Initiate progress updates listener
-                const taskId = response.data.task_id;
-                handleProgressUpdates(taskId);
-            } else if (currentStep === 3) {
-                setProgress(100);
-                const generatedFile = response.data.generated_file;
-                setGeneratedFileName(generatedFile);
-                setVisualData(response.data.visualization);
-                setHeatmapData(response.data.heatmap);
-
-                setTimeout(() => {
-                    setNotification({
-                        type: 'success',
-                        message: 'Trajectories generated successfully!'
-                        });
-                }, 1000);
-                setIsLoading(false);
-            }
-        }
-    } catch (error) {
-        setNotification({
-            type: 'error',
-            message: currentStep === 2
-                ? 'Failed to create ngram dictionaries. Please try again.'
-                : 'Failed to generate trajectories. Please try again.'
-        });
-        setIsLoading(false);
-    }
 
     };
 
     return {
-    handleUnifiedSubmit,
-    notification,
-    isLoading,
-    progress,
-    progressMessage,
-    setNotification,
-    showCachePopUp,
-    setCacheFileName,
-    handleSaveCache,
-    defaultCacheFile,
-    setShowCachePopup
+        handleUnifiedSubmit,
+        notification,
+        isLoading,
+        progress,
+        progressMessage,
+        setNotification,
+        showCachePopUp,
+        setCacheFileName,
+        handleSaveCache,
+        defaultCacheFile,
+        setShowCachePopup
    };
 
 }
