@@ -26,7 +26,7 @@ import json
 import threading
 import requests
 import pandas as pd
-from queue import Queue
+from queue import Queue, Empty
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 
@@ -37,6 +37,8 @@ from .geo_process import extract_boundary, traj_to_geojson, extract_area_center,
 
 # Holds statistics related to trajectory generation
 STATS = {}
+
+# A global queue for holding progress messages
 PROGRESS_QUEUES = {}
 
 class GenerationConfigView(APIView):
@@ -67,6 +69,7 @@ class GenerationConfigView(APIView):
         heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
                                                     study_area, int(data["num_trajectories"]))
         
+        self.delete_cache_file(data)
         return Response({'id': uploaded.id,
                          'visualization': visual_data,
                          'heatmap': heatmap_data,
@@ -261,6 +264,23 @@ class GenerationConfigView(APIView):
                 'bounds': [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]  # [[miny, minx], [maxy, maxx]]
             }
 
+    def delete_cache_file(self, data):
+        """Handles cache file after session is over.
+        
+        Cache file is deleted is "delete_cache_after" flag is set. Otherwise, keep it in disk.
+        """
+        delete = data.get('delete_cache_after')
+        cache_file = data.get('cache_file')
+
+        if delete == "true" and cache_file:
+            cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
+            cache_path = os.path.join(cache_dir, cache_file)
+            if os.path.exists(cache_path):
+                try:
+                    os.remove(cache_path)
+                except Exception as e:
+                    pass
+
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
@@ -342,7 +362,6 @@ class NgramGenerationView(APIView):
                 'created_at': datetime.now().isoformat()
             }
 
-            # Save cache file
             queue.put({
                 'type': 'progress',
                 'message': 'Saving cache file',
@@ -374,6 +393,10 @@ class NgramGenerationView(APIView):
             
     def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
+
+        Args:
+            queue(queue.Queue): thread-safe FIFO queue object for passing info between background 
+                thread and SSE view.
         """
         global STATS
 
@@ -403,6 +426,7 @@ class NgramGenerationView(APIView):
             grid, sentence_df = TokenCreator.create_tokens()
         content = f.getvalue()
         STATS["cellsCreated"] = int(content.strip().split(":")[1])
+        STATS["totalPairs"] = int(df['geometry'].apply(len).sum())
 
         queue.put({
             'type': 'progress',
@@ -626,7 +650,7 @@ class ProgressView(View):
                         else:
                             yield f"data: {json.dumps(progress_data)}\n\n"
                     
-                    except Queue.Empty:
+                    except Empty:
                         yield f"data: {json.dumps({'type': 'keepalive'})}\n\n"
             
             except Exception as e:
@@ -673,3 +697,36 @@ def download_files(request, filename):
     else:
         return HttpResponse("File not found", status=404)
 
+def rename_cache(request):
+    """Rename a cache file in the cache subdir.
+
+    Args:
+        request(rest_framework.request.Request): required for Django view
+        old_name: default system_assigned cache file name
+        new_name: user-specified cache file name
+
+    Returns:
+        HttpResponse: 200 if successful, 404 if file not found, 400 if errors, 405 if method not allowed.
+    
+    """
+    if request.method != "POST": 
+        return HttpResponse(f"Request method {request.method} not supported.", status=405)
+    
+    old_name = request.POST.get('old_name')
+    new_name = request.POST.get('new_name') + '.pkl'
+
+
+    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
+    old_path = os.path.join(cache_dir, old_name)
+    new_path = os.path.join(cache_dir, new_name)
+    if not os.path.exists(old_path):
+        return HttpResponse(f"File {old_name} not found.", status=404)
+    
+    if os.path.exists(new_path):
+        return HttpResponse(f"File {new_name} already exists.", status=400)
+    
+    try:
+        os.rename(old_path, new_path)
+        return HttpResponse(f"Renamed {old_name} to {new_name}.", status=200)
+    except Exception as e:
+        return HttpResponse(f"Error renaming file: {str(e)}", status=400)

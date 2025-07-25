@@ -19,7 +19,7 @@ function DocLinks() {
              Library
           </a>
 
-          <a href="https://www.researchgate.net/publication/385347801_Realistic_Trajectory_Generation_using_Simple_Probabilistic_Language_Models" 
+          <a href="https://dl.acm.org/doi/10.1145/3681770.3698572" 
              target="_blank" 
              rel="noopener noreferrer" 
              className="doc-link"

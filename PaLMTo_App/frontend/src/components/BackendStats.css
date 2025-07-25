@@ -12,87 +12,107 @@
     animation: fadeIn 0.3s ease-out;
   }
   
-  .popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 90%;
-    animation: slideIn 0.3s ease-out;
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
+  animation: slideIn 0.3s ease-out;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.popup-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 1px 5px;
+  width: auto;
+  margin: 0;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.popup-actions {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+
+.popup-actions button {
+  width: auto;
+}
+
+.danger-button {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.danger-button:hover {
+  background-color: #c0392b;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.stat-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.stat-value {
+  color: #333;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+  to {
+    opacity: 1;
   }
-  
-  .popup-header h3 {
-    margin: 0;
-    color: #333;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
   }
-  
-  .close-button {
-    background: none;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    color: #666;
-    cursor: pointer;
-    padding: 1px 5px;
-    width: auto;
-    margin: 0;
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  .close-button:hover {
-    color: #333;
-  }
-  
-  .popup-body {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-  }
-  
-  .stat-label {
-    font-weight: 600;
-    color: #555;
-  }
-  
-  .stat-value {
-    color: #333;
-    font-weight: 500;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideIn {
-    from {
-      transform: translateY(-20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
+}

@@ -1,4 +1,5 @@
 import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
+import { useState } from "react";
 
 function FormSteps({ 
   currentStep,
@@ -12,8 +13,14 @@ function FormSteps({
   isCacheDragActive,
   isLoading,
   progress,
-  progressMessage
+  progressMessage,
+  showCachePopUp,
+  setCacheFileName,
+  handleSaveCache,
+  defaultCacheFile
 }) {
+  const [showSaveInput, setShowSaveInput] = useState(false);
+
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
     <div className="step-content">
@@ -85,7 +92,7 @@ function FormSteps({
                   (<p>Drop the file here ...</p>) : 
                   formData.file ? 
                     (<p>{formData.file.name}</p>) : 
-                    (<p>Sample Trajectory</p>)
+                    (<p>Sample Trajectories</p>)
               }
             </div>
           </div>
@@ -109,14 +116,14 @@ function FormSteps({
                   (<p>Drop the file here ...</p>) : 
                   formData.cache_file ? 
                     (<p>{formData.cache_file.name}</p>) : 
-                    (<p>Ngram Dictionary</p>)
+                    (<p>Ngram Dictionaries</p>)
               }
             </div>
           </div>
         </div>
         <p className="note">
           <i>
-            Note: Use <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a>
+            Note: Download <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo.csv`} download>demo trajectory file</a>
              {' '}or <a href={`${process.env.REACT_APP_API_URL}/trajectory/download/demo_cache.pkl`} download>demo ngram file</a>
              {' '}to jump start.
           </i>
@@ -164,6 +171,39 @@ function FormSteps({
         </div>
         )}
       </div>
+
+      {showCachePopUp && (
+        <div className="popup-overlay">
+    
+            {!showSaveInput ? (
+              <div className="popup-content">
+                <h3>Cache File Options</h3>
+                <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
+                <div className="popup-actions">
+                  <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
+                  <button type="button" className="danger-button" onClick={() => handleSaveCache(false)}>Delete</button>
+                </div>
+              </div>
+            ) : (
+              <div className="popup-content">
+                <div>
+                  <h3>Save As</h3>
+                    <input
+                      type="text"
+                      onChange={e => setCacheFileName(e.target.value)}
+                      placeholder={defaultCacheFile}
+                    ></input>
+                </div>
+
+                <div className="popup-actions">
+                  <button type="button" onClick={() => handleSaveCache(true)}>Confirm</button>
+                  <button type="button" className="danger-button" onClick={() => setShowSaveInput(false)} >Cancel</button>
+                </div>
+              </div>
+            )}       
+          
+        </div>
+      )}
     </div>
   );
 

@@ -4,28 +4,103 @@ import axios from "axios";
 function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     setGeneratedFileName, setVisualData, setHeatmapData, setFormData) {
     // State variable for notification message
-  const [notification, setNotification] = useState(null);
+    const [notification, setNotification] = useState(null);
 
-  // State variable for loading status
-  const [isLoading, setIsLoading] = useState(false);
+    // State variable for loading status
+    const [isLoading, setIsLoading] = useState(false);
 
-  // State variable for current progress
-  const [progress, setProgress] = useState(0);
+    // State variable for current progress
+    const [progress, setProgress] = useState(0);
 
-  // State variable for progress message
-  const [progressMessage, setProgressMessage] = useState(''); 
+    // State variable for progress message
+    const [progressMessage, setProgressMessage] = useState(''); 
 
-  // Handler of API calls
-  const submitFormData = async (endpoint, payload) => {
+    // State variable for showing cache popup window
+    const [showCachePopUp, setShowCachePopup] = useState(false);
+
+    // State variable for cache file name
+    const [cacheFileName, setCacheFileName] = useState('');
+
+    // State variable for default cache file from backend
+    const [defaultCacheFile, setDefaultCacheFile] = useState('');
+
+    // Get CSRF token from a session
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+
+            for (let i=0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    }
+
+
+    // Handler of API calls
+    const submitFormData = async (endpoint, payload, csrftoken) => {
     return await axios.post(endpoint, payload, {
         headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrftoken
         }
     });
-  };
+    };
 
-  // Function to handle SSE progress updates
-  const handleProgressUpdates = (taskId) => {
+    // Handler of cache popup window
+    const handleSaveCache = async (save) => {
+        if (save) {
+            const newName = cacheFileName.trim() || defaultCacheFile
+            if (newName != defaultCacheFile) {
+                const csrftoken = getCookie('csrftoken');
+                const formData = new FormData;
+                formData.append('old_name', defaultCacheFile);
+                formData.append('new_name', newName)
+                const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
+
+                if (response.status == 200) {
+                    setNotification({
+                        type: 'success',
+                        message: response.data
+                    })
+
+                    setFormData(prev => ({
+                        ...prev,
+                        cache_file: newName
+                    }))
+                } else {
+                    setNotification({
+                        type: 'error',
+                        message: response.data
+                    })
+                }
+
+                ;
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: defaultCacheFile
+                }));
+            }
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                cache_file: defaultCacheFile,
+                delete_cache_after: true
+            }));
+        }
+        setShowCachePopup(false);
+        setCurrentStep(3);
+    }
+
+    // Function to handle SSE progress updates
+    const handleProgressUpdates = (taskId) => {
     const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
 
     // Listen for messages
@@ -42,13 +117,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 setStatsData(data.stats);
                 setShowStats(true);
 
-                // Update form data with returned cache file
-                setFormData(prev => ({
-                    ...prev,
-                    cache_file: data.cache_file
-                }));
+                setDefaultCacheFile(data.cache_file);
 
-                setCurrentStep(3);
                 setNotification({
                     type: 'success',
                     message: data.message
@@ -82,10 +152,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     };
 
     return eventSource;
-  }
+    }
 
-  // Main entry for processing form and response
-  const handleUnifiedSubmit = async (e, currentStep) => {
+    // Main entry for processing form and response
+    const handleUnifiedSubmit = async (e, currentStep) => {
     e.preventDefault();
 
     if (currentStep === 1) {
@@ -119,11 +189,16 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                 payload.append("trajectory_len", formData.trajectory_len);
             }
+
+            if (formData.delete_cache_after) {
+                payload.append("delete_cache_after", "true")
+            }
             setIsLoading(true);
         }
 
         if (endpoint && payload) {
-            const response = await submitFormData(endpoint, payload);
+            const csrftoken = getCookie('csrftoken');
+            const response = await submitFormData(endpoint, payload, csrftoken);
 
             if (currentStep === 2) {
                 // Initiate progress updates listener
@@ -140,7 +215,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     setNotification({
                         type: 'success',
                         message: 'Trajectories generated successfully!'
-                      });
+                        });
                 }, 1000);
                 setIsLoading(false);
             }
@@ -149,21 +224,26 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         setNotification({
             type: 'error',
             message: currentStep === 2
-              ? 'Failed to create ngram dictionaries. Please try again.'
-              : 'Failed to generate trajectories. Please try again.'
+                ? 'Failed to create ngram dictionaries. Please try again.'
+                : 'Failed to generate trajectories. Please try again.'
         });
         setIsLoading(false);
     }
 
-   };
+    };
 
-   return {
+    return {
     handleUnifiedSubmit,
     notification,
     isLoading,
     progress,
     progressMessage,
-    setNotification
+    setNotification,
+    showCachePopUp,
+    setCacheFileName,
+    handleSaveCache,
+    defaultCacheFile,
+    setShowCachePopup
    };
 
 }
