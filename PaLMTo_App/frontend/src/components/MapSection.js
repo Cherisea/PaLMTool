@@ -463,7 +463,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
             <div className="popup-actions">
               <button type="button" onClick={handleSaveAsDownload}>Confirm</button>
-              <button type="button" className="danger-button" onClick={setShowSaveAsModal(false)}>Cancel</button>
+              <button type="button" className="danger-button" onClick={() => setShowSaveAsModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
