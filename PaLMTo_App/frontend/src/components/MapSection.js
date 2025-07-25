@@ -113,7 +113,7 @@ const  MapMatchingMap = ({ title, data, center, onDownload, perc, bounce }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, onDownload, numTrajs }) 
+  heatmapData, generatedFileName, numTrajs }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');

@@ -125,16 +125,6 @@ function App() {
     setMapCenter(latlng)
   };
 
-  // Handler for saving generated trajectories to local machine
-  const handleDownload = (filename) => {
-    if (filename) {
-      const downloadUrl = `${process.env.REACT_APP_API_URL}/trajectory/download/${filename}`
-      window.open(downloadUrl, '_blank');
-    } else {
-      alert("No generated file available for download. Please generate trajectories first.")
-    }
-  };
-
   return (
     <div className="App">
       <div className="layout">
@@ -162,7 +152,6 @@ function App() {
           visualData={visualData}
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
-          onDownload={handleDownload}
           numTrajs={formData.num_trajectories}
         />
        
