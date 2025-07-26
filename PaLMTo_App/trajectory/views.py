@@ -359,6 +359,7 @@ class NgramGenerationView(APIView):
                 'cell_size': cell_size,
                 'file_path': uploaded_file_path,
                 'file_name': uploaded_file_name,
+                'stats': STATS,
                 'created_at': datetime.now().isoformat()
             }
 
@@ -381,8 +382,7 @@ class NgramGenerationView(APIView):
                 'type': 'complete',
                 'message': 'Ngram generation completed successfully!',
                 'progress': 100,
-                'cache_file': filename,
-                'stats': STATS
+                'cache_file': filename
             })
         except Exception as e:
             if task_id in PROGRESS_QUEUES:

@@ -173,6 +173,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         cache_file_loaded: true
                     }))
                     setCurrentStep(3);
+                    // setShowStats(true);
                     setIsLoading(false);
                     return;
                 } else {
