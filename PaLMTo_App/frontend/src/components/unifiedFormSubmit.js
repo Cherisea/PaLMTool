@@ -168,12 +168,31 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             // Build ngram dict only in step 2 and if csv file is uploaded
             if (currentStep === 2) {
                 if (!!formData.cache_file) {
+                    // Load stats from cache file
+                    const csrftoken = getCookie('csrftoken');
+                    const statsPayload = new FormData();
+                    statsPayload.append("cache_file", formData.cache_file);
+
+                    // Send request to backend
+                    try {
+                        const statsResponse = await submitFormData('/trajectory/get-cache-stats', statsPayload, csrftoken);
+                        if (statsResponse.status === 200) {
+                            setStatsData(statsResponse.data.stats);
+                        }
+                    } catch (error) {
+                        setNotification({
+                            type: 'error',
+                            message: 'Failed to extract stats data from cache'
+                        });
+                    }
+
                     setFormData(prev => ({
                         ...prev,
                         cache_file_loaded: true
                     }))
+
                     setCurrentStep(3);
-                    // setShowStats(true);
+                    setShowStats(true);
                     setIsLoading(false);
                     return;
                 } else {
