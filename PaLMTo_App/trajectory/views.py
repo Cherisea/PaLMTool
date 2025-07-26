@@ -382,6 +382,7 @@ class NgramGenerationView(APIView):
                 'type': 'complete',
                 'message': 'Ngram generation completed successfully!',
                 'progress': 100,
+                'stats': STATS,
                 'cache_file': filename
             })
         except Exception as e:
