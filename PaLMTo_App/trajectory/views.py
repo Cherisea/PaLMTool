@@ -621,6 +621,38 @@ class MapMatchingView(APIView):
 
         return out_filename
 
+class CacheStatsView(APIView):
+    """Extract stats data from a cached ngram file.
+    """
+    def post(self, request):
+        try:
+            cache_file = request.data.get('cache_file')
+
+            if not cache_file:
+                return Response({
+                    'error': 'No cache file provided'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            full_path = os.path.join(settings.MEDIA_ROOT, "cache", cache_file)
+            if not os.path.exists(full_path):
+                return Response({
+                    'error': f'Cache file {cache_file} not found'
+                }, status=status.HTTP_404_NOT_FOUND)
+            
+            with open(full_path, 'rb') as f:
+                cache_data = pickle.load(f)
+
+            stats = cache_data.get('stats', {})
+
+            return Response({
+                'stats': stats
+            }, status=status.HTTP_200_OK) 
+        
+        except Exception as e:
+            return Response({
+                'error': f'Failed to extract stats: {str(e)}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
 class ProgressView(View):
     """
         A class for handling Server-Sent Events(SSE) to stream progress updates
@@ -670,7 +702,6 @@ class ProgressView(View):
         response['Cache-Control'] = 'no-cache'
 
         return response
-
 
 # Function-based view
 def download_files(request, filename):
