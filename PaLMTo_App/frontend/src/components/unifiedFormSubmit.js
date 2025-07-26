@@ -168,6 +168,10 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             // Build ngram dict only in step 2 and if csv file is uploaded
             if (currentStep === 2) {
                 if (!!formData.cache_file) {
+                    setFormData(prev => ({
+                        ...prev,
+                        cache_file_loaded: true
+                    }))
                     setCurrentStep(3);
                     setIsLoading(false);
                     return;
