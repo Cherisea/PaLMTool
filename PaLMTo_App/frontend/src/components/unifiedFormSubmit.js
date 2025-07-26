@@ -171,10 +171,25 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     // Load stats from cache file
                     const csrftoken = getCookie('csrftoken');
 
+                    // Extract filename from cache_file object or string
+                    let cacheFileName;
+                    // File object from dropzone upload
+                    if (typeof formData.cache_file === 'object' && formData.cache_file.name) {
+                        cacheFileName = formData.cache_file.name;
+                    } 
+                    // Object with path property
+                    else if (typeof formData.cache_file === 'object' && formData.cache_file.path) {
+                        cacheFileName = formData.cache_file.path.split('/').pop();
+                    } 
+                    // String filename returned from generated cache
+                    else {
+                        cacheFileName = formData.cache_file;
+                    }
+
                     // Send request to backend
                     try {
                         const statsResponse = await axios.post('/trajectory/get-stats-from-cache/', {
-                            cache_file: formData.cache_file
+                            cache_file: cacheFileName
                         }, {
                             headers: {
                                 'Content-Type': 'application/json',
