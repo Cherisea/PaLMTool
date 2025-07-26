@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GenerationConfigView, download_files, Trajectory3DView
+from .views import GenerationConfigView, download_files, Trajectory3DView, CacheStatsView
 from .views import MapMatchingView, NgramGenerationView, ProgressView, rename_cache
 
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path('analyze/', Trajectory3DView.as_view(), name="analyze"),
     path('map-match/', MapMatchingView.as_view(), name="map_match"),
     path('progress/', ProgressView.as_view(), name='progress'),
-    path('rename-cache/', rename_cache, name='rename_cache')
+    path('rename-cache/', rename_cache, name='rename_cache'),
+    path('get-stats-from-cache/', CacheStatsView.as_view(), name='get-stats-from-cache')
 ]
 

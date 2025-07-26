@@ -175,7 +175,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
                     // Send request to backend
                     try {
-                        const statsResponse = await submitFormData('/trajectory/get-cache-stats', statsPayload, csrftoken);
+                        const statsResponse = await submitFormData('/trajectory/get-stats-from-cache', statsPayload, csrftoken);
                         if (statsResponse.status === 200) {
                             setStatsData(statsResponse.data.stats);
                         }
