@@ -170,12 +170,18 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 if (!!formData.cache_file) {
                     // Load stats from cache file
                     const csrftoken = getCookie('csrftoken');
-                    const statsPayload = new FormData();
-                    statsPayload.append("cache_file", formData.cache_file);
 
                     // Send request to backend
                     try {
-                        const statsResponse = await submitFormData('/trajectory/get-stats-from-cache', statsPayload, csrftoken);
+                        const statsResponse = await axios.post('/trajectory/get-stats-from-cache/', {
+                            cache_file: formData.cache_file
+                        }, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                            }
+                        });
+                        
                         if (statsResponse.status === 200) {
                             setStatsData(statsResponse.data.stats);
                         }
