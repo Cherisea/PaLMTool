@@ -210,6 +210,13 @@ function FormSteps({
   // STEP 3: Trajectory generation parameters
   const renderStep3 = () => (
     <div className="step-content">
+      {formData.cache_file_loaded && (
+        <div className="cache-info-section">
+          <h3>Cached Model</h3>
+          <p>Loaded cache file: <strong>{formData.cache_file.name}</strong></p>
+        </div>
+      )}
+
       <div className="form-group">
         <label className="required">
           Number of Generated Trajectories

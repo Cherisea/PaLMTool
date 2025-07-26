@@ -56,14 +56,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     const handleSaveCache = async (save) => {
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
-            if (newName != defaultCacheFile) {
+            if (newName !== defaultCacheFile) {
                 const csrftoken = getCookie('csrftoken');
-                const formData = new FormData;
+                const formData = new FormData();
                 formData.append('old_name', defaultCacheFile);
                 formData.append('new_name', newName)
                 const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                     setNotification({
                         type: 'success',
                         message: response.data
@@ -168,7 +168,52 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             // Build ngram dict only in step 2 and if csv file is uploaded
             if (currentStep === 2) {
                 if (!!formData.cache_file) {
+                    // Load stats from cache file
+                    const csrftoken = getCookie('csrftoken');
+
+                    // Extract filename from cache_file object or string
+                    let cacheFileName;
+                    // File object from dropzone upload
+                    if (typeof formData.cache_file === 'object' && formData.cache_file.name) {
+                        cacheFileName = formData.cache_file.name;
+                    } 
+                    // Object with path property
+                    else if (typeof formData.cache_file === 'object' && formData.cache_file.path) {
+                        cacheFileName = formData.cache_file.path.split('/').pop();
+                    } 
+                    // String filename returned from generated cache
+                    else {
+                        cacheFileName = formData.cache_file;
+                    }
+
+                    // Send request to backend
+                    try {
+                        const statsResponse = await axios.post('/trajectory/get-stats-from-cache/', {
+                            cache_file: cacheFileName
+                        }, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                            }
+                        });
+
+                        if (statsResponse.status === 200) {
+                            setStatsData(statsResponse.data.stats);
+                        }
+                    } catch (error) {
+                        setNotification({
+                            type: 'error',
+                            message: 'Failed to extract stats data from cache'
+                        });
+                    }
+
+                    setFormData(prev => ({
+                        ...prev,
+                        cache_file_loaded: true
+                    }))
+
                     setCurrentStep(3);
+                    setShowStats(true);
                     setIsLoading(false);
                     return;
                 } else {
