@@ -76,31 +76,110 @@ class GenerationConfigView(APIView):
             "task_id": task_id,
             "message":"Trajectory generation started"
         }, status=status.HTTP_202_ACCEPTED)
-
-    def post(self, request):
-        """Handler of processing the entire two-stage trajectory generation process.
+    
+    def _process_with_progress(self, data, task_id):
+        """
 
         Args:
-            request(rest_framework.request.Request): an object containing cache_file field.
-
-        Returns:
-            response(rest.Response): a tuple consisting of database record id, visualization data,
-                heatmap data and name of generated file.
+            data(QueryDict): request data containing additional parameters and cache 
+            task_id(str): a unique identifier for frontend to track backend updates 
         """
-        data = request.data
-        uploaded = self.save_to_record(data)
+        try:
+            if task_id not in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id] = Queue
+            
+            queue = PROGRESS_QUEUES[task_id]
 
-        sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
-        generated_file = self.save_trajectory(new_trajs, uploaded)
-        visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-        heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
+            queue.put({
+                'type': 'progress',
+                'message': 'Starting trajectory generation process',
+                'progress': 10
+            })
+            time.sleep(1)
+
+            # Step 1: save parameters of trajectory generation to database
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving configuration to database',
+                'progress': 20
+            })
+            uploaded = self.save_to_record(data)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Configuration saved successfully',
+                'progress': 30
+            })
+
+            # Step 2: process trajectory generation
+            queue.put({
+                'type': 'progress',
+                'message': 'Loading cached n-gram data',
+                'progress': 40
+            })
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Trajectories generated successfully',
+                'progress': 60
+            })
+
+            # Step 3: save generated trajectories to local disk
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving generated trajectories',
+                'progress': 70
+            })
+            generated_file = self.save_trajectory(new_trajs, uploaded)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Trajectories saved to file',
+                'progress': 80
+            })
+
+            # Step 4: generate visualization data
+            queue.put({
+                'type': 'progress',
+                'message': 'Preparing visualization data',
+                'progress': 85
+            })
+            visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
+            heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
                                                     study_area, int(data["num_trajectories"]))
-        
-        self.delete_cache_file(data)
-        return Response({'id': uploaded.id,
-                         'visualization': visual_data,
-                         'heatmap': heatmap_data,
-                         'generated_file': generated_file,}, status=status.HTTP_201_CREATED)
+            
+            queue.put({
+                'type': 'progress',
+                'message': 'Visualization data ready',
+                'progress': 90
+            })
+
+            # Step 5: cleanup
+            queue.put({
+                'type': 'progress',
+                'message': 'Cleaning up temporary files',
+                'progress': 95
+            })
+            self.delete_cache_file(data)
+
+            queue.put({
+                'type': 'complete',
+                'message': 'Trajectory generation completed successfully!',
+                'progress': 100,
+                'result': {
+                    'id': uploaded.id,
+                    'visualization': visual_data,
+                    'heatmap': heatmap_data,
+                    'generated_file': generated_file,
+                }
+            })
+        except Exception as e:
+            if task_id in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id].put({
+                    'type': 'error',
+                    'message': f'Error during trajectory generation: {str(e)}'
+                })
     
     def _process_cache(self, data):
         """Read cache file and extract pickled Python objects.
