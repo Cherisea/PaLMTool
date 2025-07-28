@@ -250,26 +250,26 @@ class GenerationConfigView(APIView):
         cached_data = self._process_cache(data)
         file_path = cached_data['file_path']
 
-        file_obj = open(file_path, "rb")
-        recreated_file = File(file_obj, name=cached_data['file_name'])
-        
-        model_data['file'] = recreated_file
-        model_data['cell_size'] = cached_data['cell_size']
-        
-        # Extract data sent along with request
-        gen_method, num_trajs, traj_len = self._extract_extra_config(data)
-        model_data['generation_method'] = gen_method
-        model_data['num_trajectories'] = num_trajs
+        with open(file_path, "rb") as file_obj:
+            recreated_file = File(file_obj, name=cached_data['file_name'])
+            
+            model_data['file'] = recreated_file
+            model_data['cell_size'] = cached_data['cell_size']
+            
+            # Extract data sent along with request
+            gen_method, num_trajs, traj_len = self._extract_extra_config(data)
+            model_data['generation_method'] = gen_method
+            model_data['num_trajectories'] = num_trajs
 
-        if gen_method == "length_constrained":
-            model_data['trajectory_len'] = traj_len
-        
-        serializer = GenerationConfigSerializer(data=model_data)
-        if serializer.is_valid():
-            uploaded = serializer.save()
-            return uploaded
-        else:
-            raise serializers.ValidationError(serializer.errors)
+            if gen_method == "length_constrained":
+                model_data['trajectory_len'] = traj_len
+            
+            serializer = GenerationConfigSerializer(data=model_data)
+            if serializer.is_valid():
+                uploaded = serializer.save()
+                return uploaded
+            else:
+                raise serializers.ValidationError(serializer.errors)
     
     def _process_traj_generation(self, data, queue):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
