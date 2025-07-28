@@ -50,6 +50,34 @@ class GenerationConfigView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        """Handler of trajectory generation with live progress updates
+
+        Args:
+            request(rest_framework.request.Request): an object containing cache_file field.
+
+        Returns:
+            response(rest.Response): a dict containing task id and server message
+        
+        """
+        data = request.data
+        task_id = str(uuid.uuid4())
+
+        # Start a background thread 
+        thread = threading.Thread(
+            target=self._process_with_progress,
+            agrs = (data, task_id)
+        )
+
+        # Allow main thread to exit
+        thread.daemon = True
+        thread.start()
+
+        return Response({
+            "task_id": task_id,
+            "message":"Trajectory generation started"
+        }, status=status.HTTP_202_ACCEPTED)
+
+    def post(self, request):
         """Handler of processing the entire two-stage trajectory generation process.
 
         Args:
