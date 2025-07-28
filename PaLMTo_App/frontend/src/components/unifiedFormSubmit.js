@@ -115,7 +115,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         setStatsData(data.stats);
                         setShowStats(true);
                         setDefaultCacheFile(data.cache_file);
+                    } 
+                    else if (stepNum === 3) {
+                        const result = response.data.result;
+                        setGeneratedFileName(result.generatedFile);
+                        setVisualData(result.visualization);
+                        setHeatmapData(result.heatmap);
                     }
+
                     setProgress(100);
                     setNotification({
                         type: 'success',
@@ -243,24 +250,12 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 const csrftoken = getCookie('csrftoken');
                 const response = await submitFormData(endpoint, payload, csrftoken);
 
+                // Initiate progress updates listener
+                const taskId = response.data.task_id;
                 if (currentStep === 2) {
-                    // Initiate progress updates listener
-                    const taskId = response.data.task_id;
                     handleProgressUpdates(taskId, 2);
                 } else if (currentStep === 3) {
-                    setProgress(100);
-                    const generatedFile = response.data.generated_file;
-                    setGeneratedFileName(generatedFile);
-                    setVisualData(response.data.visualization);
-                    setHeatmapData(response.data.heatmap);
-
-                    setTimeout(() => {
-                        setNotification({
-                            type: 'success',
-                            message: 'Trajectories generated successfully!'
-                            });
-                    }, 1000);
-                    setIsLoading(false);
+                    handleProgressUpdates(taskId, 3);
                 }
             }
         } catch (error) {
