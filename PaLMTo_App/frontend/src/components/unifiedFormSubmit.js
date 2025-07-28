@@ -118,7 +118,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     } 
                     else if (stepNum === 3) {
                         const result = data.result;
-                        setGeneratedFileName(result.generatedFile);
+                        setGeneratedFileName(result.generated_file);
                         setVisualData(result.visualization);
                         setHeatmapData(result.heatmap);
                     }
@@ -137,6 +137,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         type: 'error',
                         message: data.message
                     });
+                    setIsLoading(false);
                     eventSource.close();
                     break;
                 case 'keepalive':
@@ -153,6 +154,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 type: 'error',
                 message: 'Connection to progress stream failed'
             });
+            setIsLoading(false);
             eventSource.close();
         };
 
