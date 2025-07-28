@@ -86,7 +86,7 @@ class GenerationConfigView(APIView):
         """
         try:
             if task_id not in PROGRESS_QUEUES:
-                PROGRESS_QUEUES[task_id] = Queue
+                PROGRESS_QUEUES[task_id] = Queue()
             
             queue = PROGRESS_QUEUES[task_id]
 
