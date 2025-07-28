@@ -65,7 +65,7 @@ class GenerationConfigView(APIView):
         # Start a background thread 
         thread = threading.Thread(
             target=self._process_with_progress,
-            agrs = (data, task_id)
+            args = (data, task_id)
         )
 
         # Allow main thread to exit
