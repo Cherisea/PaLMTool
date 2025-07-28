@@ -117,7 +117,7 @@ class GenerationConfigView(APIView):
                 'message': 'Loading cached n-gram data',
                 'progress': 40
             })
-            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue)
 
             queue.put({
                 'type': 'progress',
@@ -271,7 +271,7 @@ class GenerationConfigView(APIView):
         else:
             raise serializers.ValidationError(serializer.errors)
     
-    def _process_traj_generation(self, data):
+    def _process_traj_generation(self, data, queue):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
 
         This method loads cached n-gram data and related objects and generate new trajectories 
@@ -283,6 +283,7 @@ class GenerationConfigView(APIView):
                 - "generation_method" (str): Method for trajectory generation ("length_constrained" or other).
                 - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
                 - "cache_file" (str): Filename of the cached n-gram data.
+            queue(Queue): queue for storing progress updates
         
         Returns:
             tuple:
@@ -292,7 +293,19 @@ class GenerationConfigView(APIView):
                 - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
         """
         gen_method, num_trajs, traj_len = self._extract_extra_config(data)
+        queue.put({
+            'type': 'progress',
+            'message': 'Extracting n-gram data',
+            'progress': 45
+        })
+
         ngrams, start_end_points, grid, sentence_df, study_area = self._extract_ngrams(data)
+
+        queue.put({
+            'type': 'progress',
+            'message': f'Generating trajectories using {gen_method} method',
+            'progress': 50
+        })
 
 
         if gen_method == "length_constrained":
