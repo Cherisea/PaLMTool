@@ -59,7 +59,6 @@ class GenerationConfigView(APIView):
             response(rest.Response): a tuple consisting of database record id, visualization data,
                 heatmap data and name of generated file.
         """
-        global STATS
         data = request.data
         uploaded = self.save_to_record(data)
 
