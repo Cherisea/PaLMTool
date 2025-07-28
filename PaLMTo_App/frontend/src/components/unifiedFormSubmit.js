@@ -117,7 +117,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         setDefaultCacheFile(data.cache_file);
                     } 
                     else if (stepNum === 3) {
-                        const result = response.data.result;
+                        const result = data.result;
                         setGeneratedFileName(result.generatedFile);
                         setVisualData(result.visualization);
                         setHeatmapData(result.heatmap);
