@@ -163,6 +163,14 @@ class GenerationConfigView(APIView):
             })
             self.delete_cache_file(data)
 
+            print("============================ DEBUG ========================")
+
+            try:
+                json.dumps(heatmap_data)
+                print("✅ heatmap_data is JSON serializable")
+            except Exception as e:
+                print(f"❌ heatmap_data is NOT JSON serializable: {e}")
+
             queue.put({
                 'type': 'complete',
                 'message': 'Trajectory generation completed successfully!',
@@ -373,7 +381,7 @@ class GenerationConfigView(APIView):
         original_heatmap = heatmap_geojson(df.sample(sample), study_area)
         generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area)
 
-        bounds = study_area.total_bounds
+        bounds = study_area.total_bounds.tolist()
         center = extract_area_center(study_area)
 
         return {

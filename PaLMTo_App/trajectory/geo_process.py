@@ -54,7 +54,7 @@ def extract_area_center(gdf):
         Return coordinate pair in (lat, lon) format for leaflet visualization
     """
     centroid = gdf.geometry[0].centroid
-    return [centroid.y, centroid.x]
+    return [float(centroid.y), float(centroid.x)]
 
 def traj_to_geojson(trajectory):
     """
