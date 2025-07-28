@@ -98,7 +98,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     }
 
     // Function to handle SSE progress updates
-    const handleProgressUpdates = (taskId) => {
+    const handleProgressUpdates = (taskId, stepNum) => {
         const eventSource = new EventSource(`${process.env.REACT_APP_API_URL}/trajectory/progress/?task_id=${taskId}`);
 
         // Listen for messages
@@ -111,12 +111,12 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     setProgressMessage(data.message);
                     break;
                 case 'complete':
+                    if (stepNum === 2) {
+                        setStatsData(data.stats);
+                        setShowStats(true);
+                        setDefaultCacheFile(data.cache_file);
+                    }
                     setProgress(100);
-                    setStatsData(data.stats);
-                    setShowStats(true);
-
-                    setDefaultCacheFile(data.cache_file);
-
                     setNotification({
                         type: 'success',
                         message: data.message
@@ -246,7 +246,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 if (currentStep === 2) {
                     // Initiate progress updates listener
                     const taskId = response.data.task_id;
-                    handleProgressUpdates(taskId);
+                    handleProgressUpdates(taskId, 2);
                 } else if (currentStep === 3) {
                     setProgress(100);
                     const generatedFile = response.data.generated_file;
