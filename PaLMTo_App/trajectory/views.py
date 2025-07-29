@@ -163,17 +163,6 @@ class GenerationConfigView(APIView):
             })
             self.delete_cache_file(data)
 
-            print("============================ DEBUG ========================")
-
-            try:
-                json.dumps(heatmap_data)
-                print("✅ heatmap_data is JSON serializable")
-            except Exception as e:
-                print(f"❌ heatmap_data is NOT JSON serializable: {e}")
-                print(f"Center: {type(heatmap_data['center'][0])}")
-                print(f"Bounds: {type(heatmap_data['bounds'][0][0])}")
-                print(f"Features: {heatmap_data['original']['features'][0]['geometry']['coordinates'][0][0][0]}, Type: {type(heatmap_data['original']['features'][0]['geometry']['coordinates'][0][0][0])}")
-
             queue.put({
                 'type': 'complete',
                 'message': 'Trajectory generation completed successfully!',
