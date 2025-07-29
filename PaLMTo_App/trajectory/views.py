@@ -59,7 +59,16 @@ class GenerationConfigView(APIView):
             response(rest.Response): a dict containing task id and server message
         
         """
-        data = request.data
+        data = request.data.copy()
+
+        # Preprocess cached file it's an InMemoryUploadedFile
+        cache_file = data.get('cache_file')
+        if isinstance(cache_file, InMemoryUploadedFile):
+            cache_file.seek(0)
+            file_content = cache_file.read()
+            data['cache_file_content'] = file_content
+            data['cache_file'] = None
+
         task_id = str(uuid.uuid4())
 
         # Start a background thread 
@@ -200,8 +209,9 @@ class GenerationConfigView(APIView):
         
         """
         cache_file = data.get('cache_file')
+        cache_file_content = data.get('cache_file_content')
 
-        if not cache_file:
+        if not cache_file and not cache_file_content:
             raise ValueError("No ngram file provided.")
         
         if isinstance(cache_file, str):
@@ -212,10 +222,8 @@ class GenerationConfigView(APIView):
             # Read cache file
             with open(full_path, 'rb') as f:
                 cached_data = pickle.load(f)
-        elif isinstance(cache_file, InMemoryUploadedFile):
-            # Read directly if it's an uploaded file
-            cache_file.seek(0)
-            cached_data = pickle.load(cache_file)
+        elif cache_file_content:
+            cached_data = pickle.loads(cache_file_content)
         else:
             raise ValueError("Invalid cache file type.")
         
@@ -241,7 +249,6 @@ class GenerationConfigView(APIView):
         """
         model_data = {}
         file_path = cached_data['file_path']
-
         recreated_file = File(file_path, name=cached_data['file_name'])
         
         model_data['file'] = recreated_file
