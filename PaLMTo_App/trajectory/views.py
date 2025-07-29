@@ -65,10 +65,11 @@ class GenerationConfigView(APIView):
         cache_file = data.get('cache_file')
         if isinstance(cache_file, InMemoryUploadedFile):
             cache_file.seek(0)
-            file_content = cache_file.read()
+            # Read content as bytes to ensure pickle compatibility
+            file_content = b''.join(cache_file.chunks())
             data['cache_file_content'] = file_content
             data['cache_file'] = None
-
+            
         task_id = str(uuid.uuid4())
 
         # Start a background thread 
