@@ -170,6 +170,9 @@ class GenerationConfigView(APIView):
                 print("✅ heatmap_data is JSON serializable")
             except Exception as e:
                 print(f"❌ heatmap_data is NOT JSON serializable: {e}")
+                print(f"Center: {type(heatmap_data['center'][0])}")
+                print(f"Bounds: {type(heatmap_data['bounds'][0][0])}")
+                print(f"Features: {heatmap_data['original']['features'][0]['geometry']['coordinates'][0][0][0]}, Type: {type(heatmap_data['original']['features'][0]['geometry']['coordinates'][0][0][0])}")
 
             queue.put({
                 'type': 'complete',
@@ -874,6 +877,8 @@ def rename_cache(request):
     old_name = request.POST.get('old_name')
     new_name = request.POST.get('new_name')
 
+    if not new_name.endswith('.pkl'):
+        new_name = new_name + '.pkl'
 
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
     old_path = os.path.join(cache_dir, old_name)
