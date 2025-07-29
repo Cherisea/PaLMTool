@@ -265,8 +265,8 @@ class GenerationConfigView(APIView):
             print(f"File exists: {os.path.exists(file_path)}")
 
             try:
-                with open(file_path, 'rb') as f:
-                    recreated_file = File(f, name=file_name)
+                f = open(file_path, 'rb')
+                recreated_file = File(f, name=file_name)
                 model_data['file'] = recreated_file
             except Exception as e:
                 print(f"Error opening file: {e}")
