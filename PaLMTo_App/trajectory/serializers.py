@@ -17,6 +17,9 @@ class GenerationConfigSerializer(serializers.ModelSerializer):
             Check if uploaded file is a csv file with three columns:
             ['trip_id', 'timestamp', 'geometry']
         """
+        if file is None:
+            return None
+        
         if not file.name.endswith('.csv'):
             raise serializers.ValidationError("File must be a .csv")
         
