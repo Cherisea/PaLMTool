@@ -128,18 +128,13 @@ class GenerationConfigView(APIView):
             })
             uploaded = self.save_to_record(data, cached_data)
 
-            queue.put({
-                'type': 'progress',
-                'message': 'Configuration saved successfully',
-                'progress': 30
-            })
-
             # Step 3: process trajectory generation
             queue.put({
                 'type': 'progress',
                 'message': 'Loading cached n-gram data',
                 'progress': 40
             })
+            time.sleep(1)
             sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data)
 
             queue.put({
@@ -147,6 +142,7 @@ class GenerationConfigView(APIView):
                 'message': 'Trajectories generated successfully',
                 'progress': 60
             })
+            time.sleep(1)
 
             # Step 4: save generated trajectories to local disk
             queue.put({
@@ -155,12 +151,6 @@ class GenerationConfigView(APIView):
                 'progress': 70
             })
             generated_file = self.save_trajectory(new_trajs, uploaded)
-
-            queue.put({
-                'type': 'progress',
-                'message': 'Trajectories saved to file',
-                'progress': 80
-            })
 
             # Step 5: generate visualization data
             queue.put({
@@ -171,12 +161,6 @@ class GenerationConfigView(APIView):
             visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
             heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
                                                     study_area, int(data["num_trajectories"]))
-            
-            queue.put({
-                'type': 'progress',
-                'message': 'Visualization data ready',
-                'progress': 90
-            })
 
             # Step 5: cleanup
             queue.put({
