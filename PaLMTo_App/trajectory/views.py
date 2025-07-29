@@ -50,30 +50,159 @@ class GenerationConfigView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        """Handler of processing the entire two-stage trajectory generation process.
+        """Handler of trajectory generation with live progress updates
 
         Args:
             request(rest_framework.request.Request): an object containing cache_file field.
 
         Returns:
-            response(rest.Response): a tuple consisting of database record id, visualization data,
-                heatmap data and name of generated file.
-        """
-        global STATS
-        data = request.data
-        uploaded = self.save_to_record(data)
-
-        sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data)
-        generated_file = self.save_trajectory(new_trajs, uploaded)
-        visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
-        heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
-                                                    study_area, int(data["num_trajectories"]))
+            response(rest.Response): a dict containing task id and server message
         
-        self.delete_cache_file(data)
-        return Response({'id': uploaded.id,
-                         'visualization': visual_data,
-                         'heatmap': heatmap_data,
-                         'generated_file': generated_file,}, status=status.HTTP_201_CREATED)
+        """
+        data = request.data.copy()
+
+        # Preprocess cached file it's an InMemoryUploadedFile
+        cache_file = data.get('cache_file')
+        if isinstance(cache_file, InMemoryUploadedFile):
+            temp_filename = f"temp_cache_{uuid.uuid4()}.pkl"
+            temp_path = os.path.join(settings.MEDIA_ROOT, "cache", temp_filename)
+            
+            with open(temp_path, "wb") as f:
+                for chunk in cache_file.chunks():
+                    f.write(chunk)
+            data['cache_file'] = temp_filename
+            data['delete_after'] = True
+        else:
+            data['delete_after'] = False
+
+        task_id = str(uuid.uuid4())
+
+        # Start a background thread 
+        thread = threading.Thread(
+            target=self._process_with_progress,
+            args = (data, task_id)
+        )
+
+        # Allow main thread to exit
+        thread.daemon = True
+        thread.start()
+
+        return Response({
+            "task_id": task_id,
+            "message":"Trajectory generation started"
+        }, status=status.HTTP_202_ACCEPTED)
+    
+    def _process_with_progress(self, data, task_id):
+        """
+
+        Args:
+            data(QueryDict): request data containing additional parameters and cache 
+            task_id(str): a unique identifier for frontend to track backend updates 
+        """
+        try:
+            if task_id not in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id] = Queue()
+            
+            queue = PROGRESS_QUEUES[task_id]
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Starting trajectory generation process',
+                'progress': 10
+            })
+            time.sleep(1)
+
+            # Step 1: Extract cached data once and reuse it
+            queue.put({
+                'type': 'progress',
+                'message': 'Loading cached data',
+                'progress': 15
+            })
+            cached_data = self._process_cache(data)
+
+            # Step 2: save parameters of trajectory generation to database
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving configuration to database',
+                'progress': 20
+            })
+            uploaded = self.save_to_record(data, cached_data)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Configuration saved successfully',
+                'progress': 30
+            })
+
+            # Step 3: process trajectory generation
+            queue.put({
+                'type': 'progress',
+                'message': 'Loading cached n-gram data',
+                'progress': 40
+            })
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Trajectories generated successfully',
+                'progress': 60
+            })
+
+            # Step 4: save generated trajectories to local disk
+            queue.put({
+                'type': 'progress',
+                'message': 'Saving generated trajectories',
+                'progress': 70
+            })
+            generated_file = self.save_trajectory(new_trajs, uploaded)
+
+            queue.put({
+                'type': 'progress',
+                'message': 'Trajectories saved to file',
+                'progress': 80
+            })
+
+            # Step 5: generate visualization data
+            queue.put({
+                'type': 'progress',
+                'message': 'Preparing visualization data',
+                'progress': 85
+            })
+            visual_data = self.generate_trajectory_visual(sentence_df, new_trajs_gdf, study_area)
+            heatmap_data = self.compare_trajectory_heatmap(sentence_df, new_trajs_gdf,
+                                                    study_area, int(data["num_trajectories"]))
+            
+            queue.put({
+                'type': 'progress',
+                'message': 'Visualization data ready',
+                'progress': 90
+            })
+
+            # Step 5: cleanup
+            queue.put({
+                'type': 'progress',
+                'message': 'Cleaning up temporary files',
+                'progress': 95
+            })
+            self.delete_cache_file(data)
+
+            queue.put({
+                'type': 'complete',
+                'message': 'Trajectory generation completed successfully!',
+                'progress': 100,
+                'result': {
+                    'id': uploaded.id,
+                    'visualization': visual_data,
+                    'heatmap': heatmap_data,
+                    'generated_file': generated_file,
+                }
+            })
+        except Exception as e:
+            if task_id in PROGRESS_QUEUES:
+                PROGRESS_QUEUES[task_id].put({
+                    'type': 'error',
+                    'message': f'Error during trajectory generation: {str(e)}'
+                })
     
     def _process_cache(self, data):
         """Read cache file and extract pickled Python objects.
@@ -86,8 +215,9 @@ class GenerationConfigView(APIView):
         
         """
         cache_file = data.get('cache_file')
+        cache_file_content = data.get('cache_file_content')
 
-        if not cache_file:
+        if not cache_file and not cache_file_content:
             raise ValueError("No ngram file provided.")
         
         if isinstance(cache_file, str):
@@ -98,27 +228,10 @@ class GenerationConfigView(APIView):
             # Read cache file
             with open(full_path, 'rb') as f:
                 cached_data = pickle.load(f)
-        elif isinstance(cache_file, InMemoryUploadedFile):
-            # Read directly if it's an uploaded file
-            cache_file.seek(0)
-            cached_data = pickle.load(cache_file)
         else:
             raise ValueError("Invalid cache file type.")
         
         return cached_data
-    
-    def _extract_ngrams(self, data):
-        """Extract ngrams related data from cache file
-        
-        """
-        cached_data = self._process_cache(data)
-        ngrams = cached_data['ngrams']
-        start_end_points = cached_data['start_end_points']
-        grid = cached_data['grid']
-        sentence_df = cached_data['sentence_df']
-        study_area = cached_data['study_area']
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
 
     def _extract_extra_config(self, data):
         """Retrieve user-supplied configurations in step three of form
@@ -134,20 +247,31 @@ class GenerationConfigView(APIView):
         
         return gen_method, num_trajs, traj_len
 
-    def save_to_record(self, data):
+    def save_to_record(self, data, cached_data):
         """Save configurations for trajectory generation to local sql database.
         
         """
         model_data = {}
+        is_temp_cache = data.get('delete_after', False)
 
-        # Extract data compressed in cache
-        cached_data = self._process_cache(data)
-        file_path = cached_data['file_path']
-
-        file_obj = open(file_path, "rb")
-        recreated_file = File(file_obj, name=cached_data['file_name'])
+        if is_temp_cache:
+            model_data['file'] = None
+        else:
+            file_path = cached_data['file_path']
+            file_name = cached_data['file_name']
         
-        model_data['file'] = recreated_file
+            print(f"===================DEBUG================")
+            print(f"Original File: {file_path}")
+            print(f"File exists: {os.path.exists(file_path)}")
+
+            try:
+                f = open(file_path, 'rb')
+                recreated_file = File(f, name=file_name)
+                model_data['file'] = recreated_file
+            except Exception as e:
+                print(f"Error opening file: {e}")
+                model_data['file'] = None
+        
         model_data['cell_size'] = cached_data['cell_size']
         
         # Extract data sent along with request
@@ -165,7 +289,7 @@ class GenerationConfigView(APIView):
         else:
             raise serializers.ValidationError(serializer.errors)
     
-    def _process_traj_generation(self, data):
+    def _process_traj_generation(self, data, queue, cached_data):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
 
         This method loads cached n-gram data and related objects and generate new trajectories 
@@ -177,6 +301,7 @@ class GenerationConfigView(APIView):
                 - "generation_method" (str): Method for trajectory generation ("length_constrained" or other).
                 - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
                 - "cache_file" (str): Filename of the cached n-gram data.
+            queue(Queue): queue for storing progress updates
         
         Returns:
             tuple:
@@ -186,7 +311,23 @@ class GenerationConfigView(APIView):
                 - new_trajs_gdf (geopandas.GeoDataFrame): GeoDataFrame of generated trajectories for visualization.
         """
         gen_method, num_trajs, traj_len = self._extract_extra_config(data)
-        ngrams, start_end_points, grid, sentence_df, study_area = self._extract_ngrams(data)
+        queue.put({
+            'type': 'progress',
+            'message': 'Extracting n-gram data',
+            'progress': 45
+        })
+
+        ngrams = cached_data['ngrams']
+        start_end_points = cached_data['start_end_points']
+        grid = cached_data['grid']
+        sentence_df = cached_data['sentence_df']
+        study_area = cached_data['study_area']
+
+        queue.put({
+            'type': 'progress',
+            'message': f'Generating trajectories using {gen_method} method',
+            'progress': 50
+        })
 
 
         if gen_method == "length_constrained":
@@ -254,7 +395,7 @@ class GenerationConfigView(APIView):
         original_heatmap = heatmap_geojson(df.sample(sample), study_area)
         generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area)
 
-        bounds = study_area.total_bounds
+        bounds = study_area.total_bounds.tolist()
         center = extract_area_center(study_area)
 
         return {
@@ -271,8 +412,9 @@ class GenerationConfigView(APIView):
         """
         delete = data.get('delete_cache_after')
         cache_file = data.get('cache_file')
+        is_temp = data.get('delete_after', False)
 
-        if delete == "true" and cache_file:
+        if (delete == "true" or is_temp) and cache_file:
             cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
             cache_path = os.path.join(cache_dir, cache_file)
             if os.path.exists(cache_path):
@@ -745,17 +887,24 @@ def rename_cache(request):
         return HttpResponse(f"Request method {request.method} not supported.", status=405)
     
     old_name = request.POST.get('old_name')
-    new_name = request.POST.get('new_name') + '.pkl'
+    new_name = request.POST.get('new_name')
 
+    if not new_name.endswith('.pkl'):
+        new_name = new_name + '.pkl'
 
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
     old_path = os.path.join(cache_dir, old_name)
     new_path = os.path.join(cache_dir, new_name)
+
     if not os.path.exists(old_path):
         return HttpResponse(f"File {old_name} not found.", status=404)
     
+    # Remove file if it already exists
     if os.path.exists(new_path):
-        return HttpResponse(f"File {new_name} already exists.", status=400)
+        try:
+            os.remove(new_path)
+        except Exception as e:
+            return HttpResponse(f"Error removing existing file {new_name}: {str(e)}.", status=400)
     
     try:
         os.rename(old_path, new_path)

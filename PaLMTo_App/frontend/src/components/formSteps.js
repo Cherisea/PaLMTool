@@ -278,10 +278,21 @@ function FormSteps({
           {isLoading ? 'Generating...' : 'Generate'}
           {isLoading && (
             <div className="progress-container">
-              <div className="progress-bar" style={{ width: `${progress}%` }} />
+              <div className="progress-bar" >
+                <div 
+                  className="progress-fill"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
             </div>
           )}
         </button>
+        
+        {isLoading && (
+          <div className="progress-text">
+          {progress}% -- {progressMessage || 'Processing...'}
+        </div>
+        )}
       </div>
     </div>
   );
