@@ -883,11 +883,16 @@ def rename_cache(request):
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
     old_path = os.path.join(cache_dir, old_name)
     new_path = os.path.join(cache_dir, new_name)
+
     if not os.path.exists(old_path):
         return HttpResponse(f"File {old_name} not found.", status=404)
     
+    # Remove file if it already exists
     if os.path.exists(new_path):
-        return HttpResponse(f"File {new_name} already exists.", status=400)
+        try:
+            os.remove(new_path)
+        except Exception as e:
+            return HttpResponse(f"Error removing existing file {new_name}: {str(e)}.", status=400)
     
     try:
         os.rename(old_path, new_path)
