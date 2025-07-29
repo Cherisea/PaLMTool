@@ -252,10 +252,26 @@ class GenerationConfigView(APIView):
         
         """
         model_data = {}
-        file_path = cached_data['file_path']
-        recreated_file = File(file_path, name=cached_data['file_name'])
+        is_temp_cache = data.get('delete_after', False)
+
+        if is_temp_cache:
+            model_data['file'] = None
+        else:
+            file_path = cached_data['file_path']
+            file_name = cached_data['file_name']
         
-        model_data['file'] = recreated_file
+            print(f"===================DEBUG================")
+            print(f"Original File: {file_path}")
+            print(f"File exists: {os.path.exists(file_path)}")
+
+            try:
+                with open(file_path, 'rb') as f:
+                    recreated_file = File(f, name=file_name)
+                model_data['file'] = recreated_file
+            except Exception as e:
+                print(f"Error opening file: {e}")
+                model_data['file'] = None
+        
         model_data['cell_size'] = cached_data['cell_size']
         
         # Extract data sent along with request
