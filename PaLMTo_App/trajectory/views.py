@@ -97,13 +97,21 @@ class GenerationConfigView(APIView):
             })
             time.sleep(1)
 
-            # Step 1: save parameters of trajectory generation to database
+            # Step 1: Extract cached data once and reuse it
+            queue.put({
+                'type': 'progress',
+                'message': 'Loading cached data',
+                'progress': 15
+            })
+            cached_data = self._process_cache(data)
+
+            # Step 2: save parameters of trajectory generation to database
             queue.put({
                 'type': 'progress',
                 'message': 'Saving configuration to database',
                 'progress': 20
             })
-            uploaded = self.save_to_record(data)
+            uploaded = self.save_to_record(data, cached_data)
 
             queue.put({
                 'type': 'progress',
@@ -111,13 +119,13 @@ class GenerationConfigView(APIView):
                 'progress': 30
             })
 
-            # Step 2: process trajectory generation
+            # Step 3: process trajectory generation
             queue.put({
                 'type': 'progress',
                 'message': 'Loading cached n-gram data',
                 'progress': 40
             })
-            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data)
 
             queue.put({
                 'type': 'progress',
@@ -125,7 +133,7 @@ class GenerationConfigView(APIView):
                 'progress': 60
             })
 
-            # Step 3: save generated trajectories to local disk
+            # Step 4: save generated trajectories to local disk
             queue.put({
                 'type': 'progress',
                 'message': 'Saving generated trajectories',
@@ -139,7 +147,7 @@ class GenerationConfigView(APIView):
                 'progress': 80
             })
 
-            # Step 4: generate visualization data
+            # Step 5: generate visualization data
             queue.put({
                 'type': 'progress',
                 'message': 'Preparing visualization data',
@@ -240,14 +248,11 @@ class GenerationConfigView(APIView):
         
         return gen_method, num_trajs, traj_len
 
-    def save_to_record(self, data):
+    def save_to_record(self, data, cached_data):
         """Save configurations for trajectory generation to local sql database.
         
         """
         model_data = {}
-
-        # Extract data compressed in cache
-        cached_data = self._process_cache(data)
         file_path = cached_data['file_path']
 
         with open(file_path, "rb") as file_obj:
@@ -271,7 +276,7 @@ class GenerationConfigView(APIView):
             else:
                 raise serializers.ValidationError(serializer.errors)
     
-    def _process_traj_generation(self, data, queue):
+    def _process_traj_generation(self, data, queue, cached_data):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
 
         This method loads cached n-gram data and related objects and generate new trajectories 
@@ -299,7 +304,11 @@ class GenerationConfigView(APIView):
             'progress': 45
         })
 
-        ngrams, start_end_points, grid, sentence_df, study_area = self._extract_ngrams(data)
+        ngrams = cached_data['ngrams']
+        start_end_points = cached_data['start_end_points']
+        grid = cached_data['grid']
+        sentence_df = cached_data['sentence_df']
+        study_area = cached_data['study_area']
 
         queue.put({
             'type': 'progress',
