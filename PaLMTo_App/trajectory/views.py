@@ -220,19 +220,6 @@ class GenerationConfigView(APIView):
             raise ValueError("Invalid cache file type.")
         
         return cached_data
-    
-    def _extract_ngrams(self, data):
-        """Extract ngrams related data from cache file
-        
-        """
-        cached_data = self._process_cache(data)
-        ngrams = cached_data['ngrams']
-        start_end_points = cached_data['start_end_points']
-        grid = cached_data['grid']
-        sentence_df = cached_data['sentence_df']
-        study_area = cached_data['study_area']
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
 
     def _extract_extra_config(self, data):
         """Retrieve user-supplied configurations in step three of form
