@@ -64,12 +64,17 @@ class GenerationConfigView(APIView):
         # Preprocess cached file it's an InMemoryUploadedFile
         cache_file = data.get('cache_file')
         if isinstance(cache_file, InMemoryUploadedFile):
-            cache_file.seek(0)
-            # Read content as bytes to ensure pickle compatibility
-            file_content = b''.join(cache_file.chunks())
-            data['cache_file_content'] = file_content
-            data['cache_file'] = None
+            temp_filename = f"temp_cache_{uuid.uuid4()}.pkl"
+            temp_path = os.path.join(settings.MEDIA_ROOT, "cache", temp_filename)
             
+            with open(temp_path, "wb") as f:
+                for chunk in cache_file.chunks():
+                    f.write(chunk)
+            data['cache_file'] = temp_filename
+            data['delete_after'] = True
+        else:
+            data['delete_after'] = False
+
         task_id = str(uuid.uuid4())
 
         # Start a background thread 
