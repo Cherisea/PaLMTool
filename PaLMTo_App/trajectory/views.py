@@ -228,8 +228,6 @@ class GenerationConfigView(APIView):
             # Read cache file
             with open(full_path, 'rb') as f:
                 cached_data = pickle.load(f)
-        elif cache_file_content:
-            cached_data = pickle.loads(cache_file_content)
         else:
             raise ValueError("Invalid cache file type.")
         
@@ -398,8 +396,9 @@ class GenerationConfigView(APIView):
         """
         delete = data.get('delete_cache_after')
         cache_file = data.get('cache_file')
+        is_temp = data.get('delete_after', False)
 
-        if delete == "true" and cache_file:
+        if (delete == "true" or is_temp) and cache_file:
             cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
             cache_path = os.path.join(cache_dir, cache_file)
             if os.path.exists(cache_path):
