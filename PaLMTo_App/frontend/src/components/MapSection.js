@@ -226,7 +226,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       {
         id: 'map-matching',
         title: 'Map-Matching',
-        available: !!mapMatchData,
+        available: !!mapMatchData || mapMatchLoading,
         color: '#4caf50'
       }
     ]; 
