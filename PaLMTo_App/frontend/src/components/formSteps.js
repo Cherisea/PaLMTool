@@ -20,25 +20,24 @@ function FormSteps({
   defaultCacheFile
 }) {
   const [showSaveInput, setShowSaveInput] = useState(false);
-  const [selectedDir, setSelectedDir] = useState('');
+  const [selectedPath, setSelectedPath] = useState('');
 
   // A mutable reference that persists across re-renders
-  const dirInputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Handler for selecting dir in "save as" window
   const handleDirSelect = (event) => {
-    const files = event.target.files;
-    if (files.length > 0) {
-      const path = files[0].webkitRelativePath;
-      const dir = path.split('/')[0];
-      setSelectedDir(dir);
-      setCacheFileName(`${dir}/${defaultCacheFile}`);
+    const file = event.target.files[0];
+    if (file) {
+      const fullPath = file.name;
+      setSelectedPath(fullPath);
+      setCacheFileName(fullPath);
     }
   }
 
   // Triggers a click event on a file input element
-  const openDirPicker = () => {
-    dirInputRef.current?.click();
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
   }
 
   // STEP 1: Overview of trajectory generation process
