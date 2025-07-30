@@ -136,9 +136,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Declare a state variable for download bounce effect
   const [bounceDownload, setBounceDownload] = useState(false);
 
-  // Declare a state variable for hovering state of a snapshot
-  const [hovered, setHovered] = useState(null);
-
   // Declare a state variable for showing "save as" window
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
   
@@ -209,7 +206,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     }
   }, [generatedFileName, mapMatchData])
 
-  const ViewSnapshots = () => {
+  const ViewBtns = () => {
     const snapshots = [
       {
         id: 'trajectory',
@@ -437,7 +434,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           />
         </div>
       )}
-      <ViewSnapshots />
+      <ViewBtns />
 
       {showSaveAsModal && (
         <div className="popup-overlay">
