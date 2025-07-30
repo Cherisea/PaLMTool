@@ -253,7 +253,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                   setViewMode(snap.id)
                 }
               }}
-              disabled={!snap.available}
+              disabled={snap.id !=='map-matching' && !snap.available}
             >
               <span className="view-button-text">{snap.title}</span>
             </button>
