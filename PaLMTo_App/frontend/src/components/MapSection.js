@@ -214,21 +214,18 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       {
         id: 'trajectory',
         title: 'Trajectory View',
-        icon: FiMap,
         available: !!visualData,
         color: '#007bff'
       },
       {
         id: 'heatmap',
         title: 'Heatmap View',
-        icon: FiGrid,
         available: !!heatmapData,
         color: '#ff9800'
       },
       {
         id: 'map-matching',
         title: 'Map-Matching View',
-        icon: FiCrosshair,
         available: !!mapMatchData,
         color: '#4caf50'
       }
@@ -236,8 +233,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
     return (
       <div className="view-buttons-container">
-        {snapshots.map((snap, idx) => {
-          const IconComponent = snap.icon;
+        {snapshots.map((snap) => {
           return (
           <button
             key={snap.id}
@@ -260,7 +256,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             disabled={!snap.available}
             title={snap.title}
           >
-            <IconComponent className="snapshot-icon" />
             <span className="view-button-text">{snap.title}</span>
           </button>
           );

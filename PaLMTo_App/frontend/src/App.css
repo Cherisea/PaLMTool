@@ -220,13 +220,6 @@
   color: #666;
 }
 
-.snapshot-icon {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .snapshot-thumb.hovered {
   transform: scale(1.2);
   z-index: 2;
