@@ -1,5 +1,5 @@
-import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
-import { useState } from "react";
+import { FiFileText, FiInfo, FiBook, FiFolder } from "react-icons/fi";
+import { useState, useRef } from "react";
 
 function FormSteps({ 
   currentStep,
@@ -20,6 +20,26 @@ function FormSteps({
   defaultCacheFile
 }) {
   const [showSaveInput, setShowSaveInput] = useState(false);
+  const [selectedDir, setSelectedDir] = useState('');
+
+  // A mutable reference that persists across re-renders
+  const dirInputRef = useRef(null);
+
+  // Handler for selecting dir in "save as" window
+  const handleDirSelect = (event) => {
+    const files = event.target.files;
+    if (files.length > 0) {
+      const path = files[0].webkitRelativePath;
+      const dir = path.split('/')[0];
+      setSelectedDir(dir);
+      setCacheFileName(`${dir}/${defaultCacheFile}`);
+    }
+  }
+
+  // Triggers a click event on a file input element
+  const openDirPicker = () => {
+    dirInputRef.current?.click();
+  }
 
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
@@ -48,7 +68,7 @@ function FormSteps({
             <div className="step-content">
               <h3>Step 2: Trajectory Generation</h3>
               <p>
-                Configure generation parameters including the number of trajectories, 
+                Configures generation parameters including the number of trajectories, 
                 generation method (Length Constrained or Point-to-Point), and optional 
                 trajectory length. The trained model will create synthetic trajectories 
                 based on your specifications.
