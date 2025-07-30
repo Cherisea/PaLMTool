@@ -239,13 +239,12 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         {snapshots.map((snap, idx) => {
           const IconComponent = snap.icon;
           return (
-          <div
+          <button
             key={snap.id}
             className={
               `snapshot-thumb` + 
               (viewMode === snap.id ? ' active' : '') +
-              (!snap.available ? ' disabled' : '') + 
-              (hovered === idx ? ' hovered' : hovered !== null ? ' not-hovered' : '')
+              (!snap.available ? ' disabled' : '') 
             }
             onClick={() => {
               if (snap.id === 'map-matching') {
@@ -258,16 +257,12 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                 setViewMode(snap.id)
               }
             }}
-            style={{
-              borderColor: viewMode === snap.id ? snap.color :
-                           hovered === idx ? snap.color : '#e9ecef'
-            }}
-            onMouseEnter={() => setHovered(idx)}
-            onMouseLeave={() => setHovered(null)}
+            disabled={!snap.available}
             title={snap.title}
           >
-            <IconComponent className="snapshot-icon" style={{ color: snap.color }} />
-          </div>
+            <IconComponent className="snapshot-icon" />
+            <span>{snap.title}</span>
+          </button>
           );
         })}
       </div>
