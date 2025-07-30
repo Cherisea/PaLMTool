@@ -235,14 +235,14 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     ]; 
 
     return (
-      <div className="view-snapshots-bar">
+      <div className="view-buttons-container">
         {snapshots.map((snap, idx) => {
           const IconComponent = snap.icon;
           return (
           <button
             key={snap.id}
             className={
-              `snapshot-thumb` + 
+              `view-button` + 
               (viewMode === snap.id ? ' active' : '') +
               (!snap.available ? ' disabled' : '') 
             }
@@ -261,7 +261,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             title={snap.title}
           >
             <IconComponent className="snapshot-icon" />
-            <span>{snap.title}</span>
+            <span className="view-button-text">{snap.title}</span>
           </button>
           );
         })}
