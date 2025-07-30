@@ -225,7 +225,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       },
       {
         id: 'map-matching',
-        title: 'Map-Matching View',
+        title: 'Map-Matching',
         available: !!mapMatchData,
         color: '#4caf50'
       }
@@ -235,29 +235,29 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       <div className="view-buttons-container">
         {snapshots.map((snap) => {
           return (
-          <button
-            key={snap.id}
-            className={
-              `view-button` + 
-              (viewMode === snap.id ? ' active' : '') +
-              (!snap.available ? ' disabled' : '') 
-            }
-            onClick={() => {
-              if (snap.id === 'map-matching') {
-                if (snap.available) {
-                  setViewMode('map-matching');
-                } else {
-                  handleMapMatchView();
-                }
-              } else if (snap.available) {
-                setViewMode(snap.id)
+            <button
+              key={snap.id}
+              className={
+                `view-button` + 
+                (viewMode === snap.id ? ' active' : '') +
+                (!snap.available ? ' disabled' : '') 
               }
-            }}
-            disabled={!snap.available}
-            title={snap.title}
-          >
-            <span className="view-button-text">{snap.title}</span>
-          </button>
+              onClick={() => {
+                if (snap.id === 'map-matching') {
+                  if (snap.available) {
+                    setViewMode('map-matching');
+                  } else {
+                    handleMapMatchView();
+                  }
+                } else if (snap.available) {
+                  setViewMode(snap.id)
+                }
+              }}
+              disabled={!snap.available}
+              title={snap.title}
+            >
+              <span className="view-button-text">{snap.title}</span>
+            </button>
           );
         })}
       </div>
