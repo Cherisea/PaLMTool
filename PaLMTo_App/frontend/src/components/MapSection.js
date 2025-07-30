@@ -254,7 +254,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                 }
               }}
               disabled={!snap.available}
-              title={snap.title}
             >
               <span className="view-button-text">{snap.title}</span>
             </button>
