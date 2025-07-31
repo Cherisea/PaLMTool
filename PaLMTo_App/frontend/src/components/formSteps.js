@@ -20,18 +20,6 @@ function FormSteps({
   defaultCacheFile
 }) {
   const [showSaveInput, setShowSaveInput] = useState(false);
-  const [selectedDir, setSelectedDir] = useState('');
-
-  // Handler for selecting dir in "save as" window
-  const handleDirSelect = async () => {
-    try {
-      const dirHandle = await window.showDirectoryPicker();
-      setSelectedDir(dirHandle.name);
-    } catch (error) {
-      console.error('Error selecting directory: ', error);
-    }
-
-  }
 
   // STEP 1: Overview of trajectory generation process
   const renderStep1 = () => (
@@ -203,8 +191,12 @@ function FormSteps({
                     <input
                       type="text"
                       onChange={e => setCacheFileName(e.target.value)}
-                      placeholder={defaultCacheFile}
+                      placeholder={`/path/to/directory/${defaultCacheFile}`}
                     ></input>
+
+                    <small className="path-hint">
+                      Enter full path including directory (e.g, /home/user/documents/cache.pkl)
+                    </small>
                 </div>
 
                 <div className="popup-actions">
