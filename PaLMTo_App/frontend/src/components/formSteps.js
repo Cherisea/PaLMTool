@@ -200,7 +200,14 @@ function FormSteps({
                 </div>
 
                 <div className="popup-actions">
-                  <button type="button" onClick={() => handleSaveCache(true)}>Confirm</button>
+                  <button type="button" 
+                          onClick={async () => {
+                            const success = await handleSaveCache(true);
+                            if (!success) {
+                              return;
+                            }
+                          }}>
+                  Confirm</button>
                   <button type="button" className="danger-button" onClick={() => setShowSaveInput(false)} >Cancel</button>
                 </div>
               </div>

@@ -62,6 +62,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     type: 'error',
                     message: 'Cache file must have .pkl extension'
                 })
+                return false;
             }
 
             if (newName !== defaultCacheFile) {
@@ -103,6 +104,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
         }
         setShowCachePopup(false);
         setCurrentStep(3);
+        return true;
     }
 
     // Function to handle SSE progress updates
