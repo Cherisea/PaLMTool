@@ -15,6 +15,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 # System libraries
 import os
 import uuid
+import shutil
 from io import StringIO
 from contextlib import redirect_stdout
 
@@ -870,18 +871,21 @@ def rename_cache(request):
     if request.method != "POST": 
         return HttpResponse(f"Request method {request.method} not supported.", status=405)
     
-    old_name = request.POST.get('old_name')
+    old_path = request.POST.get('old_name')
     new_name = request.POST.get('new_name')
 
-    if not new_name.endswith('.pkl'):
-        new_name = new_name + '.pkl'
-
     cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
-    old_path = os.path.join(cache_dir, old_name)
-    new_path = os.path.join(cache_dir, new_name)
+    
+    if os.path.isabs(new_name):
+        new_dir = os.path.dirname(new_name)
 
-    if not os.path.exists(old_path):
-        return HttpResponse(f"File {old_name} not found.", status=404)
+        try:
+            os.makedirs(new_dir, exist_ok=True)
+        except Exception as e:
+            return HttpResponse(f"Error creating directory {new_dir}: {str(e)}.", status=400)
+        new_path = new_name
+    else:
+        new_path = os.path.join(cache_dir, new_name)
     
     # Remove file if it already exists
     if os.path.exists(new_path):
@@ -891,7 +895,7 @@ def rename_cache(request):
             return HttpResponse(f"Error removing existing file {new_name}: {str(e)}.", status=400)
     
     try:
-        os.rename(old_path, new_path)
-        return HttpResponse(f"Renamed {old_name} to {new_name}.", status=200)
+        shutil.copy2(old_path, new_path)
+        return HttpResponse(f"Moved {old_path} to {new_name}.", status=200)
     except Exception as e:
         return HttpResponse(f"Error renaming file: {str(e)}", status=400)
