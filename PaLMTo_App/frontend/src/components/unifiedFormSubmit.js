@@ -67,8 +67,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             if (newName !== defaultCacheFile) {
                 const csrftoken = getCookie('csrftoken');
                 const formData = new FormData();
-                formData.append('old_path', defaultCacheFile);
-                formData.append('new_path', newName)
+                formData.append('old_name', defaultCacheFile);
+                formData.append('new_name', newName)
                 const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
 
                 if (response.status === 200) {
