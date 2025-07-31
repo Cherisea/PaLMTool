@@ -3,7 +3,7 @@ import LocationPicker from "./locationPicker";
 import MapUpdater from "./mapUpdater";
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-import { FiDownload, FiMap, FiGrid, FiCrosshair } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import MapMatchInputModal from "./mapMatchInput";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
