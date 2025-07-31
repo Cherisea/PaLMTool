@@ -510,7 +510,7 @@ class NgramGenerationView(APIView):
                 'message': 'Ngram generation completed successfully!',
                 'progress': 100,
                 'stats': STATS,
-                'cache_file': file_path
+                'cache_file': filename
             })
         except Exception as e:
             if task_id in PROGRESS_QUEUES:
@@ -871,10 +871,11 @@ def rename_cache(request):
     if request.method != "POST": 
         return HttpResponse(f"Request method {request.method} not supported.", status=405)
     
-    old_path = request.POST.get('old_name')
+    old_name = request.POST.get('old_name')
     new_name = request.POST.get('new_name')
 
-    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")   
+    cache_dir = os.path.join(settings.MEDIA_ROOT, "cache")
+    old_path = os.path.join(cache_dir, old_name) 
     
     if os.path.isabs(new_name):
         new_dir = os.path.dirname(new_name)
