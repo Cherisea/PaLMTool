@@ -191,7 +191,7 @@ function FormSteps({
                     <input
                       type="text"
                       onChange={e => setCacheFileName(e.target.value)}
-                      placeholder={`/path/to/directory/${defaultCacheFile}`}
+                      placeholder={defaultCacheFile}
                     ></input>
 
                     <p className="note">
