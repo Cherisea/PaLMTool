@@ -56,6 +56,14 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
     const handleSaveCache = async (save) => {
         if (save) {
             const newName = cacheFileName.trim() || defaultCacheFile
+
+            if (!newName.endsWith('.pkl')) {
+                setNotification({
+                    type: 'error',
+                    message: 'Cache file must have .pkl extension'
+                })
+            }
+            
             if (newName !== defaultCacheFile) {
                 const csrftoken = getCookie('csrftoken');
                 const formData = new FormData();
