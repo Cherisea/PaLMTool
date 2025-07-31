@@ -194,9 +194,9 @@ function FormSteps({
                       placeholder={`/path/to/directory/${defaultCacheFile}`}
                     ></input>
 
-                    <small className="path-hint">
-                      Enter full path including directory (e.g, /home/user/documents/cache.pkl)
-                    </small>
+                    <p className="note">
+                      <i>Note: Enter full path including directory.</i>
+                    </p>
                 </div>
 
                 <div className="popup-actions">
