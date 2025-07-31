@@ -509,7 +509,7 @@ class NgramGenerationView(APIView):
                 'message': 'Ngram generation completed successfully!',
                 'progress': 100,
                 'stats': STATS,
-                'cache_file': filename
+                'cache_file': file_path
             })
         except Exception as e:
             if task_id in PROGRESS_QUEUES:
