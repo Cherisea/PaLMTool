@@ -76,6 +76,11 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         type: 'success',
                         message: response.data
                     })
+
+                    setFormData(prev => ({
+                        ...prev,
+                        cache_file: defaultCacheFile
+                    }))
                 } else {
                     setNotification({
                         type: 'error',
@@ -83,7 +88,12 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     });
                 }
 
-            } 
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    cache_file: defaultCacheFile
+                }))
+            }
         } else {
             setFormData(prev => ({
                 ...prev,
