@@ -79,14 +79,23 @@ const Trajectory3DViewer = () => {
                 });
 
                 // Create animated trajectory path with timestamped coord pairs
-                trajData.feature.forEach((feature, index) => {
+                trajData.features.forEach((feature, index) => {
                     const coords = feature.geometry.coordinates;
 
-                    // Create timed position
-                    const timeStampedPositions = coords.map(coord => ({
-                        time: Cesium.JulianDate.fromIso8601(coord[2]),
-                        position: Cesium.Cartesian3.fromDegrees(coord[0], coord[1], 0)
-                    }));
+                    // Create timed position that substitute elapsed time for altitude
+                    const timeStampedPositions = coords.map(coord => {
+                        const time = new Date(coord[2]);
+
+                        const timeInSecs = time.getTime() / 1000;
+                        const startTimeSecs = new Date(feature.properties.start_time).getTime() / 1000;
+                        const relativeTime = timeInSecs - startTimeSecs;
+                        
+                        return {
+                            time: Cesium.JulianDate.fromIso8601(coord[2]),
+                            position: Cesium.Cartesian3.fromDegrees(coord[0], coord[1], relativeTime)
+                        };
+                        
+                    });
                     
                     // Create a position property that adds samples between points
                     const positionProperty = new Cesium.SampledPositionProperty();
