@@ -95,6 +95,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         type: 'error',
                         message: error.response.data
                     })
+                    return false;
                 }
 
             } else {
