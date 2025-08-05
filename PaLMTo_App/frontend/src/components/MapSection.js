@@ -352,7 +352,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       />
 
       {viewMode === '3d' ? (
-        <div style={{ height: '600px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
           <Trajectory3DViewer />
         </div>
       ) : viewMode === 'heatmap' && heatmapData ? (
