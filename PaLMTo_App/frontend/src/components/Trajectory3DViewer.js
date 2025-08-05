@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Cesium from 'cesium';
 
 const Trajectory3DViewer = () => {
@@ -11,11 +11,14 @@ const Trajectory3DViewer = () => {
     // State variable for error messages
     const [error, setError] = useState(null);
 
+    // State variable for persistent reference of Cesium viewer instance
+    const viewerRef = useRef(null);
+
     // Retrieve data
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`trajectory/analyze`);
+                const response = await fetch(`trajectory/3d-view`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch trajectory data.');
                 }
@@ -40,13 +43,23 @@ const Trajectory3DViewer = () => {
         const initializeCesium = async () => {
             try {
                 const terrainProvider = await Cesium.createWorldTerrainAsync();
-
+                
+                // Creates a 3D globe viewer
                 const viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: terrainProvider,
                     timeline: true,
                     animation: true,
-                    baseLayerPicker: false
+                    baseLayerPicker: false,
+                    homeButton: false,
+                    geocoder: false,
+                    navigationHelpButton: false,
+                    sceneModePicker: false,
+                    fullscreenButton: true,
+                    infoBox: false
                 });
+
+                // Assign a viewer reference for proper cleanup 
+                viewerRef.current = viewer;
 
                 // Get the overall time range
                 let minTime = null;
