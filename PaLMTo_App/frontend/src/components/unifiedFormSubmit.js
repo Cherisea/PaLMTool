@@ -70,23 +70,31 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 const formData = new FormData();
                 formData.append('old_name', defaultCacheFile);
                 formData.append('new_name', newName)
-                const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
 
-                if (response.status === 200) {
-                    setNotification({
-                        type: 'success',
-                        message: response.data
-                    })
+                try {
+                    const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
 
-                    setFormData(prev => ({
-                        ...prev,
-                        cache_file: defaultCacheFile
-                    }))
-                } else {
+                    if (response.status === 200) {
+                        setNotification({
+                            type: 'success',
+                            message: response.data
+                        })
+
+                        setFormData(prev => ({
+                            ...prev,
+                            cache_file: defaultCacheFile
+                        }))
+                    } else {
+                        setNotification({
+                            type: 'error',
+                            message: response.data
+                        });
+                    }
+                } catch (error) {
                     setNotification({
                         type: 'error',
-                        message: response.data
-                    });
+                        message: error.response.data
+                    })
                 }
 
             } else {
