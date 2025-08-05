@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import MapMatchInputModal from "./mapMatchInput";
+import Trajectory3DViewer from "./Trajectory3DViewer";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -225,6 +226,12 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         title: 'Map-Matching',
         available: !!mapMatchData || mapMatchLoading,
         color: '#4caf50'
+      },
+      {
+        id: '3d',
+        title: '3D View',
+        available: !!visualData,
+        color: '#9c27b0'
       }
     ]; 
 
