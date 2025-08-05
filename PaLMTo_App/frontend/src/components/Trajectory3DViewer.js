@@ -155,6 +155,31 @@ const Trajectory3DViewer = () => {
                 // Camera position: all trajectories are visible
                 viewer.zoomTo(viewer.entities);
 
+                // Add time axis labels
+                const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
+                const timeStep = timeRange / 10;
+
+                for (let i=0; i<=10; i++) {
+                    const height = i * timeStep;
+
+                    viewer.entities.add({
+                        position: Cesium.Cartesian3.fromDegrees(
+                            trajData.features[0].geometry.coordinates[0][0] - 0.01,
+                            trajData.features[0].geometry.coordinates[0][1] - 0.01,
+                            height
+                        ),
+                        label: {
+                            text: `${Math.round(height / 60)} min`,
+                            font: '12pt sans-serif',
+                            fillColor: Cesium.Color.WHITE,
+                            outlineColor: Cesium.Color.BLACK,
+                            outlineWidth: 2,
+                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                            pixelOffset: new Cesium.Cartesian2(0, -10)
+                        }
+                    });
+                }
+
             } catch (error) {
                 console.error("Failed to initialize Cesium viewer: ", error);
                 setError('Failed to load 3D visualization');
