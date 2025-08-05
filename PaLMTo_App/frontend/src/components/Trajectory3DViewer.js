@@ -45,7 +45,7 @@ const Trajectory3DViewer = () => {
                 const terrainProvider = await Cesium.createWorldTerrainAsync();
                 
                 // Creates a 3D globe viewer
-                const viewer = new Cesium.Viewer('cesiumContainer', {
+                viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: terrainProvider,
                     timeline: true,
                     animation: true,
