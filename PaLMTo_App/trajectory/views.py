@@ -605,7 +605,7 @@ class Trajectory3DView(APIView):
         # Convert Unix timestamp to local time
         region = extract_boundary(df)
         centroid = extract_area_center(region)
-        df = convert_time(df, centroid.x, centroid.y)
+        df = convert_time(df, centroid[1], centroid[0])
 
         for _, row in df.iterrows():
             start_time_str = row['timestamp']
