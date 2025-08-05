@@ -103,8 +103,22 @@ const Trajectory3DViewer = () => {
                         positionProperty.addSample(time, position);
                     });
 
+                    // Genrate a unique color for each trajectory
+                    const colors = [
+                        Cesium.Color.RED,
+                        Cesium.Color.BLUE,
+                        Cesium.Color.GREEN,
+                        Cesium.Color.YELLOW,
+                        Cesium.Color.CYAN,
+                        Cesium.Color.MAGENTA,
+                        Cesium.Color.ORANGE,
+                        Cesium.Color.LIME
+                    ];
+                    const color = colors[index % colors.length];
+
                     // Add trajectory path as an entity
                     viewer.entities.add({
+                        name: `Trajectory ${index + 1}`,
                         availability: new Cesium.TimeIntervalCollection([
                             new Cesium.TimeInterval({
                                 start: timeStampedPositions[0].time,
@@ -118,15 +132,18 @@ const Trajectory3DViewer = () => {
                                 glowPower: 0.2,     // Intensity
                                 color: Cesium.Color.fromRandom({ alpha: 1.0 })
                             }),
-                            width: 3
+                            width: 4,
+                            show: true
                         },
                         point: {
                             pixelSize: 8,
-                            color: Cesium.Color.fromRandom({ alpha: 1.0 })
+                            color: color,
+                            outlineColor: Cesium.Color.WHITE,
+                            outlineWidth: 2
                         }
                     });
 
-                })
+                });
 
                 // Set up the clock
                 viewer.clock.startTime = minTime;
