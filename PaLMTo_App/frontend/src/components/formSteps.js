@@ -1,5 +1,5 @@
-import { FiFileText, FiInfo, FiBook, FiFolder } from "react-icons/fi";
-import { useState, useRef } from "react";
+import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
+import { useState } from "react";
 
 function FormSteps({ 
   currentStep,
