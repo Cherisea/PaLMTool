@@ -611,10 +611,8 @@ class Trajectory3DView(APIView):
             start_time_str = row['timestamp']
             start_time = datetime.strptime(start_time_str, '%d/%m/%Y %H:%M:%S')
 
-            # Parse geometry column
-            geometry = ast.literal_eval(row['geometry'])
-
             # Create time-stamped coordinates with 15s interval
+            geometry = row['geometry']
             coords_with_time = []
             for i, point in enumerate(geometry):
                 point_time = start_time + timedelta(seconds=i * 15)
