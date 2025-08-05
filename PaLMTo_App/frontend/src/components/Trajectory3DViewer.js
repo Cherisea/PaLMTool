@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Cesium from 'cesium';
 
 const Trajectory3DViewer = () => {
@@ -11,11 +11,14 @@ const Trajectory3DViewer = () => {
     // State variable for error messages
     const [error, setError] = useState(null);
 
+    // State variable for persistent reference of Cesium viewer instance
+    const viewerRef = useRef(null);
+
     // Retrieve data
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`trajectory/analyze`);
+                const response = await fetch(`trajectory/3d-view`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch trajectory data.');
                 }
@@ -40,13 +43,23 @@ const Trajectory3DViewer = () => {
         const initializeCesium = async () => {
             try {
                 const terrainProvider = await Cesium.createWorldTerrainAsync();
-
-                const viewer = new Cesium.Viewer('cesiumContainer', {
+                
+                // Creates a 3D globe viewer
+                viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: terrainProvider,
                     timeline: true,
                     animation: true,
-                    baseLayerPicker: false
+                    baseLayerPicker: false,
+                    homeButton: false,
+                    geocoder: false,
+                    navigationHelpButton: false,
+                    sceneModePicker: false,
+                    fullscreenButton: true,
+                    infoBox: false
                 });
+
+                // Assign a viewer reference for proper cleanup 
+                viewerRef.current = viewer;
 
                 // Get the overall time range
                 let minTime = null;
@@ -66,14 +79,23 @@ const Trajectory3DViewer = () => {
                 });
 
                 // Create animated trajectory path with timestamped coord pairs
-                trajData.feature.forEach((feature, index) => {
+                trajData.features.forEach((feature, index) => {
                     const coords = feature.geometry.coordinates;
 
-                    // Create timed position
-                    const timeStampedPositions = coords.map(coord => ({
-                        time: Cesium.JulianDate.fromIso8601(coord[2]),
-                        position: Cesium.Cartesian3.fromDegrees(coord[0], coord[1], 0)
-                    }));
+                    // Create timed position that substitute elapsed time for altitude
+                    const timeStampedPositions = coords.map(coord => {
+                        const time = new Date(coord[2]);
+
+                        const timeInSecs = time.getTime() / 1000;
+                        const startTimeSecs = new Date(feature.properties.start_time).getTime() / 1000;
+                        const relativeTime = timeInSecs - startTimeSecs;
+                        
+                        return {
+                            time: Cesium.JulianDate.fromIso8601(coord[2]),
+                            position: Cesium.Cartesian3.fromDegrees(coord[0], coord[1], relativeTime)
+                        };
+                        
+                    });
                     
                     // Create a position property that adds samples between points
                     const positionProperty = new Cesium.SampledPositionProperty();
@@ -81,8 +103,22 @@ const Trajectory3DViewer = () => {
                         positionProperty.addSample(time, position);
                     });
 
+                    // Genrate a unique color for each trajectory
+                    const colors = [
+                        Cesium.Color.RED,
+                        Cesium.Color.BLUE,
+                        Cesium.Color.GREEN,
+                        Cesium.Color.YELLOW,
+                        Cesium.Color.CYAN,
+                        Cesium.Color.MAGENTA,
+                        Cesium.Color.ORANGE,
+                        Cesium.Color.LIME
+                    ];
+                    const color = colors[index % colors.length];
+
                     // Add trajectory path as an entity
                     viewer.entities.add({
+                        name: `Trajectory ${index + 1}`,
                         availability: new Cesium.TimeIntervalCollection([
                             new Cesium.TimeInterval({
                                 start: timeStampedPositions[0].time,
@@ -96,15 +132,18 @@ const Trajectory3DViewer = () => {
                                 glowPower: 0.2,     // Intensity
                                 color: Cesium.Color.fromRandom({ alpha: 1.0 })
                             }),
-                            width: 3
+                            width: 4,
+                            show: true
                         },
                         point: {
                             pixelSize: 8,
-                            color: Cesium.Color.fromRandom({ alpha: 1.0 })
+                            color: color,
+                            outlineColor: Cesium.Color.WHITE,
+                            outlineWidth: 2
                         }
                     });
 
-                })
+                });
 
                 // Set up the clock
                 viewer.clock.startTime = minTime;
@@ -116,6 +155,31 @@ const Trajectory3DViewer = () => {
                 // Camera position: all trajectories are visible
                 viewer.zoomTo(viewer.entities);
 
+                // Add time axis labels
+                const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
+                const timeStep = timeRange / 10;
+
+                for (let i=0; i<=10; i++) {
+                    const height = i * timeStep;
+
+                    viewer.entities.add({
+                        position: Cesium.Cartesian3.fromDegrees(
+                            trajData.features[0].geometry.coordinates[0][0] - 0.01,
+                            trajData.features[0].geometry.coordinates[0][1] - 0.01,
+                            height
+                        ),
+                        label: {
+                            text: `${Math.round(height / 60)} min`,
+                            font: '12pt sans-serif',
+                            fillColor: Cesium.Color.WHITE,
+                            outlineColor: Cesium.Color.BLACK,
+                            outlineWidth: 2,
+                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                            pixelOffset: new Cesium.Cartesian2(0, -10)
+                        }
+                    });
+                }
+
             } catch (error) {
                 console.error("Failed to initialize Cesium viewer: ", error);
                 setError('Failed to load 3D visualization');
@@ -125,8 +189,9 @@ const Trajectory3DViewer = () => {
         initializeCesium()
 
         return () => {
-            if (viewer) {
-                viewer.destory();
+            if (viewerRef.current) {
+                viewerRef.current.destory();
+                viewerRef.current = null;
             }
         };
 
@@ -134,7 +199,26 @@ const Trajectory3DViewer = () => {
 
     if (loading) return <div>Loading 3D Visualization</div>;
     if (error) return <div>Error: {error} </div>;
-    return <div id='cesiumContainer'  style={{ width: '100%', height: '100vh' }}/>;
+
+    return (
+        <div style={{ width: '100%', height: '100vh', position: 'relative'}}>
+            <div id='cesiumContainer' style={{ width: '100%', height: '100%'}} />
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    fontSize: '12px'
+                }}>
+                    <div><strong>3D Trajectory Viewer</strong></div>
+                    <div>Time is represented on the Z-axis</div>
+                    <div>Use mouse to rotate and zoom</div> 
+                </div>
+        </div>
+    );
 };
 
 export default Trajectory3DViewer;

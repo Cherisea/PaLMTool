@@ -1,5 +1,5 @@
-import { FiFileText, FiInfo, FiBook, FiFolder } from "react-icons/fi";
-import { useState, useRef } from "react";
+import { FiFileText, FiInfo, FiBook } from "react-icons/fi";
+import { useState } from "react";
 
 function FormSteps({ 
   currentStep,
@@ -177,8 +177,7 @@ function FormSteps({
     
             {!showSaveInput ? (
               <div className="popup-content">
-                <h3>Cache File Options</h3>
-                <p>The cache file was created. Would you like to save it or delete it at the end of the session?</p>
+                <p>The ngram model was created. Would you like to save it or delete it at the end of the session?</p>
                 <div className="popup-actions">
                   <button type="button" onClick={() => setShowSaveInput(true)}>Save</button>
                   <button type="button" className="danger-button" onClick={() => handleSaveCache(false)}>Delete</button>
@@ -195,7 +194,7 @@ function FormSteps({
                     ></input>
 
                     <p className="note">
-                      <i>Note: Enter full path including directory.</i>
+                      <i>Note: Enter full path including directory. File name must have '.pkl' extension.</i>
                     </p>
                 </div>
 

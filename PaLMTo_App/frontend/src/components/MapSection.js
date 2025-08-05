@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import MapMatchInputModal from "./mapMatchInput";
+import Trajectory3DViewer from "./trajectory3DViewer";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -221,11 +222,18 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         color: '#ff9800'
       },
       {
+        id: '3d',
+        title: '3D View',
+        available: !!visualData,
+        color: '#9c27b0'
+      },
+      {
         id: 'map-matching',
         title: 'Map-Matching',
         available: !!mapMatchData || mapMatchLoading,
         color: '#4caf50'
       }
+      
     ]; 
 
     return (
@@ -343,7 +351,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         numTrajs={numTrajs}
       />
 
-      {viewMode === 'heatmap' && heatmapData ? (
+      {viewMode === '3d' ? (
+        <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
+          <Trajectory3DViewer />
+        </div>
+      ) : viewMode === 'heatmap' && heatmapData ? (
         <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <HeatMap
             title="Original Trajectories Heatmap"
