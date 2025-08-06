@@ -2,6 +2,12 @@
     display: none !important;
 }
 
+/* Additional rules to hide Ion credits more thoroughly */
+.cesium-credit-logoContainer,
+.cesium-credit-textContainer {
+    display: none !important;
+}
+
 .trajectory-viewer-container {
     width: 100%;
     height: 100vh;
