@@ -3,6 +3,9 @@ import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import './trajectory3DViewer.css';
 
+// Set ION token to null as we don't need it
+Cesium.Ion.defaultAccessToken = null;
+
 const Trajectory3DViewer = () => {
     // State variable for 3D trajectory data
     const [trajData, setTrajData] = useState(null);
@@ -44,7 +47,6 @@ const Trajectory3DViewer = () => {
 
         const initializeCesium = async () => {
             try {
-                Cesium.Ion.defaultAccessToken = null;
                 const terrainProvider = new Cesium.EllipsoidTerrainProvider();
                 
                 // Creates a 3D globe viewer
