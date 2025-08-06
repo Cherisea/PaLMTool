@@ -42,7 +42,8 @@ const Trajectory3DViewer = () => {
 
         const initializeCesium = async () => {
             try {
-                const terrainProvider = await Cesium.createWorldTerrainAsync();
+                Cesium.Ion.defaultAccessToken = null;
+                const terrainProvider = await Cesium.EllipsoidTerrainProvider();
                 
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
