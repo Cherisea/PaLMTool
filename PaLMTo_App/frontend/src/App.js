@@ -13,6 +13,7 @@ import "leaflet/dist/leaflet.css";
 import './components/backendStats.css';
 import './components/mapMatchInput.css';
 import './components/formSteps.css';
+import './components/trajectory3DViewer.css';
 
 // Fix default icon issue with Leaflet in React
 delete L.Icon.Default.prototype._getIconUrl;
