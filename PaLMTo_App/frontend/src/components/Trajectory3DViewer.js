@@ -202,19 +202,10 @@ const Trajectory3DViewer = () => {
     if (error) return <div>Error: {error} </div>;
 
     return (
-        <div style={{ width: '100%', height: '100vh', position: 'relative'}}>
-            <div id='cesiumContainer' style={{ width: '100%', height: '100%'}} />
-                <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    background: 'rgba(0, 0, 0, 0.7)',
-                    color: 'white',
-                    padding: '10px',
-                    borderRadius: '5px',
-                    fontSize: '12px'
-                }}>
-                    <div><strong>3D Trajectory Viewer</strong></div>
+        <div className='trajectory-viewer-container' >
+            <div id='cesiumContainer' className='cesium-container' />
+                <div className='trajectory-info-panel'>
+                    <div className='trajectory-info-title'>3D Trajectory Viewer</div>
                     <div>Time is represented on the Z-axis</div>
                     <div>Use mouse to rotate and zoom</div> 
                 </div>
