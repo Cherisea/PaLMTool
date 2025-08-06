@@ -5,6 +5,7 @@ import './trajectory3DViewer.css';
 
 // Set ION token to null as we don't need it
 Cesium.Ion.defaultAccessToken = null;
+Cesium.Ion.defaultServer = undefined;
 
 const Trajectory3DViewer = () => {
     // State variable for 3D trajectory data
