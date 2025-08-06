@@ -1,5 +1,5 @@
 // External libraries
-import React, { useState } from "react"
+import { useState } from "react"
 import { useDropzone } from "react-dropzone" 
 import L from "leaflet"
 

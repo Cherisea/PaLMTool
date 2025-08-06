@@ -1,5 +1,3 @@
-import React from 'react';
-
 function DocLinks() {
     return (
         <div className="doc-link-container">
