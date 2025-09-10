@@ -3,8 +3,9 @@ import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import './trajectory3DViewer.css';
 
-// Set ION token to null as we don't need it
+// Disable ION services completely
 Cesium.Ion.defaultAccessToken = null;
+Cesium.Ion.defaultServer = 'https://api.cesium.com';
 
 const Trajectory3DViewer = () => {
     // State variable for 3D trajectory data
@@ -49,9 +50,15 @@ const Trajectory3DViewer = () => {
             try {
                 const terrainProvider = new Cesium.EllipsoidTerrainProvider();
                 
+                // Use OpenStreetMap as base layer instead of ION
+                const imageryProvider = new Cesium.OpenStreetMapImageryProvider({
+                    url: 'https://a.tile.openstreetmap.org/'
+                });
+
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: terrainProvider,
+                    imageryProvider: imageryProvider,
                     timeline: true,
                     animation: true,
                     baseLayerPicker: false,
@@ -62,6 +69,14 @@ const Trajectory3DViewer = () => {
                     fullscreenButton: true,
                     infoBox: false
                 });
+
+                // Disable ION services completely
+                viewer.scene.globe.enableLighting = false;
+                viewer.scene.globe.showGroundAtmosphere = false;
+                viewer.scene.globe.showSkyAtmosphere = false;
+                
+                // Disable ION credit display
+                viewer.cesiumWidget.creditContainer.style.display = 'none';
 
                 // Assign a viewer reference for proper cleanup 
                 viewerRef.current = viewer;
@@ -184,6 +199,9 @@ const Trajectory3DViewer = () => {
                         }
                     });
                 }
+
+                // Restore original console.error
+                // console.error = originalConsoleError;
 
             } catch (error) {
                 console.error("Failed to initialize Cesium viewer: ", error);
