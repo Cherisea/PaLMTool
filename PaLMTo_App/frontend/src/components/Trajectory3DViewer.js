@@ -200,9 +200,6 @@ const Trajectory3DViewer = () => {
                     });
                 }
 
-                // Restore original console.error
-                // console.error = originalConsoleError;
-
             } catch (error) {
                 console.error("Failed to initialize Cesium viewer: ", error);
                 setError('Failed to load 3D visualization');
