@@ -48,17 +48,9 @@ const Trajectory3DViewer = () => {
 
         const initializeCesium = async () => {
             try {
-                const terrainProvider = new Cesium.EllipsoidTerrainProvider();
-                
-                // Use OpenStreetMap as base layer instead of ION
-                const imageryProvider = new Cesium.OpenStreetMapImageryProvider({
-                    url: 'https://a.tile.openstreetmap.org/'
-                });
 
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
-                    terrainProvider: terrainProvider,
-                    imageryProvider: imageryProvider,
                     timeline: true,
                     animation: true,
                     baseLayerPicker: false,
@@ -67,14 +59,17 @@ const Trajectory3DViewer = () => {
                     navigationHelpButton: false,
                     sceneModePicker: false,
                     fullscreenButton: true,
-                    infoBox: false
+                    infoBox: false,
+                    scene3DOnly: true,
+                    shouldAnimate: true
                 });
 
-                // Disable ION services completely
-                viewer.scene.globe.enableLighting = false;
-                viewer.scene.globe.showGroundAtmosphere = false;
-                viewer.scene.globe.showSkyAtmosphere = false;
-                
+                // Disable the globe completely for abstract 3D representation
+                viewer.scene.globe.show = false;
+
+                // Set up a simple background color
+                viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#524B4B')
+
                 // Disable ION credit display
                 viewer.cesiumWidget.creditContainer.style.display = 'none';
 
