@@ -215,18 +215,21 @@ const Trajectory3DViewer = () => {
                     }
                 })
 
+                // Add time axis labels
+                const timeStep = timeRange / 10;
+
                 for (let i=0; i<=10; i++) {
                     const height = i * timeStep;
 
                     viewer.entities.add({
                         position: Cesium.Cartesian3.fromDegrees(
-                            trajData.features[0].geometry.coordinates[0][0] - 0.01,
-                            trajData.features[0].geometry.coordinates[0][1] - 0.01,
+                            centerX - (maxX - minX) * 0.1,
+                            centerY - (maxY - minY) * 0.1,
                             height
-                        ),
+                        ), 
                         label: {
                             text: `${Math.round(height / 60)} min`,
-                            font: '12pt sans-serif',
+                            font: '14pt sans-serif',
                             fillColor: Cesium.Color.WHITE,
                             outlineColor: Cesium.Color.BLACK,
                             outlineWidth: 2,
@@ -235,6 +238,20 @@ const Trajectory3DViewer = () => {
                         }
                     });
                 }
+
+                // Add axis labels
+                viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(centerX, centerY, 0),
+                    label: {
+                        text: 'X: Longitude, Y: Latitude, Z: time',
+                        font: '12pt sans-serif',
+                        fillColor: Cesium.Color.YELLOW,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 2,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        pixelOffset: new Cesium.Cartesian2(0, 50)
+                    }
+                });
 
             } catch (error) {
                 console.error("Failed to initialize Cesium viewer: ", error);
@@ -261,7 +278,7 @@ const Trajectory3DViewer = () => {
             <div id='cesiumContainer' className='cesium-container' />
                 <div className='trajectory-info-panel'>
                     <div className='trajectory-info-title'>3D Trajectory Viewer</div>
-                    <div>Time is represented on the Z-axis</div>
+                    <div>Abstract 3D representation</div>
                     <div>Use mouse to rotate and zoom</div> 
                 </div>
         </div>
