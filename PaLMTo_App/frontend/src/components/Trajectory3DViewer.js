@@ -56,6 +56,7 @@ const Trajectory3DViewer = () => {
 
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
+                    terrainProvider: new Cesium.EllipsoidTerrainProvider(),
                     timeline: true,
                     animation: true,
                     baseLayerPicker: false,
@@ -129,7 +130,7 @@ const Trajectory3DViewer = () => {
                             (maxY - minY) * 111000,
                             maxZ
                         ),
-                        material: Cesium.Color.BLUE.withAlpha(0,1),
+                        material: Cesium.Color.BLUE.withAlpha(0.1),
                         outline: true,
                         outlineColor: Cesium.Color.BLUE.withAlpha(0.5)
                     }
