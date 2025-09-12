@@ -105,7 +105,32 @@ const Trajectory3DViewer = () => {
                     });
                 });
 
-                // Create animated trajectory path with timestamped coord pairs
+                // Calculate time range for Z-axis scaling
+                const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
+                maxZ = timeRange;
+
+                // Create a 3D bounding box to show the region
+                const centerX = (minX + maxX) / 2;
+                const centerY = (minY + maxY) / 2;
+                const centerZ = maxZ / 2;
+
+                // Add a semi-transparent box
+                viewer.entities.add({
+                    name: 'Region Bounds',
+                    position: Cesium.Cartesian3.fromDegrees(centerX, centerY, centerZ),
+                    box: {
+                        dimensions: new Cesium.Cartesian3(
+                            (maxX - minX) * 111000, // Degrees to meters,
+                            (maxY - minY) * 111000,
+                            maxZ
+                        ),
+                        material: Cesium.Color.BLUE.withAlpha(0,1),
+                        outline: true,
+                        outlineColor: Cesium.Color.BLUE.withAlpha(0.5)
+                    }
+                });
+
+                // Create animated trajectory path
                 trajData.features.forEach((feature, index) => {
                     const coords = feature.geometry.coordinates;
 
@@ -183,7 +208,7 @@ const Trajectory3DViewer = () => {
                 viewer.zoomTo(viewer.entities);
 
                 // Add time axis labels
-                const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
+                //const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
                 const timeStep = timeRange / 10;
 
                 for (let i=0; i<=10; i++) {
