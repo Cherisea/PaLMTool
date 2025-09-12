@@ -205,11 +205,15 @@ const Trajectory3DViewer = () => {
                 viewer.clock.multiplier = 1;    // Playback speed
 
                 // Camera position: all trajectories are visible
-                viewer.zoomTo(viewer.entities);
-
-                // Add time axis labels
-                //const timeRange = Cesium.JulianDate.secondsDifference(maxTime, minTime);
-                const timeStep = timeRange / 10;
+                const center = Cesium.Cartesian3.fromDegrees(centerX, centerY, centerZ);
+                viewer.camera.setView({
+                    destination: Cesium.Cartesian3.fromDegrees(centerX, centerY, centerZ + centerZ * 2),
+                    orientation: {
+                        heading: 0.0,
+                        pitch: Cesium.Math.toRadians(-45),
+                        roll: 0.0
+                    }
+                })
 
                 for (let i=0; i<=10; i++) {
                     const height = i * timeStep;
