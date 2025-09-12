@@ -7,6 +7,11 @@ import './trajectory3DViewer.css';
 Cesium.Ion.defaultAccessToken = null;
 Cesium.Ion.defaultServer = 'https://api.cesium.com';
 
+// Disable terrain data loading
+Cesium.TerrainProvider.fromIonAssetId = () => {
+    return new Cesium.EllipsoidTerrainProvider();
+} 
+
 const Trajectory3DViewer = () => {
     // State variable for 3D trajectory data
     const [trajData, setTrajData] = useState(null);
