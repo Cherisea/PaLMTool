@@ -75,6 +75,11 @@ const Trajectory3DViewer = () => {
 
                 // Assign a viewer reference for proper cleanup 
                 viewerRef.current = viewer;
+                
+                // Calculate bounds for 3D space
+                let minX = Infinity, maxX = -Infinity;
+                let minY = Infinity, maxY = -Infinity;
+                let minZ = 0, maxZ = 0;
 
                 // Get the overall time range
                 let minTime = null;
@@ -91,6 +96,13 @@ const Trajectory3DViewer = () => {
                     if (!maxTime || Cesium.JulianDate.compare(endTime, maxTime) > 0) {
                         maxTime = endTime
                     }
+
+                    feature.geometry.coordinates.forEach(coord => {
+                        minX = Math.min(minX, coord[0]);
+                        maxX = Math.max(maxX, coord[0]);
+                        minY = Math.min(minY, coord[1]);
+                        maxY = Math.max(maxY, coord[1]);
+                    });
                 });
 
                 // Create animated trajectory path with timestamped coord pairs
