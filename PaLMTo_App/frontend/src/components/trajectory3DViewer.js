@@ -57,6 +57,7 @@ const Trajectory3DViewer = () => {
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                    imageryProvider: false,
                     timeline: true,
                     animation: true,
                     baseLayerPicker: false,
@@ -67,7 +68,8 @@ const Trajectory3DViewer = () => {
                     fullscreenButton: true,
                     infoBox: false,
                     scene3DOnly: true,
-                    shouldAnimate: true
+                    shouldAnimate: true,
+                    creditContainer: document.createElement('div'),
                 });
 
                 // Disable the globe completely for abstract 3D representation
