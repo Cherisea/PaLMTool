@@ -3,9 +3,13 @@ import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import './trajectory3DViewer.css';
 
+// Configure Cesium asset paths
+window.CESIUM_BASE_URL = '/static/cesium/';
+Cesium.buildModuleUrl.setBaseUrl('/static/cesium');
+
 // Disable ION services completely
 Cesium.Ion.defaultAccessToken = null;
-Cesium.Ion.defaultServer = 'https://api.cesium.com';
+Cesium.Ion.defaultServer = undefined;
 
 // Disable terrain data loading
 Cesium.TerrainProvider.fromIonAssetId = () => {
@@ -53,7 +57,6 @@ const Trajectory3DViewer = () => {
 
         const initializeCesium = async () => {
             try {
-
                 // Creates a 3D globe viewer
                 viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: new Cesium.EllipsoidTerrainProvider(),
