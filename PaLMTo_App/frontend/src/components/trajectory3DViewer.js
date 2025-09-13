@@ -1,9 +1,9 @@
 import { Canvas } from '@react-three/fiber';
 import { OribitControls, Line, Text } from '@react-three/drei';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
-function toXYZ(coord, center, startTimeMs) {
+const toXYZ = (coord, center, startTimeMs) => {
     const [lon, lat, isoTime] = coord;
 
     // Convert difference in degrees to meters
@@ -14,7 +14,27 @@ function toXYZ(coord, center, startTimeMs) {
     return [x, y, z];
 }
 
-function Trajectory3DViewer({trajData}) {
+const Trajectory3DViewer = () => {
+    const [trajData, setTrajData] = useState(null);
+
+    // Retrieve data from URL endpoint
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`trajectory/3d-view`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch trajectory data.');
+                }
+                const data = await response.json();
+                setTrajData(data);
+            } catch (err) {
+                console.log(err.message);
+            }
+        };
+
+        fetchData();
+    }, [])
+
     // Optimizes performance by using memoization
     const prepared = useMemo(() => {
         // Check if input data exists
