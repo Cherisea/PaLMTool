@@ -49,6 +49,7 @@ export default function Trajectory3DViewer({trajData}) {
             return {id : i, points};
         });
 
+        // 3D box in meters
         const size = {
             x : (maxLon - minLon) * 111000 || 1000,
             y : (maxLat - minLat) * 111000 || 1000,
@@ -60,4 +61,33 @@ export default function Trajectory3DViewer({trajData}) {
     }, [trajData]);
 
     if (!prepared) return <div>Loading 3D visualization</div>;
+
+    const {lines, size, _, timeRangeSec} = prepared;
+
+    return (
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
+                {/* Transparent region bounds */}
+                <mesh position={[0, 0, size.z / 2]}>
+                    <boxGeometry args={[Math.max(size.x, 1000), Math.max(size.y, 1000), Math.max(size.z, 1000)]} />
+                    <meshBasicMaterial color="#3399ff" wireframe />
+                </mesh>
+
+                {/* Plot trajectories as lines in 3D space */}
+                {lines.map(({ id, points }) => (
+                    <Line 
+                        key={id}
+                        points={points}
+                        color={['#ff4d4d', '#4d79ff', '#33cc66', '#ffd11a', '#00e5ff', '#ff66ff', '#ff9933', '#99ff33'][id % 8]}
+                        linewidth={3}
+                    />
+                ))}
+            </Canvas>
+
+            <div style={{ position: 'absolute', top: 12, left: 12, color: 'white' }}>
+                <div style={{ fontWeight: 600}}>3D Trajectory Viewer</div>
+                <div>Abstract 3D representation (Orbit to rotate/zoom)</div>
+            </div>
+        </div>
+    )
 };
