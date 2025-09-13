@@ -17,19 +17,30 @@ const toXYZ = (coord, center, startTimeMs) => {
 
 const Trajectory3DViewer = () => {
     const [trajData, setTrajData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // Retrieve data from URL endpoint
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+                setError(null);
+
+                console.log('Fetching traejctory data...');
                 const response = await fetch(`trajectory/3d-view`);
+
                 if (!response.ok) {
-                    throw new Error('Failed to fetch trajectory data.');
+                    throw new Error(`Failed to fetch trajectory data: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log('Received data:', data);
                 setTrajData(data);
             } catch (err) {
-                console.log(err.message);
+                console.log('Error fetching data:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
         };
 
