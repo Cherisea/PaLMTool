@@ -87,12 +87,26 @@ const Trajectory3DViewer = () => {
     return (
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
+                <color attach="background" args={['#524B4B']} />
+                <ambientLight intensity={0.8} />
                 <OrbitControls enablePan enableZoom enableRotate />
+
                 {/* Transparent region bounds */}
                 <mesh position={[0, 0, size.z / 2]}>
                     <boxGeometry args={[Math.max(size.x, 1000), Math.max(size.y, 1000), Math.max(size.z, 1000)]} />
                     <meshBasicMaterial color="#3399ff" wireframe />
                 </mesh>
+
+                {/* Time ticks in 10 steps */}
+                {Array.from({ length: 11 }).map((_, i) => {
+                    const z = (i / 10) * timeRangeSec;
+                    return (
+                        <Text key={i} position={[-size.x * 0.55, -size.y * 0.55, z]} fontSize={12} color="white"
+                        outlineColor="black" outlineWidth={0.02}>
+                            {Math.round(z / 60)} min
+                        </Text>
+                    )
+                })}
 
                 {/* Plot trajectories as lines in 3D space */}
                 {lines.map(({ id, points }) => (
