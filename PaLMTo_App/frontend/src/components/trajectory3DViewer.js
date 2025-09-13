@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState } from 'react';
+import './trajectory3DViewer.css';
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
 const toXYZ = (coord, center, startTimeMs) => {
@@ -85,7 +86,7 @@ const Trajectory3DViewer = () => {
     const {lines, size, _, timeRangeSec} = prepared;
 
     return (
-        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+        <div className="container">
             <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
                 <color attach="background" args={['#524B4B']} />
                 <ambientLight intensity={0.8} />
@@ -98,12 +99,12 @@ const Trajectory3DViewer = () => {
                 </mesh>
 
                 {/* Axis label */}
-                <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
+                {/* <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
                     X: Longitude, Y: Latitude, Z: Time
-                </Text>
+                </Text> */}
 
                 {/* Time ticks in 10 steps */}
-                {Array.from({ length: 11 }).map((_, i) => {
+                {/* {Array.from({ length: 11 }).map((_, i) => {
                     const z = (i / 10) * timeRangeSec;
                     return (
                         <Text key={i} position={[-size.x * 0.55, -size.y * 0.55, z]} fontSize={12} color="white"
@@ -111,7 +112,7 @@ const Trajectory3DViewer = () => {
                             {Math.round(z / 60)} min
                         </Text>
                     );
-                })}
+                })} */}
 
                 {/* Plot trajectories as lines in 3D space */}
                 {lines.map(({ id, points }) => (
@@ -124,9 +125,9 @@ const Trajectory3DViewer = () => {
                 ))}
             </Canvas>
 
-            <div style={{ position: 'absolute', top: 12, left: 12, color: 'white' }}>
-                <div style={{ fontWeight: 600}}>3D Trajectory Viewer</div>
-                <div>Abstract 3D representation (Orbit to rotate/zoom)</div>
+            <div className='overlay'>
+                <div className='title'>3D Trajectory Viewer</div>
+                <div className='subtitle'>Abstract 3D representation (Orbit to rotate/zoom)</div>
             </div>
         </div>
     );
