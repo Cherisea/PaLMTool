@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OribitControls, Line, Text } from '@react-three/drei';
+import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState } from 'react';
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
@@ -85,8 +85,9 @@ const Trajectory3DViewer = () => {
     const {lines, size, _, timeRangeSec} = prepared;
 
     return (
-        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
             <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
+                <OrbitControls enablePan enableZoom enableRotate />
                 {/* Transparent region bounds */}
                 <mesh position={[0, 0, size.z / 2]}>
                     <boxGeometry args={[Math.max(size.x, 1000), Math.max(size.y, 1000), Math.max(size.z, 1000)]} />
@@ -99,7 +100,7 @@ const Trajectory3DViewer = () => {
                         key={id}
                         points={points}
                         color={['#ff4d4d', '#4d79ff', '#33cc66', '#ffd11a', '#00e5ff', '#ff66ff', '#ff9933', '#99ff33'][id % 8]}
-                        linewidth={3}
+                        lineWidth={3}
                     />
                 ))}
             </Canvas>
