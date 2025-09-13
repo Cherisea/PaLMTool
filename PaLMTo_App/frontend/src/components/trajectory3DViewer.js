@@ -85,7 +85,7 @@ const Trajectory3DViewer = () => {
     const {lines, size, _, timeRangeSec} = prepared;
 
     return (
-        <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
                 <OrbitControls enablePan enableZoom enableRotate />
                 {/* Transparent region bounds */}
