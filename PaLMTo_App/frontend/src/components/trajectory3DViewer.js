@@ -14,7 +14,7 @@ function toXYZ(coord, center, startTimeMs) {
     return [x, y, z];
 }
 
-export default function Trajectory3DViewer({trajData}) {
+function Trajectory3DViewer({trajData}) {
     // Optimizes performance by using memoization
     const prepared = useMemo(() => {
         // Check if input data exists
@@ -89,5 +89,7 @@ export default function Trajectory3DViewer({trajData}) {
                 <div>Abstract 3D representation (Orbit to rotate/zoom)</div>
             </div>
         </div>
-    )
-};
+    );
+}
+
+export default Trajectory3DViewer;
