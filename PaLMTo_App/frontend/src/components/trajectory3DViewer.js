@@ -97,6 +97,11 @@ const Trajectory3DViewer = () => {
                     <meshBasicMaterial color="#3399ff" wireframe />
                 </mesh>
 
+                {/* Axis label */}
+                <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
+                    X: Longitude, Y: Latitude, Z: Time
+                </Text>
+
                 {/* Time ticks in 10 steps */}
                 {Array.from({ length: 11 }).map((_, i) => {
                     const z = (i / 10) * timeRangeSec;
@@ -105,7 +110,7 @@ const Trajectory3DViewer = () => {
                         outlineColor="black" outlineWidth={0.02}>
                             {Math.round(z / 60)} min
                         </Text>
-                    )
+                    );
                 })}
 
                 {/* Plot trajectories as lines in 3D space */}
