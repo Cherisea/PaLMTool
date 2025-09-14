@@ -16,9 +16,29 @@ const toXYZ = (coord, center, startTimeMs) => {
 }
 
 const Trajectory3DViewer = () => {
+    // Track if current window is in fullscreen mode
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    // Provides access to the actual div element for fullscreen
+    const containerRef = useRef(null);
+
+    // Synchronize React component's state with actual screen status
+    useEffect(() => {
+        // Setup function
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        }
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+        // Cleanup function: run at re-mount
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
     
     return (
-        <div className="container">
+        <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
             <Canvas camera={{ position: [200, -150, 200], fov: 50 }}>
                 <color attach="background" args={['#1a1a1a']} />
 
@@ -86,6 +106,11 @@ const Trajectory3DViewer = () => {
                 <div className='title'>3D Trajectory Viewer</div>
                 <div className='subtitle'>Abstract 3D representation (Orbit to rotate/zoom)</div>
             </div>
+
+            {/* Fullscreen button */}
+            <button className='fullscreen-button' onClick={toggleFullscreen} title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
+                    {isFullscreen ? '⤓' : '⤢'}
+            </button>
         </div>
     );
 }
