@@ -11,7 +11,6 @@ import MapSection from './components/MapSection';
 import './App.css';
 import "leaflet/dist/leaflet.css";
 import './components/backendStats.css';
-import './components/mapMatchInput.css';
 import './components/formSteps.css';
 import './components/trajectory3DViewer.css';
 

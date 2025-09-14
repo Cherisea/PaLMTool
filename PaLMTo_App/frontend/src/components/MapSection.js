@@ -1,10 +1,9 @@
 import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
 import LocationPicker from "./locationPicker";
 import MapUpdater from "./mapUpdater";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
-import MapMatchInputModal from "./mapMatchInput";
 import Trajectory3DViewer from "./trajectory3DViewer";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
@@ -63,76 +62,12 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
-function getRandomColor() {
-  // Generate random hex code for coloring snapped trajectories
-  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-}
-
-function onEachSnappedFeature(feature, layer) {
-  // Add a popup window to each trajectory when hovered
-  if (feature.properties && feature.properties.trip_id) {
-    layer.bindPopup(`Trip ID: ${feature.properties.trip_id}`);
-    layer.on('mouseover', function () { this.openPopup(); });
-  }
-}
-
-const  MapMatchingMap = ({ title, data, center, onDownload, perc, bounce }) => (
-  <div style={{ flex: 1 }}>
-    <h3 style={{ textAlign: "center" }}>
-      {title} {perc !== undefined && `(${perc}% Processed)`}
-    </h3>
-    <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
-      <MapContainer center={center} zoom={15} style={{ height: "100%", width: "100%" }}>
-        <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
-        {data.features.map((feature, index) => {
-          const color = getRandomColor();
-          return (
-            <GeoJSON key={feature.properties.trip_id || index} 
-                     data={feature} 
-                     style={{ color: color, weight: 5, opacity: 1, dashArray: "10, 6", lineCap: "butt" }}
-                     onEachFeature={onEachSnappedFeature} />
-          )
-        })}
-        
-      </MapContainer>
-
-      {/* Download button overlay */}
-      {onDownload && (
-        <div className={`download-overlay${bounce ? ' bounce' : ''}`} 
-             onClick={onDownload} 
-             title="Download map-matched trajectories">
-          <FiDownload size={24} />
-        </div>
-      )}
-    </div>
-  </div>
-);
-
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, numTrajs }) 
+  heatmapData, generatedFileName }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
-
-  // Declare a state variable for map matching data
-  const [mapMatchData, setMapMatchData] = useState(null);
-
-  // Declare a state variable for status of fetching map matching data
-  const [mapMatchLoading, setMapMatchLoading] = useState(false);
-
-  // Declare a state variable for filename of matched trajectories saved in csv
-  const [matchedTrajFile, setMatchedTrajFile] = useState(''); 
-
-  // Declare a state variable for the presence of user input in map-matching view
-  const [showMapMatchInput, setShowMapMatchInput] = useState(false);
-
-  // Declare a state variable for user input
-  const [mapMatchPerc, setMapMatchPerc] = useState(1);
 
   // Declare a state variable for download bounce effect
   const [bounceDownload, setBounceDownload] = useState(false);
@@ -145,46 +80,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Declare a state variable for current file name
   const [pendingDownloadFile, setPendingDownloadFile] = useState('');
-
-
-  // ? Consider moving data fetching logic to a separate script
-  const fetchMapMatchingData = useCallback(async (percentage) => {
-    setMapMatchLoading(true);
-    try {
-      const response = await axios.post('trajectory/map-match/', {
-        filename: generatedFileName,
-        percentage: percentage
-      });
-      setMapMatchData(response.data.map_data);
-      setMatchedTrajFile(response.data.output_file)
-    } catch (error) {
-      console.error('Failed to fetch map-matching data: ', error);
-    } finally {
-      setMapMatchLoading(false);
-    }
-  }, [generatedFileName]);
-
-  // Show input box when switching to map-matching view
-  const handleMapMatchView = () => {
-    if (!mapMatchData && viewMode !== 'map-matching' && !mapMatchLoading) {
-      setShowMapMatchInput(true);
-    } else if (viewMode !== 'map-matching' || mapMatchData) {
-      setViewMode('map-matching');
-    }
-  }
-
-  // Process user input submission
-  const handleMapMatchSubmit = () => {
-    setShowMapMatchInput(false);
-    setViewMode('map-matching');
-    fetchMapMatchingData(mapMatchPerc);
-  }
-
-  // Process user input cancellation
-  const handleMapMatchCancel = () => {
-    setShowMapMatchInput(false);
-    setMapMatchPerc(1);
-  }
 
   // Function that control bounce effect of download button
   const triggerBounce = () => {
@@ -202,10 +97,10 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Set up a side effect that calls bounce 
   useEffect(() => {
-    if (generatedFileName || mapMatchData) {
+    if (generatedFileName) {
       triggerBounce();
     }
-  }, [generatedFileName, mapMatchData])
+  }, [generatedFileName])
 
   const ViewBtns = () => {
     const snapshots = [
@@ -226,12 +121,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         title: '3D View',
         available: !!visualData,
         color: '#9c27b0'
-      },
-      {
-        id: 'map-matching',
-        title: 'Map-Matching',
-        available: !!mapMatchData || mapMatchLoading,
-        color: '#4caf50'
       }
       
     ]; 
@@ -248,17 +137,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
                 (!snap.available ? ' disabled' : '') 
               }
               onClick={() => {
-                if (snap.id === 'map-matching') {
-                  if (snap.available) {
-                    setViewMode('map-matching');
-                  } else {
-                    handleMapMatchView();
-                  }
-                } else if (snap.available) {
+                if (snap.available) {
                   setViewMode(snap.id)
                 }
               }}
-              disabled={snap.id !=='map-matching' && !snap.available}
+              disabled={!snap.available}
             >
               <span className="view-button-text">{snap.title}</span>
             </button>
@@ -341,15 +224,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className="map-box" style={{ position: 'relative' }}>
-      
-      <MapMatchInputModal 
-        isOpen={showMapMatchInput}
-        percentage={mapMatchPerc}
-        onPercentageChange={setMapMatchPerc}
-        onSubmit={handleMapMatchSubmit}
-        onCancel={handleMapMatchCancel}
-        numTrajs={numTrajs}
-      />
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
@@ -373,54 +247,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             style={heatmapStyle}
             onEachFeature={onEachFeature}
           />
-        </div>
-      ) : viewMode === 'map-matching' && generatedFileName ? (
-        <div style={{ display: 'flex', height: '600px', marginTop: '10px'}}>
-          {mapMatchLoading ? (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              width: '100%',
-              fontSize: '18px',
-              color: '#666'}}>
-              <div>Generating map-matching data...</div>
-              <div className="spinner" style={{
-                marginLeft: '24px',
-                width: '40px',
-                height: '40px',
-                border: '4px solid #f3f3f3',
-                borderTop: '4px solid #3498db',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
-            </div>
-          ) : mapMatchData ? (
-            <MapMatchingMap
-              title="Map-matched Trajectories"
-              data={mapMatchData}
-              center={visualData.center}
-              onDownload={() => {
-                setPendingDownloadFile(matchedTrajFile);
-                setSaveAsFilename(matchedTrajFile);
-                setShowSaveAsModal(true);
-              }}
-              perc={mapMatchPerc}
-              bounce={bounceDownload}
-            />
-          ) : (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              fontSize: '18px',
-              color: '#666'}}>
-              Failed to load map-matching data
-            </div>
-          )}
         </div>
       ) : (
         <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
