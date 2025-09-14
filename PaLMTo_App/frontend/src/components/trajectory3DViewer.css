@@ -5,6 +5,16 @@
   min-height: 700px;  
 }
 
+.container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #1a1a1a;
+}
+
 .overlay {
     position: absolute;
     top: 12px;
@@ -21,4 +31,32 @@
 .subtitle {
   font-size: 14px;
   opacity: 0.9;
+}
+
+.fullscreen-button {
+  position: absolute;
+  top: -15px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid white;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+.fullscreen-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.fullscreen-button:active {
+  transform: scale(0.95);
 }
