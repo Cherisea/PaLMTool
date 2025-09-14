@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 
 const MapMatchInputModal = ({isOpen, percentage, onPercentageChange, onSubmit, onCancel, numTrajs}) => {

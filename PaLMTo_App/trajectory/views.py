@@ -590,6 +590,7 @@ class Trajectory3DView(APIView):
         # TODO: replace demo file with dynamically generated file
         file_path = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
         df = pd.read_csv(file_path)
+        df['geometry'] = df['geometry'].apply(ast.literal_eval)
         processed_data = self.prepare_3d_data(df)
 
         return Response(processed_data, status=status.HTTP_200_OK)
@@ -604,16 +605,14 @@ class Trajectory3DView(APIView):
         # Convert Unix timestamp to local time
         region = extract_boundary(df)
         centroid = extract_area_center(region)
-        df = convert_time(df, centroid.x, centroid.y)
+        df = convert_time(df, centroid[1], centroid[0])
 
         for _, row in df.iterrows():
             start_time_str = row['timestamp']
             start_time = datetime.strptime(start_time_str, '%d/%m/%Y %H:%M:%S')
 
-            # Parse geometry column
-            geometry = ast.literal_eval(row['geometry'])
-
             # Create time-stamped coordinates with 15s interval
+            geometry = row['geometry']
             coords_with_time = []
             for i, point in enumerate(geometry):
                 point_time = start_time + timedelta(seconds=i * 15)
