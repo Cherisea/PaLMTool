@@ -18,7 +18,7 @@ const toXYZ = (coord, center, startTimeMs) => {
 const Trajectory3DViewer = () => {
     
     return (
-        <div className="map-container">
+        <div className="container">
             <Canvas camera={{ position: [200, -150, 200], fov: 50 }}>
                 <color attach="background" args={['#1a1a1a']} />
 
