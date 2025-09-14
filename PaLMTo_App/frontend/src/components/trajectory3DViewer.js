@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState, useRef } from 'react';
+import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
@@ -130,7 +131,7 @@ const Trajectory3DViewer = () => {
 
             {/* Fullscreen button */}
             <button className='fullscreen-button' onClick={toggleFullscreen} title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
-                    {isFullscreen ? '⤓' : '⤢'}
+                    {isFullscreen ? <FiMinimize2 size={20} /> : <FiMaximize2 size={20} />}
             </button>
         </div>
     );

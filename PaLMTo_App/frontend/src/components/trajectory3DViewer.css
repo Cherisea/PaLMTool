@@ -35,16 +35,15 @@
 
 .fullscreen-button {
   position: absolute;
-  top: -15px;
+  top: -20px;
   right: 12px;
   background: rgba(0, 0, 0, 0.7);
-  border: 2px solid white;
+  border: 1px solid white;
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
