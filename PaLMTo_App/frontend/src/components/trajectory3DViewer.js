@@ -29,19 +29,19 @@ const Trajectory3DViewer = () => {
 
                 <group>
                     {/* X axis: horizontal red rod  */}
-                    <mesh position={[50, 0, 0]} >
+                    <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
                         <cylinderGeometry args={[1, 1, 100]} />
                         <meshStandardMaterial color="#ff0000" />
                     </mesh>
 
                     {/* Y axis: vertical green rod */}
-                    <mesh position={[0, 50, 0]} rotation={[0, 0, Math.PI / 2]}>
+                    <mesh position={[0, 0, 0]} >
                         <cylinderGeometry args={[1, 1, 100]} />
                         <meshStandardMaterial color="#00ff00" />
                     </mesh>
 
                     {/* Z axis: blue depth rod */}
-                    <mesh position={[0, 0, 50]} rotation={[0, Math.PI / 2, 0]}>
+                    <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
                         <cylinderGeometry args={[1, 1, 100]} />
                         <meshStandardMaterial color="#0000ff" />
                     </mesh>
@@ -63,8 +63,6 @@ const Trajectory3DViewer = () => {
                     <boxGeometry args={[100, 100, 100]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
-
-                <gridHelper agrs={[200, 20, '#444444', '#444444']}/>
 
                 {/* Axis label */}
                 {/* <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
