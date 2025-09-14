@@ -16,98 +16,55 @@ const toXYZ = (coord, center, startTimeMs) => {
 }
 
 const Trajectory3DViewer = () => {
-    const [trajData, setTrajData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // Retrieve data from URL endpoint
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                console.log('Fetching traejctory data...');
-                const response = await fetch(`trajectory/3d-view`);
-
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch trajectory data: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Received data:', data);
-                setTrajData(data);
-            } catch (err) {
-                console.log('Error fetching data:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [])
-
-    // Optimizes performance by using memoization
-    const prepared = useMemo(() => {
-        // Check if input data exists
-        if (!trajData?.features?.length) return null;
-
-        let minLon = Infinity, maxLon = -Infinity;
-        let minLat = Infinity, maxLat = -Infinity;
-        let minTime = Infinity, maxTime = -Infinity;
-
-        // Loop through every feature 
-        for (const f of trajData.features) {
-            const start_ms = new Date(f.properties.start_time).getTime();
-            const end_ms = new Date(f.properties.end_time).getTime();
-            minTime = Math.min(minTime, start_ms);
-            maxTime = Math.max(maxTime, end_ms);
-
-            for (const [lon, lat] of f.geometry.coordinates) {
-                minLon = Math.min(minLon, lon);
-                maxLon = Math.max(maxLon, lon);
-                minLat = Math.min(minLat, lat);
-                maxLat = Math.max(maxLat, lat);
-            }
-        }
-
-        const center = { lon: (minLon + maxLon) / 2, lat: (minLat + maxLat) / 2};
-        const startTimeMs = minTime;
-        const timeRangeSec = (maxTime - minTime) / 1000;
-
-        // Convert each feature into an array of points
-        const lines = trajData.features.map((f, i) => {
-            const points = f.geometry.coordinates.map(c => toXYZ(c, center, startTimeMs));
-            return {id : i, points};
-        });
-
-        // 3D box in meters
-        const size = {
-            x : (maxLon - minLon) * 111000 || 1000,
-            y : (maxLat - minLat) * 111000 || 1000,
-            z: timeRangeSec || 1000
-        };
-
-        return { lines, size, center, timeRangeSec };
-
-    }, [trajData]);
-
-    if (!prepared) return <div>Loading 3D visualization</div>;
-
-    const {lines, size, _, timeRangeSec} = prepared;
-
+    
     return (
         <div className="container">
-            <Canvas camera={{ position: [0, -size.y * 1.5, size.z * 2], fov: 50 }}>
-                <color attach="background" args={['#524B4B']} />
-                <ambientLight intensity={0.8} />
+            <Canvas camera={{ position: [200, -150, 200], fov: 50 }}>
+                <color attach="background" args={['#1a1a1a']} />
+
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[200, 200, 100]} intensity={1} />
+                <pointLight position={[-150, -150, -150]} intensity={0.5} />
                 <OrbitControls enablePan enableZoom enableRotate />
 
+                <group>
+                    {/* X axis: horizontal red rod  */}
+                    <mesh position={[50, 0, 0]} >
+                        <cylinderGeometry args={[1, 1, 100]} />
+                        <meshStandardMaterial color="#ff0000" />
+                    </mesh>
+
+                    {/* Y axis: vertical green rod */}
+                    <mesh position={[0, 50, 0]} rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[1, 1, 100]} />
+                        <meshStandardMaterial color="#00ff00" />
+                    </mesh>
+
+                    {/* Z axis: blue depth rod */}
+                    <mesh position={[0, 0, 50]} rotation={[0, Math.PI / 2, 0]}>
+                        <cylinderGeometry args={[1, 1, 100]} />
+                        <meshStandardMaterial color="#0000ff" />
+                    </mesh>
+                </group>
+
+                {/* Axis labels */}
+                <Text position={[60, 0, 0]} fontSize={20} color="red">
+                    X
+                </Text>
+                <Text position={[0, 60, 0]} fontSize={20} color="green">
+                    Y
+                </Text>
+                <Text position={[0, 0, 60]} fontSize={20} color="blue">
+                    Z
+                </Text>
+
                 {/* Transparent region bounds */}
-                <mesh position={[0, 0, size.z / 2]}>
-                    <boxGeometry args={[Math.max(size.x, 1000), Math.max(size.y, 1000), Math.max(size.z, 1000)]} />
-                    <meshBasicMaterial color="#3399ff" wireframe />
+                <mesh position={[0, 0, 0]}>
+                    <boxGeometry args={[100, 100, 100]} />
+                    <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
+
+                <gridHelper agrs={[200, 20, '#444444', '#444444']}/>
 
                 {/* Axis label */}
                 {/* <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
@@ -125,15 +82,6 @@ const Trajectory3DViewer = () => {
                     );
                 })} */}
 
-                {/* Plot trajectories as lines in 3D space */}
-                {lines.map(({ id, points }) => (
-                    <Line 
-                        key={id}
-                        points={points}
-                        color={['#ff4d4d', '#4d79ff', '#33cc66', '#ffd11a', '#00e5ff', '#ff66ff', '#ff9933', '#99ff33'][id % 8]}
-                        lineWidth={3}
-                    />
-                ))}
             </Canvas>
 
             <div className='overlay'>
