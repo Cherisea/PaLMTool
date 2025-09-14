@@ -90,14 +90,14 @@ const Trajectory3DViewer = () => {
                 </group>
 
                 {/* Axis labels */}
-                <Text position={[60, 0, 0]} fontSize={20} color="red">
-                    X
+                <Text position={[60, 0, 0]} fontSize={14} color="red">
+                    Longitude
                 </Text>
-                <Text position={[0, 60, 0]} fontSize={20} color="green">
-                    Y
+                <Text position={[0, 60, 0]} fontSize={14} color="green">
+                    Latitude
                 </Text>
-                <Text position={[0, 0, 60]} fontSize={20} color="blue">
-                    Z
+                <Text position={[0, 0, 60]} fontSize={14} color="blue">
+                    Time
                 </Text>
 
                 {/* Transparent region bounds */}
@@ -105,11 +105,6 @@ const Trajectory3DViewer = () => {
                     <boxGeometry args={[100, 100, 100]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
-
-                {/* Axis label */}
-                {/* <Text position={[0, 0, -30]} fontSize={14} color="yellow" outlineColor="black" outlineWidth={0.02}>
-                    X: Longitude, Y: Latitude, Z: Time
-                </Text> */}
 
                 {/* Time ticks in 10 steps */}
                 {/* {Array.from({ length: 11 }).map((_, i) => {
