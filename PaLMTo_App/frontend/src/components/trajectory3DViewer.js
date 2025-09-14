@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import './trajectory3DViewer.css';
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
@@ -35,6 +35,27 @@ const Trajectory3DViewer = () => {
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
         };
     }, []);
+
+    // Function that executes entering and exiting fullscreen
+    const toggleFullscreen = async () => {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            try {
+                await containerRef.current.requestFullscreen();
+                setIsFullscreen(true);
+            } catch (err) {
+                console.error('Error attempting to enable fullscreen:', err);
+            }
+        } else {
+            //Exit fullscreen
+            try {
+                await document.exitFullscreen();
+                setIsFullscreen(false);
+            } catch (err) {
+                console.error()
+            }
+        }
+    };
 
     
     return (
