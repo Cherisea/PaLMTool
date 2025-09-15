@@ -23,6 +23,9 @@ const Trajectory3DViewer = () => {
     // Provides access to the actual div element for fullscreen
     const containerRef = useRef(null);
 
+    // Stores retrieved trajectory data
+    const [trajData, setTrajData] = useState(null);
+
     // Synchronize React component's state with actual screen status
     useEffect(() => {
         // Setup function
@@ -58,6 +61,25 @@ const Trajectory3DViewer = () => {
         }
     };
 
+    // Fetch data from url endpoint
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`/trajectory/3d-view`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch trajectory data.');
+                }
+                const data = await response.json();
+                console.log("Number of retrieved trajectories: ", data.features.length)
+                console.log("First trajectories: ", data.features[0])
+                setTrajData(data);
+            } catch (err) {
+                console.error(err.message);
+            }
+        };
+
+        fetchData();
+    }, [])
     
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
@@ -121,7 +143,7 @@ const Trajectory3DViewer = () => {
 
             <div className='overlay'>
                 <div className='title'>3D Trajectory Viewer</div>
-                <div className='subtitle'>Abstract 3D representation (Orbit to rotate/zoom)</div>
+                <div className='subtitle'>Abstract 3D representation of trajectories (Orbit to rotate/zoom)</div>
             </div>
 
             {/* Fullscreen button */}
