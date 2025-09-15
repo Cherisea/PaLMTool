@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Line, Text } from '@react-three/drei';
+import { OrbitControls, Line, Text, ScreenSizer } from '@react-three/drei';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
@@ -7,6 +7,7 @@ import './trajectory3DViewer.css';
 const timeBins = 48;    // Total bins in a day
 const binSize = 24 * 60 * 60 / timeBins;    // Seconds per bin
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
+const scaleFactor = 0.01;   // Every meter is scaled down to 1cm
 
 // Categorizes an ISO-formatted time to one of 48 bins on z axis
 const timeToBin = (isoTime) => {
@@ -22,8 +23,8 @@ const timeToBin = (isoTime) => {
 const toXYZ = (coord, origin) => {
     const [lon, lat, isoTime] = coord;
     
-    const x = Math.floor((lon - origin.lon) * meterPerDegree);
-    const y = Math.floor((lat - origin.lat) * meterPerDegree);
+    const x = Math.floor((lon - origin.lon) * meterPerDegree) * scaleFactor;
+    const y = Math.floor((lat - origin.lat) * meterPerDegree) * scaleFactor;
     const z = timeToBin(isoTime);
     return [x, y, z];
 }
@@ -98,14 +99,8 @@ const Trajectory3DViewer = () => {
         // Initialize values we need
         let minLon = Infinity, maxLon = -Infinity;
         let minLat = Infinity, maxLat = -Infinity;
-        let minTime = Infinity, maxTime = -Infinity;
 
         for (const f of trajData.features) {
-            const start_ms = new Date(f.properties.start_time).getTime();
-            const end_ms = new Date(f.properties.end_time).getTime();
-            minTime = Math.min(minTime, start_ms);
-            maxTime = Math.max(maxTime, end_ms);
-
             for (const [lon, lat] of f.geometry.coordinates) {
                 minLon = Math.min(minLon, lon);
                 maxLon = Math.max(maxLon, lon);
@@ -115,49 +110,49 @@ const Trajectory3DViewer = () => {
         }
 
         // Range of longitude and latitude in meters
-        const lonRange = Math.floor((maxLon - minLon) * 111000);
-        const latRange = Math.floor((maxLat - minLat) * 111000);
+        const lonRange = Math.floor((maxLon - minLon) * meterPerDegree);
+        const latRange = Math.floor((maxLat - minLat) * meterPerDegree);
         const origin = {lon: minLon, lat: minLat};
-
-        console.log("Longitude range: ", lonRange);
-        console.log("Latitude range: ", latRange);
-        console.log("Bin size (secs):", binSize);
         
         return {origin, lonRange, latRange}
     }, [trajData])
+
+    if (!prepared) return <div>Loading 3D visualization</div>;
+
+    const {origin, lonRange, latRange} = prepared;
     
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
-            <Canvas camera={{ position: [200, -150, 200], fov: 50 }}>
+            <Canvas camera={{ position: [50, -30, 50], fov: 50 }}>
                 <color attach="background" args={['#1a1a1a']} />
 
                 <ambientLight intensity={0.5} />
-                <directionalLight position={[200, 200, 100]} intensity={1} />
-                <pointLight position={[-150, -150, -150]} intensity={0.5} />
+                <directionalLight position={[50, 50, 25]} intensity={1} />
+                <pointLight position={[-25, -25, -25]} intensity={0.5} />
                 <OrbitControls enablePan enableZoom enableRotate />
 
                 <group>
                     {/* X axis: horizontal red rod  */}
                     <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[1, 1, 100]} />
+                        <cylinderGeometry args={[0.5, 0.5, 50]} />
                         <meshStandardMaterial color="#ff0000" />
                     </mesh>
 
                     {/* Y axis: vertical green rod */}
                     <mesh position={[0, 0, 0]} >
-                        <cylinderGeometry args={[1, 1, 100]} />
+                        <cylinderGeometry args={[0.5, 0.5, 50]} />
                         <meshStandardMaterial color="#00ff00" />
                     </mesh>
 
                     {/* Z axis: blue depth rod */}
                     <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                        <cylinderGeometry args={[1, 1, 100]} />
+                        <cylinderGeometry args={[0.5, 0.5, 50]} />
                         <meshStandardMaterial color="#0000ff" />
                     </mesh>
                 </group>
 
                 {/* Axis labels */}
-                <Text position={[60, 0, 0]} fontSize={14} color="red">
+                <Text position={[60, 0, 0]} fontSize={10} color="red">
                     Longitude
                 </Text>
                 <Text position={[0, 60, 0]} fontSize={14} color="green">
@@ -168,8 +163,8 @@ const Trajectory3DViewer = () => {
                 </Text>
 
                 {/* Transparent region bounds */}
-                <mesh position={[0, 0, 0]}>
-                    <boxGeometry args={[100, 100, 100]} />
+                <mesh position={[lonRange * scaleFactor * 0.5, latRange * scaleFactor * 0.5, timeBins * 0.5]}>
+                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
 
