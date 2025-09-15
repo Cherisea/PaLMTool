@@ -4,15 +4,27 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
-// Converts (lon, lat, ts) coordinate pairs into 3D coordinates
-const toXYZ = (coord, center, startTimeMs) => {
-    const [lon, lat, isoTime] = coord;
+const timeBins = 48;    // Total bins in a day
+const binSize = 24 * 60 * 60 / timeBins;    // Seconds per bin
+const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 
-    // Convert difference in degrees to meters
-    const meterPerDegree = 111000;
-    const x = (lon - center.lon) * meterPerDegree;
-    const y = (lat - center.lat) * meterPerDegree;
-    const z = (new Date(isoTime).getTime() - startTimeMs) / 1000;
+// Categorizes an ISO-formatted time to one of 48 bins on z axis
+const timeToBin = (isoTime) => {
+    const date = new Date(isoTime);
+    const hours = date.getHours();
+    const mins = date.getMinutes();
+    const secs = date.getSeconds();
+    const totalSecs = hours * 3600 + mins * 60 + secs;
+    return Math.floor(totalSecs / binSize);
+}
+
+// Converts (lon, lat, ts) coordinate pairs into 3D coordinates
+const toXYZ = (coord, origin) => {
+    const [lon, lat, isoTime] = coord;
+    
+    const x = Math.floor((lon - origin.lon) * meterPerDegree);
+    const y = Math.floor((lat - origin.lat) * meterPerDegree);
+    const z = timeToBin(isoTime);
     return [x, y, z];
 }
 
@@ -107,18 +119,11 @@ const Trajectory3DViewer = () => {
         const latRange = Math.floor((maxLat - minLat) * 111000);
         const origin = {lon: minLon, lat: minLat};
 
-        // Total bins in a day
-        const timeBins = 48;
-
-        // Milliseconds per bin
-        const binSize = 24 * 60 * 60 * 1000 / timeBins;
-
         console.log("Longitude range: ", lonRange);
         console.log("Latitude range: ", latRange);
-        console.log("Number of time bins: ", timeBins)
-        console.log("Bin size (minutes):", binSize / (60 * 1000));
+        console.log("Bin size (secs):", binSize);
         
-        return {origin, lonRange, latRange, timeBins}
+        return {origin, lonRange, latRange}
     }, [trajData])
     
     return (
