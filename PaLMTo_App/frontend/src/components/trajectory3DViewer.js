@@ -70,8 +70,6 @@ const Trajectory3DViewer = () => {
                     throw new Error('Failed to fetch trajectory data.');
                 }
                 const data = await response.json();
-                console.log("Number of retrieved trajectories: ", data.features.length)
-                console.log("First trajectories: ", data.features[0])
                 setTrajData(data);
             } catch (err) {
                 console.error(err.message);
@@ -80,6 +78,31 @@ const Trajectory3DViewer = () => {
 
         fetchData();
     }, [])
+
+    // Prepare trajectory data for 3D rendering
+    const prepared = useMemo(() => {
+        if (!trajData?.features?.length) return null;
+        
+        // Initialize values we need
+        let minLon = Infinity, maxLon = -Infinity;
+        let minLat = Infinity, maxLat = -Infinity;
+        let minTime = Infinity, maxTime = -Infinity;
+
+        for (const f of trajData.features) {
+            const start_ms = new Date(f.properties.start_time).getTime();
+            const end_ms = new Date(f.properties.end_time).getTime();
+            minTime = Math.min(minTime, start_ms);
+            maxTime = Math.max(maxTime, end_ms);
+
+            for (const [lon, lat] of f.geometry.coordinates) {
+                minLon = Math.min(minLon, lon);
+                maxLon = Math.max(maxLon, lon);
+                minLat = Math.min(minLat, lat);
+                maxLat = Math.max(maxLat, lat);
+            }
+        }
+
+    }, [trajData])
     
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
