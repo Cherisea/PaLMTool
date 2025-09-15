@@ -102,6 +102,23 @@ const Trajectory3DViewer = () => {
             }
         }
 
+        // Range of longitude and latitude in meters
+        const lonRange = Math.floor((maxLon - minLon) * 111000);
+        const latRange = Math.floor((maxLat - minLat) * 111000);
+        const origin = {lon: minLon, lat: minLat};
+
+        // Total bins in a day
+        const timeBins = 48;
+
+        // Milliseconds per bin
+        const binSize = 24 * 60 * 60 * 1000 / timeBins;
+
+        console.log("Longitude range: ", lonRange);
+        console.log("Latitude range: ", latRange);
+        console.log("Number of time bins: ", timeBins)
+        console.log("Bin size (minutes):", binSize / (60 * 1000));
+        
+        return {origin, lonRange, latRange, timeBins}
     }, [trajData])
     
     return (
@@ -150,17 +167,6 @@ const Trajectory3DViewer = () => {
                     <boxGeometry args={[100, 100, 100]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
-
-                {/* Time ticks in 10 steps */}
-                {/* {Array.from({ length: 11 }).map((_, i) => {
-                    const z = (i / 10) * timeRangeSec;
-                    return (
-                        <Text key={i} position={[-size.x * 0.55, -size.y * 0.55, z]} fontSize={12} color="white"
-                        outlineColor="black" outlineWidth={0.02}>
-                            {Math.round(z / 60)} min
-                        </Text>
-                    );
-                })} */}
 
             </Canvas>
 
