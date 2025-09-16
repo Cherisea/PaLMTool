@@ -151,19 +151,32 @@ const Trajectory3DViewer = () => {
                     </mesh>
                 </group>
 
+                {/* Grid lines every 1km (scaled down) */}
+                {Array.from({ length: Math.ceil(lonRange / 1000) + 1 }).map((_, i) => (
+                    <Line 
+                        key={`x-${i}`}
+                        points={[
+                            [i * 10, 0, 0],
+                            [i * 10, latRange * scaleFactor, 0]
+                        ]}
+                        color="white"
+                        lineWidth={1}
+                    />
+                ))}
+
                 {/* Axis labels */}
-                <Text position={[60, 0, 0]} fontSize={10} color="red">
+                <Text position={[50, 0, 0]} fontSize={10} color="red">
                     Longitude
                 </Text>
-                <Text position={[0, 60, 0]} fontSize={14} color="green">
+                <Text position={[0, 50, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                <Text position={[0, 0, 60]} fontSize={14} color="blue">
+                <Text position={[0, 0, 30]} fontSize={14} color="blue">
                     Time
                 </Text>
 
                 {/* Transparent region bounds */}
-                <mesh position={[lonRange * scaleFactor * 0.5, latRange * scaleFactor * 0.5, timeBins * 0.5]}>
+                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 0.5]}>
                     <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
