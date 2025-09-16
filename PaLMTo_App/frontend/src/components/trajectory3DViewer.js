@@ -4,7 +4,7 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
-const timeBins = 48;    // Total bins in a day
+const timeBins = 24;    // Total bins in a day
 const binSize = 24 * 60 * 60 / timeBins;    // Seconds per bin
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km equals to 10 visual units
@@ -182,7 +182,7 @@ const Trajectory3DViewer = () => {
                 ))}
 
                 {/* Grid lines every 2.4 hours in z axis */}
-                {Array.from({ length: timeBins / 10 + 1 }).map((_, i) => (
+                {Array.from({ length: timeBins + 1 }).map((_, i) => (
                     <Line 
                         key={`z-${i}`}
                         points={[
@@ -206,8 +206,8 @@ const Trajectory3DViewer = () => {
                 </Text>
 
                 {/* Transparent region bounds */}
-                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 0.5]}>
-                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins]} />
+                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 5]}>
+                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * 10]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
 
