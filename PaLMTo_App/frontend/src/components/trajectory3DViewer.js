@@ -128,11 +128,12 @@ const Trajectory3DViewer = () => {
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
             <Canvas camera={{ position: [50, -30, 50], fov: 50 }}>
                 <color attach="background" args={['#1a1a1a']} />
+                <OrbitControls enablePan enableZoom enableRotate />
 
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[50, 50, 25]} intensity={1} />
                 <pointLight position={[-25, -25, -25]} intensity={0.5} />
-                <OrbitControls enablePan enableZoom enableRotate />
+                
 
                 <group>
                     {/* X axis: horizontal red rod  */}
@@ -180,15 +181,15 @@ const Trajectory3DViewer = () => {
                     />
                 ))}
 
-                {/* Grid lines every 30 mins in z axis */}
-                {Array.from({ length: timeBins + 1 }).map((_, i) => (
+                {/* Grid lines every 2.4 hours in z axis */}
+                {Array.from({ length: timeBins / 10 + 1 }).map((_, i) => (
                     <Line 
                         key={`z-${i}`}
                         points={[
-                            [0, 0, i],
-                            [lonRange * scaleFactor, 0, i]
+                            [0, 0, i * 10],
+                            [lonRange * scaleFactor, 0, i * 10]
                         ]}
-                        color="white"
+                        color="red"
                         lineWidth={1}
                     />
                 ))}
