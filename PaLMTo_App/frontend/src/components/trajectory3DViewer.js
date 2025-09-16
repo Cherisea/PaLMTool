@@ -155,39 +155,39 @@ const Trajectory3DViewer = () => {
                     </mesh>
                 </group>
 
-                {/* Grid lines every 1km (scaled down) in x axis */}
-                {Array.from({ length: Math.ceil(lonRange / 1000) + 1 }).map((_, i) => (
+                {/* Grid lines every 0.5km (scaled down) in x axis */}
+                {Array.from({ length: Math.ceil(lonRange / 500) + 1 }).map((_, i) => (
                     <Line 
                         key={`x-${i}`}
                         points={[
-                            [i * 10, 0, 0],
-                            [i * 10, latRange * scaleFactor, 0]
+                            [i * 5, 0, 0],
+                            [i * 5, latRange * scaleFactor, 0]
                         ]}
                         color="white"
                         lineWidth={1}
                     />
                 ))}
 
-                {/* Grid lines every 1km (scaled down) in y axis */}
-                {Array.from({ length: Math.ceil(latRange / 1000) + 1 }).map((_, i) => (
+                {/* Grid lines every 0.5km (scaled down) in y axis */}
+                {Array.from({ length: Math.ceil(latRange / 500) + 1 }).map((_, i) => (
                     <Line 
                         key={`y-${i}`}
                         points={[
-                            [0, i * 10, 0],
-                            [lonRange * scaleFactor, i * 10, 0]
+                            [0, i * 5, 0],
+                            [lonRange * scaleFactor, i * 5, 0]
                         ]}
                         color="white"
                         lineWidth={1}
                     />
                 ))}
 
-                {/* Grid lines every 2.4 hours in z axis */}
+                {/* Grid lines every 1 hours in z axis */}
                 {Array.from({ length: timeBins + 1 }).map((_, i) => (
                     <Line 
                         key={`z-${i}`}
                         points={[
-                            [0, 0, i * 10],
-                            [lonRange * scaleFactor, 0, i * 10]
+                            [0, 0, i * 5],
+                            [lonRange * scaleFactor, 0, i * 5]
                         ]}
                         color="red"
                         lineWidth={1}
@@ -206,8 +206,8 @@ const Trajectory3DViewer = () => {
                 </Text>
 
                 {/* Transparent region bounds */}
-                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 5]}>
-                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * 10]} />
+                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 2.5]}>
+                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * 5]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
 
