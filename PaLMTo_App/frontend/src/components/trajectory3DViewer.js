@@ -4,7 +4,7 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
-const timeBins = 48;    // Total bins in a day
+const timeBins = 24;    // Total bins in a day
 const binSize = 24 * 60 * 60 / timeBins;    // Seconds per bin
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // Every meter is scaled down to 1cm
@@ -151,13 +151,39 @@ const Trajectory3DViewer = () => {
                     </mesh>
                 </group>
 
-                {/* Grid lines every 1km (scaled down) */}
+                {/* Grid lines every 1km (scaled down) in x axis */}
                 {Array.from({ length: Math.ceil(lonRange / 1000) + 1 }).map((_, i) => (
                     <Line 
                         key={`x-${i}`}
                         points={[
                             [i * 10, 0, 0],
                             [i * 10, latRange * scaleFactor, 0]
+                        ]}
+                        color="white"
+                        lineWidth={1}
+                    />
+                ))}
+
+                {/* Grid lines every 1km (scaled down) in y axis */}
+                {Array.from({ length: Math.ceil(latRange / 1000) + 1 }).map((_, i) => (
+                    <Line 
+                        key={`y-${i}`}
+                        points={[
+                            [0, i * 10, 0],
+                            [lonRange * scaleFactor, i * 10, 0]
+                        ]}
+                        color="white"
+                        lineWidth={1}
+                    />
+                ))}
+
+                {/* Grid lines every 30 mins in z axis */}
+                {Array.from({ length: timeBins + 1 }).map((_, i) => (
+                    <Line 
+                        key={`z-${i}`}
+                        points={[
+                            [0, 0, i],
+                            [lonRange * scaleFactor, 0, i]
                         ]}
                         color="white"
                         lineWidth={1}
