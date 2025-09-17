@@ -31,6 +31,32 @@ const toXYZ = (coord, origin) => {
     return [x, y, z];
 }
 
+    // Grid line creation function
+    const createGridLines = (axis, count, xrang, yrang, color="white") => {
+        const getPoints = (i) => {
+            switch (axis) {
+                case 'x':
+                    return [[i * gridLineStep, 0, 0], [i * gridLineStep, yrang, 0]];
+                case 'y':
+                    return [[0, i * gridLineStep, 0], [xrang, i * gridLineStep, 0]];
+                case 'z-x':
+                    return [[0, 0, i * gridLineStep], [xrang, 0, i * gridLineStep]];
+                case 'z-y':
+                    return [[0, 0, i * gridLineStep], [0, yrang, i * gridLineStep]];
+            }
+        }
+
+        return Array.from({ length: count }).map((_, i) => (
+            <Line 
+                key={`${axis}-${i}`}
+                points={getPoints(i)}
+                color={color}
+                lineWidth={1}
+            />
+        ))
+    }
+
+
 // Display time ticks on z axis
 const createTimeTicks = (count, color) => {
     return Array.from({ length: count }).map((_, i) => {
@@ -137,31 +163,6 @@ const Trajectory3DViewer = () => {
         return {origin, lonRange, latRange}
     }, [trajData])
 
-    // Grid line creation function
-    const createGridLines = (axis, count, color="white") => {
-        const getPoints = (i) => {
-            switch (axis) {
-                case 'x':
-                    return [[i * gridLineStep, 0, 0], [i * gridLineStep, latRange * scaleFactor, 0]];
-                case 'y':
-                    return [[0, i * gridLineStep, 0], [lonRange * scaleFactor, i * gridLineStep, 0]];
-                case 'z-x':
-                    return [[0, 0, i * gridLineStep], [lonRange * scaleFactor, 0, i * gridLineStep]];
-                case 'z-y':
-                    return [[0, 0, i * gridLineStep], [0, latRange * scaleFactor, i * gridLineStep]];
-            }
-        }
-
-        return Array.from({ length: count }).map((_, i) => (
-            <Line 
-                key={`${axis}-${i}`}
-                points={getPoints(i)}
-                color={color}
-                lineWidth={1}
-            />
-        ))
-    }
-
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {origin, lonRange, latRange} = prepared;
@@ -199,10 +200,10 @@ const Trajectory3DViewer = () => {
                 </group>
 
                 {/* Grid lines every 5 visual unit(500m/1h) */}
-                {createGridLines('x', Math.ceil(lonRange / 500) + 1, "red")}
-                {createGridLines('y', Math.ceil(latRange / 500) + 1, "green")}
-                {createGridLines('z-x', timeBins + 1, "blue")}
-                {createGridLines('z-y', timeBins + 1, "blue")}
+                {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "red")}
+                {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "green")}
+                {createGridLines('z-x', timeBins + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
+                {createGridLines('z-y', timeBins + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
 
                 {/* Axis labels */}
                 <Text position={[150, 0, 0]} fontSize={10} color="red">
