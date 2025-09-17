@@ -159,13 +159,18 @@ const Trajectory3DViewer = () => {
         const lonRange = Math.floor((maxLon - minLon) * meterPerDegree);
         const latRange = Math.floor((maxLat - minLat) * meterPerDegree);
         const origin = {lon: minLon, lat: minLat};
+
+        const lines = trajData.features.map((f, i) => {
+            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin));
+            return {id: i, points};
+        })
         
-        return {origin, lonRange, latRange}
+        return {lonRange, latRange, lines}
     }, [trajData])
 
     if (!prepared) return <div>Loading 3D visualization</div>;
 
-    const {origin, lonRange, latRange} = prepared;
+    const {lonRange, latRange, lines} = prepared;
     const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeBins * gridLineStep]
 
     return (
@@ -219,6 +224,15 @@ const Trajectory3DViewer = () => {
                     <boxGeometry args={boxSize} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
+
+                {/* Plot trajectories as lines in 3D space */}
+                {lines.map((line) => (
+                    <Line 
+                        key={line.id}
+                        points={line.points}
+                        lineWidth={3}
+                    />
+                ))}
 
             </Canvas>
 
