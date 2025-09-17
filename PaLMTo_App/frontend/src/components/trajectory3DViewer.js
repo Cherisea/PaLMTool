@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Line, Text, ScreenSizer } from '@react-three/drei';
+import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
@@ -165,6 +165,7 @@ const Trajectory3DViewer = () => {
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {origin, lonRange, latRange} = prepared;
+    const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeBins * gridLineStep]
 
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
@@ -204,17 +205,17 @@ const Trajectory3DViewer = () => {
                 {createGridLines('z-y', timeBins + 1, "blue")}
 
                 {/* Axis labels */}
-                <Text position={[50, 0, 0]} fontSize={10} color="red">
+                <Text position={[150, 0, 0]} fontSize={10} color="red">
                     Longitude
                 </Text>
-                <Text position={[0, 50, 0]} fontSize={14} color="green">
+                <Text position={[0, 60, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
                 {createTimeTicks(timeBins + 1, 'white')}
 
                 {/* Transparent region bounds */}
                 <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 2.5]}>
-                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * gridLineStep]} />
+                    <boxGeometry args={boxSize} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
 
