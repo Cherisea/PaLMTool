@@ -30,6 +30,24 @@ const toXYZ = (coord, origin) => {
     return [x, y, z];
 }
 
+// Display time ticks on z axis
+const createTimeTicks = (count, spacing, color) => {
+    return Array.from({ length: count }).map((_, i) => {
+        return (
+            <Text 
+                key={`time-${i}`}
+                position={[-5, -5, i * spacing]}
+                fontSize={8}
+                color={color}
+                outlineColor="black"
+                outlineWidth={0.02}
+            >
+                {i}:00
+            </Text>
+        )
+    })
+}
+
 const Trajectory3DViewer = () => {
     // Track if current window is in fullscreen mode
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -179,9 +197,10 @@ const Trajectory3DViewer = () => {
                 </group>
 
                 {/* Grid lines every 5 visual unit(500m) in x axis */}
-                {createGridLines('x', Math.ceil(lonRange / 500) + 1, 5)}
-                {createGridLines('y', Math.ceil(latRange / 500) + 1, 5)}
-                {createGridLines('z-x', timeBins + 1, 5, "red")}
+                {createGridLines('x', Math.ceil(lonRange / 500) + 1, 5, "red")}
+                {createGridLines('y', Math.ceil(latRange / 500) + 1, 5, "green")}
+                {createGridLines('z-x', timeBins + 1, 5, "blue")}
+                {createGridLines('z-y', timeBins + 1, 5, "blue")}
 
                 {/* Axis labels */}
                 <Text position={[50, 0, 0]} fontSize={10} color="red">
@@ -190,9 +209,7 @@ const Trajectory3DViewer = () => {
                 <Text position={[0, 50, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                <Text position={[0, 0, 30]} fontSize={14} color="blue">
-                    Time
-                </Text>
+                {createTimeTicks(timeBins + 1, 5)}
 
                 {/* Transparent region bounds */}
                 <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 2.5]}>
