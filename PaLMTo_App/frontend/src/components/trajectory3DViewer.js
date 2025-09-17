@@ -6,14 +6,15 @@ import './trajectory3DViewer.css';
 
 const timeBins = 24;    // Total bins in a day
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
-const scaleFactor = 0.01;   // 1 km equals to 10 visual units
+const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 
-// Categorizes an ISO-formatted time to one of 48 bins on z axis
+// Categorizes an ISO-formatted time to one of 24 bins on z axis
 const timeToBin = (isoTime) => {
     const date = new Date(isoTime);
     const hours = date.getHours();
     const mins = date.getMinutes();
     
+    // Round result to one decimal place
     const bin = Math.floor((hours + mins / 60) * 10) / 10;
 
     return bin;
@@ -117,10 +118,35 @@ const Trajectory3DViewer = () => {
         return {origin, lonRange, latRange}
     }, [trajData])
 
+    // Grid line creation function
+    const createGridLines = (axis, count, spacing, color="white") => {
+        const getPoints = (i) => {
+            switch (axis) {
+                case 'x':
+                    return [[i * spacing, 0, 0], [i * spacing, latRange * scaleFactor, 0]];
+                case 'y':
+                    return [[0, i * spacing, 0], [lonRange * scaleFactor, i * spacing, 0]];
+                case 'z-x':
+                    return [[0, 0, i * spacing], [lonRange * scaleFactor, 0, i * spacing]];
+                case 'z-y':
+                    return [[0, 0, i * spacing], [0, latRange * scaleFactor, i * spacing]];
+            }
+        }
+
+        return Array.from({ length: count }).map((_, i) => (
+            <Line 
+                key={`${axis}-${i}`}
+                points={getPoints(i)}
+                color={color}
+                lineWidth={1}
+            />
+        ))
+    }
+
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {origin, lonRange, latRange} = prepared;
-    
+
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
             <Canvas camera={{ position: [50, -30, 50], fov: 50 }}>
@@ -152,44 +178,10 @@ const Trajectory3DViewer = () => {
                     </mesh>
                 </group>
 
-                {/* Grid lines every 0.5km (scaled down) in x axis */}
-                {Array.from({ length: Math.ceil(lonRange / 500) + 1 }).map((_, i) => (
-                    <Line 
-                        key={`x-${i}`}
-                        points={[
-                            [i * 5, 0, 0],
-                            [i * 5, latRange * scaleFactor, 0]
-                        ]}
-                        color="white"
-                        lineWidth={1}
-                    />
-                ))}
-
-                {/* Grid lines every 0.5km (scaled down) in y axis */}
-                {Array.from({ length: Math.ceil(latRange / 500) + 1 }).map((_, i) => (
-                    <Line 
-                        key={`y-${i}`}
-                        points={[
-                            [0, i * 5, 0],
-                            [lonRange * scaleFactor, i * 5, 0]
-                        ]}
-                        color="white"
-                        lineWidth={1}
-                    />
-                ))}
-
-                {/* Grid lines every 1 hours in z axis */}
-                {Array.from({ length: timeBins + 1 }).map((_, i) => (
-                    <Line 
-                        key={`z-${i}`}
-                        points={[
-                            [0, 0, i * 5],
-                            [lonRange * scaleFactor, 0, i * 5]
-                        ]}
-                        color="red"
-                        lineWidth={1}
-                    />
-                ))}
+                {/* Grid lines every 5 visual unit(500m) in x axis */}
+                {createGridLines('x', Math.ceil(lonRange / 500) + 1, 5)}
+                {createGridLines('y', Math.ceil(latRange / 500) + 1, 5)}
+                {createGridLines('z-x', timeBins + 1, 5, "red")}
 
                 {/* Axis labels */}
                 <Text position={[50, 0, 0]} fontSize={10} color="red">
