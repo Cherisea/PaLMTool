@@ -7,6 +7,7 @@ import './trajectory3DViewer.css';
 const timeBins = 24;    // Total bins in a day
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
+const gridLineStep = 5;     // One grid line every 5 visual units
 
 // Categorizes an ISO-formatted time to one of 24 bins on z axis
 const timeToBin = (isoTime) => {
@@ -24,22 +25,22 @@ const timeToBin = (isoTime) => {
 const toXYZ = (coord, origin) => {
     const [lon, lat, isoTime] = coord;
     
-    const x = Math.floor((lon - origin.lon) * meterPerDegree) * scaleFactor;
-    const y = Math.floor((lat - origin.lat) * meterPerDegree) * scaleFactor;
+    const x = Math.floor((lon - origin.lon) * meterPerDegree * scaleFactor / gridLineStep);
+    const y = Math.floor((lat - origin.lat) * meterPerDegree * scaleFactor / gridLineStep);
     const z = timeToBin(isoTime);
     return [x, y, z];
 }
 
 // Display time ticks on z axis
-const createTimeTicks = (count, spacing, color) => {
+const createTimeTicks = (count, color) => {
     return Array.from({ length: count }).map((_, i) => {
         return (
             <Text 
                 key={`time-${i}`}
-                position={[-5, -5, i * spacing]}
+                position={[-5, -5, i * gridLineStep]}
                 fontSize={8}
                 color={color}
-                outlineColor="black"
+                outlineColor="blue"
                 outlineWidth={0.02}
             >
                 {i}:00
@@ -137,17 +138,17 @@ const Trajectory3DViewer = () => {
     }, [trajData])
 
     // Grid line creation function
-    const createGridLines = (axis, count, spacing, color="white") => {
+    const createGridLines = (axis, count, color="white") => {
         const getPoints = (i) => {
             switch (axis) {
                 case 'x':
-                    return [[i * spacing, 0, 0], [i * spacing, latRange * scaleFactor, 0]];
+                    return [[i * gridLineStep, 0, 0], [i * gridLineStep, latRange * scaleFactor, 0]];
                 case 'y':
-                    return [[0, i * spacing, 0], [lonRange * scaleFactor, i * spacing, 0]];
+                    return [[0, i * gridLineStep, 0], [lonRange * scaleFactor, i * gridLineStep, 0]];
                 case 'z-x':
-                    return [[0, 0, i * spacing], [lonRange * scaleFactor, 0, i * spacing]];
+                    return [[0, 0, i * gridLineStep], [lonRange * scaleFactor, 0, i * gridLineStep]];
                 case 'z-y':
-                    return [[0, 0, i * spacing], [0, latRange * scaleFactor, i * spacing]];
+                    return [[0, 0, i * gridLineStep], [0, latRange * scaleFactor, i * gridLineStep]];
             }
         }
 
@@ -196,11 +197,11 @@ const Trajectory3DViewer = () => {
                     </mesh>
                 </group>
 
-                {/* Grid lines every 5 visual unit(500m) in x axis */}
-                {createGridLines('x', Math.ceil(lonRange / 500) + 1, 5, "red")}
-                {createGridLines('y', Math.ceil(latRange / 500) + 1, 5, "green")}
-                {createGridLines('z-x', timeBins + 1, 5, "blue")}
-                {createGridLines('z-y', timeBins + 1, 5, "blue")}
+                {/* Grid lines every 5 visual unit(500m/1h) */}
+                {createGridLines('x', Math.ceil(lonRange / 500) + 1, "red")}
+                {createGridLines('y', Math.ceil(latRange / 500) + 1, "green")}
+                {createGridLines('z-x', timeBins + 1, "blue")}
+                {createGridLines('z-y', timeBins + 1, "blue")}
 
                 {/* Axis labels */}
                 <Text position={[50, 0, 0]} fontSize={10} color="red">
@@ -209,11 +210,11 @@ const Trajectory3DViewer = () => {
                 <Text position={[0, 50, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                {createTimeTicks(timeBins + 1, 5)}
+                {createTimeTicks(timeBins + 1, 'white')}
 
                 {/* Transparent region bounds */}
                 <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 2.5]}>
-                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * 5]} />
+                    <boxGeometry args={[lonRange * scaleFactor, latRange * scaleFactor, timeBins * gridLineStep]} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
 
