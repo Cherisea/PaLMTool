@@ -5,21 +5,18 @@ import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
 const timeBins = 24;    // Total bins in a day
-const binSize = 24 * 60 * 60 / timeBins;    // Seconds per bin
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km equals to 10 visual units
-const averageSpeed = 1.4;   // Average walking speed 1.4 m/s
 
 // Categorizes an ISO-formatted time to one of 48 bins on z axis
 const timeToBin = (isoTime) => {
     const date = new Date(isoTime);
     const hours = date.getHours();
     const mins = date.getMinutes();
-    const secs = date.getSeconds();
-    const totalSecs = hours * 3600 + mins * 60 + secs;
+    
+    const bin = Math.floor((hours + mins / 60) * 10) / 10;
 
-    const dist = totalSecs * averageSpeed;
-    return dist * scaleFactor;
+    return bin;
 }
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
