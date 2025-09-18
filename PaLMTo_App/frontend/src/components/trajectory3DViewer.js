@@ -10,15 +10,15 @@ const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
 
 // Categorizes an ISO-formatted time to one of 24 bins on z axis
-const timeToBin = (isoTime) => {
+const isoToHour = (isoTime) => {
     const date = new Date(isoTime);
     const hours = date.getHours();
     const mins = date.getMinutes();
     
     // Round result to one decimal place
-    const bin = Math.floor((hours + mins / 60) * 10) / 10;
+    const hour = Math.floor((hours + mins / 60) * 10) / 10;
 
-    return bin * gridLineStep;
+    return hour;
 }
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
@@ -27,7 +27,7 @@ const toXYZ = (coord, origin) => {
     
     const x = Math.floor((lon - origin.lon) * meterPerDegree * scaleFactor / gridLineStep);
     const y = Math.floor((lat - origin.lat) * meterPerDegree * scaleFactor / gridLineStep);
-    const z = timeToBin(isoTime);
+    const z = isoToHour(isoTime) * gridLineStep;
     return [x, y, z];
 }
 
@@ -148,8 +148,8 @@ const Trajectory3DViewer = () => {
         let minStart = Infinity, maxStart = -Infinity;
 
         for (const f of trajData.features) {
-            const startTime = timeToBin(f.properties.start_time);
-            const endTime = timeToBin(f.properties.end_time);
+            const startTime = isoToHour(f.properties.start_time);
+            const endTime = isoToHour(f.properties.end_time);
 
             minStart = Math.min(minStart, startTime);
             maxStart = Math.max(maxStart, endTime);
