@@ -4,7 +4,6 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 import './trajectory3DViewer.css';
 
-const timeBins = 24;    // Total bins in a day
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
@@ -31,30 +30,30 @@ const toXYZ = (coord, origin) => {
     return [x, y, z];
 }
 
-    // Grid line creation function
-    const createGridLines = (axis, count, xrang, yrang, color="white") => {
-        const getPoints = (i) => {
-            switch (axis) {
-                case 'x':
-                    return [[i * gridLineStep, 0, 0], [i * gridLineStep, yrang, 0]];
-                case 'y':
-                    return [[0, i * gridLineStep, 0], [xrang, i * gridLineStep, 0]];
-                case 'z-x':
-                    return [[0, 0, i * gridLineStep], [xrang, 0, i * gridLineStep]];
-                case 'z-y':
-                    return [[0, 0, i * gridLineStep], [0, yrang, i * gridLineStep]];
-            }
+// Grid line creation function
+const createGridLines = (axis, count, xrang, yrang, color="white") => {
+    const getPoints = (i) => {
+        switch (axis) {
+            case 'x':
+                return [[i * gridLineStep, 0, 0], [i * gridLineStep, yrang, 0]];
+            case 'y':
+                return [[0, i * gridLineStep, 0], [xrang, i * gridLineStep, 0]];
+            case 'z-x':
+                return [[0, 0, i * gridLineStep], [xrang, 0, i * gridLineStep]];
+            case 'z-y':
+                return [[0, 0, i * gridLineStep], [0, yrang, i * gridLineStep]];
         }
-
-        return Array.from({ length: count }).map((_, i) => (
-            <Line 
-                key={`${axis}-${i}`}
-                points={getPoints(i)}
-                color={color}
-                lineWidth={1}
-            />
-        ))
     }
+
+    return Array.from({ length: count }).map((_, i) => (
+        <Line 
+            key={`${axis}-${i}`}
+            points={getPoints(i)}
+            color={color}
+            lineWidth={1}
+        />
+    ))
+}
 
 
 // Display time ticks on z axis
@@ -164,22 +163,21 @@ const Trajectory3DViewer = () => {
         // Range of longitude and latitude in meters
         const lonRange = Math.floor((maxLon - minLon) * meterPerDegree);
         const latRange = Math.floor((maxLat - minLat) * meterPerDegree);
+        const timeRange = Math.ceil(maxStart) - Math.floor(minStart)
         const origin = {lon: minLon, lat: minLat};
 
         const lines = trajData.features.map((f, i) => {
             const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin));
             return {id: i, points};
         })
-        
-        console.log("Min start time: ", minStart);
-        console.log("Max start time: ", maxStart);
-        return {lonRange, latRange, lines}
+
+        return {lonRange, latRange, lines, timeRange}
     }, [trajData])
 
     if (!prepared) return <div>Loading 3D visualization</div>;
 
-    const {lonRange, latRange, lines} = prepared;
-    const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeBins * gridLineStep]
+    const {lonRange, latRange, lines, timeRange} = prepared;
+    const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeRange * gridLineStep]
 
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
@@ -215,8 +213,8 @@ const Trajectory3DViewer = () => {
                 {/* Grid lines every 5 visual unit(500m/1h) */}
                 {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "red")}
                 {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "green")}
-                {createGridLines('z-x', timeBins + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
-                {createGridLines('z-y', timeBins + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
+                {createGridLines('z-x', timeRange + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
+                {createGridLines('z-y', timeRange + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
 
                 {/* Axis labels */}
                 <Text position={[150, 0, 0]} fontSize={10} color="red">
@@ -225,10 +223,10 @@ const Trajectory3DViewer = () => {
                 <Text position={[0, 60, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                {createTimeTicks(timeBins + 1, 'white')}
+                {createTimeTicks(timeRange + 1, 'white')}
 
                 {/* Transparent region bounds */}
-                <mesh position={[lonRange * 0.005, latRange * 0.005, timeBins * 2.5]}>
+                <mesh position={[lonRange * 0.005, latRange * 0.005, timeRange * 2.5]}>
                     <boxGeometry args={boxSize} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
