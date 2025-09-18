@@ -18,7 +18,7 @@ const timeToBin = (isoTime) => {
     // Round result to one decimal place
     const bin = Math.floor((hours + mins / 60) * 10) / 10;
 
-    return bin;
+    return bin * gridLineStep;
 }
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
@@ -145,8 +145,14 @@ const Trajectory3DViewer = () => {
         // Initialize values we need
         let minLon = Infinity, maxLon = -Infinity;
         let minLat = Infinity, maxLat = -Infinity;
+        let minStart = Infinity, maxStart = -Infinity;
 
         for (const f of trajData.features) {
+            const startTime = timeToBin(f.properties.start_time);
+            const endTime = timeToBin(f.properties.end_time);
+
+            minStart = Math.min(minStart, startTime);
+            maxStart = Math.max(maxStart, endTime);
             for (const [lon, lat] of f.geometry.coordinates) {
                 minLon = Math.min(minLon, lon);
                 maxLon = Math.max(maxLon, lon);
@@ -165,6 +171,8 @@ const Trajectory3DViewer = () => {
             return {id: i, points};
         })
         
+        console.log("Min start time: ", minStart);
+        console.log("Max start time: ", maxStart);
         return {lonRange, latRange, lines}
     }, [trajData])
 
@@ -231,6 +239,7 @@ const Trajectory3DViewer = () => {
                         key={line.id}
                         points={line.points}
                         lineWidth={3}
+                        color={['#ff4d4d', '#4d79ff', '#33cc66', '#ffd11a', '#00e5ff', '#ff66ff', '#ff9933', '#99ff33'][line.id % 8]}
                     />
                 ))}
 
