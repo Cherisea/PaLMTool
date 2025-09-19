@@ -24,8 +24,8 @@ const isoToHour = (isoTime) => {
 const toXYZ = (coord, origin) => {
     const [lon, lat, isoTime] = coord;
     
-    const x = Math.floor((lon - origin.lon) * meterPerDegree * scaleFactor / gridLineStep);
-    const y = Math.floor((lat - origin.lat) * meterPerDegree * scaleFactor / gridLineStep);
+    const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
+    const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
     const z = isoToHour(isoTime) * gridLineStep;
     return [x, y, z];
 }
