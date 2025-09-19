@@ -188,27 +188,6 @@ const Trajectory3DViewer = () => {
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[50, 50, 25]} intensity={1} />
                 <pointLight position={[-25, -25, -25]} intensity={0.5} />
-                
-
-                <group>
-                    {/* X axis: horizontal red rod  */}
-                    <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-                        <cylinderGeometry args={[0.5, 0.5, 50]} />
-                        <meshStandardMaterial color="#ff0000" />
-                    </mesh>
-
-                    {/* Y axis: vertical green rod */}
-                    <mesh position={[0, 0, 0]} >
-                        <cylinderGeometry args={[0.5, 0.5, 50]} />
-                        <meshStandardMaterial color="#00ff00" />
-                    </mesh>
-
-                    {/* Z axis: blue depth rod */}
-                    <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                        <cylinderGeometry args={[0.5, 0.5, 50]} />
-                        <meshStandardMaterial color="#0000ff" />
-                    </mesh>
-                </group>
 
                 {/* Grid lines every 5 visual unit(500m/1h) */}
                 {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "red")}
