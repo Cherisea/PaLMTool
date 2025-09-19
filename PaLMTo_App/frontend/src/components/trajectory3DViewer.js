@@ -55,7 +55,7 @@ const createGridLines = (axis, count, xrang, yrang, color="white") => {
     ))
 }
 
-// Display time ticks on z axis
+// Display dynamically retrieved time ticks on z axis
 const createTimeTicks = (count, color, start) => {
     return Array.from({ length: count }).map((_, i) => {
         return (
@@ -73,15 +73,9 @@ const createTimeTicks = (count, color, start) => {
     })
 }
 
-const Trajectory3DViewer = () => {
-    // Track if current window is in fullscreen mode
+// Fullscreen utility function
+const useFullscreen = (containerRef) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
-
-    // Provides access to the actual div element for fullscreen
-    const containerRef = useRef(null);
-
-    // Stores retrieved trajectory data
-    const [trajData, setTrajData] = useState(null);
 
     // Synchronize React component's state with actual screen status
     useEffect(() => {
@@ -118,26 +112,12 @@ const Trajectory3DViewer = () => {
         }
     };
 
-    // Fetch data from url endpoint
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`/trajectory/3d-view`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch trajectory data.');
-                }
-                const data = await response.json();
-                setTrajData(data);
-            } catch (err) {
-                console.error(err.message);
-            }
-        };
+    return { isFullscreen, toggleFullscreen };
+}
 
-        fetchData();
-    }, [])
-
-    // Prepare trajectory data for 3D rendering
-    const prepared = useMemo(() => {
+// Process input trajectory data
+const useTrajData = (trajData) => {
+    return useMemo(() => {
         if (!trajData?.features?.length) return null;
         
         // Initialize values we need
@@ -175,7 +155,51 @@ const Trajectory3DViewer = () => {
 
         return {lonRange, latRange, lines, timeRange, minStart}
     }, [trajData])
+};
 
+// Custom hook for retrieving data via URL endpoint
+const useFetchTrajData = () => {
+    const [trajData, setTrajData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error,setError] = useState(null);
+
+    // Fetch data from url endpoint
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`/trajectory/3d-view`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch trajectory data.');
+                }
+                const data = await response.json();
+                setTrajData(data);
+                setError(null);
+            } catch (err) {
+                console.error(err.message);
+                setError(err.message)
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [])
+
+    return { trajData, loading, error };
+}
+
+const Trajectory3DViewer = () => {
+    // Provides access to the actual div element for fullscreen
+    const containerRef = useRef(null);
+
+    // Utilize custom hooks
+    const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+    const { trajData, loading, error } = useFetchTrajData();
+    const prepared = useTrajData(trajData);
+    
+    if (loading) return <div>Loading 3D visualization</div>;
+    if (error) return <div>Error: {error}</div>;
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {lonRange, latRange, lines, timeRange, minStart} = prepared;
