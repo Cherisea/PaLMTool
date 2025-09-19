@@ -8,7 +8,7 @@ const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
 
-// Categorizes an ISO-formatted time to one of 24 bins on z axis
+// Converts an ISO-formatted time to hours with one decimal place
 const isoToHour = (isoTime) => {
     const date = new Date(isoTime);
     const hours = date.getHours();
@@ -21,12 +21,12 @@ const isoToHour = (isoTime) => {
 }
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates
-const toXYZ = (coord, origin) => {
+const toXYZ = (coord, origin, minStart) => {
     const [lon, lat, isoTime] = coord;
     
     const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
     const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
-    const z = isoToHour(isoTime) * gridLineStep;
+    const z = (isoToHour(isoTime) - minStart) * gridLineStep;
     return [x, y, z];
 }
 
@@ -55,9 +55,8 @@ const createGridLines = (axis, count, xrang, yrang, color="white") => {
     ))
 }
 
-
 // Display time ticks on z axis
-const createTimeTicks = (count, color) => {
+const createTimeTicks = (count, color, start) => {
     return Array.from({ length: count }).map((_, i) => {
         return (
             <Text 
@@ -68,7 +67,7 @@ const createTimeTicks = (count, color) => {
                 outlineColor="blue"
                 outlineWidth={0.02}
             >
-                {i}:00
+                {i+start}:00
             </Text>
         )
     })
@@ -160,23 +159,26 @@ const Trajectory3DViewer = () => {
             }
         }
 
+        minStart = Math.floor(minStart)
+        maxStart = Math.ceil(maxStart)
+
         // Range of longitude and latitude in meters
         const lonRange = Math.floor((maxLon - minLon) * meterPerDegree);
         const latRange = Math.floor((maxLat - minLat) * meterPerDegree);
-        const timeRange = Math.ceil(maxStart) - Math.floor(minStart)
+        const timeRange = maxStart - minStart
         const origin = {lon: minLon, lat: minLat};
 
         const lines = trajData.features.map((f, i) => {
-            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin));
+            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin, minStart));
             return {id: i, points};
         })
 
-        return {lonRange, latRange, lines, timeRange}
+        return {lonRange, latRange, lines, timeRange, minStart}
     }, [trajData])
 
     if (!prepared) return <div>Loading 3D visualization</div>;
 
-    const {lonRange, latRange, lines, timeRange} = prepared;
+    const {lonRange, latRange, lines, timeRange, minStart} = prepared;
     const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeRange * gridLineStep]
 
     return (
@@ -202,7 +204,7 @@ const Trajectory3DViewer = () => {
                 <Text position={[0, 60, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                {createTimeTicks(timeRange + 1, 'white')}
+                {createTimeTicks(timeRange + 1, 'white', minStart)}
 
                 {/* Transparent region bounds */}
                 <mesh position={[lonRange * 0.005, latRange * 0.005, timeRange * 2.5]}>

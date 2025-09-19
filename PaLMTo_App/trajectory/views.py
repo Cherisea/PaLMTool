@@ -589,7 +589,7 @@ class Trajectory3DView(APIView):
     def get(self, request):
         # TODO: replace demo file with dynamically generated file
         file_path = os.path.join(settings.MEDIA_ROOT, 'demo.csv')
-        df = pd.read_csv(file_path).tail(100)
+        df = pd.read_csv(file_path).tail(10)
         df['geometry'] = df['geometry'].apply(ast.literal_eval)
         processed_data = self.prepare_3d_data(df)
 
