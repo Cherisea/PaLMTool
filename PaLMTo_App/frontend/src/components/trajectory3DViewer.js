@@ -103,7 +103,7 @@ const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOO
 
     return Array.from({ length: count }).map((_, i) => (
         <Line 
-            key={`${axis}-${i}`}
+            key={`${axis}-${i}-${zoomLevel.name}`}
             points={getPoints(i)}
             color={color}
             lineWidth={1}
