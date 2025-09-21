@@ -8,6 +8,50 @@ const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
 
+// Dynamic reference system configuration
+const ZOOM_LEVELS = [
+    {
+        name: 'Overview',
+        minDistance: 200,   // Camera distance
+        maxDistance: Infinity,
+        timeUnit: 'hour',
+        timeStep: 1,        //Increment between consecutive time ticks
+        distanceUnit: 'km',
+        distanceStep: 1,    // Increment between consecutive x/y ticks
+        gridSpacing: 10     // Grid units per grid line
+    },
+    {
+        name: 'Regional',
+        minDistance: 100,
+        maxDistance: 200,
+        timeUnit: 'minute',
+        timeStep: 30,
+        distanceUnit: 'm',
+        distanceStep: 500,
+        gridSpacing: 5
+    },
+    {
+        name: 'Local',
+        minDistance: 50,
+        maxDistance: 100,
+        timeUnit: 'minute',
+        timeStep: 10,
+        distanceUnit: 'm',
+        distanceStep: 100,
+        gridSpacing: 2
+    },
+    {
+        name: 'Detail',
+        minDistance: 0,
+        maxDistance: 50,
+        timeUnit: 'minute',
+        timeStep: 1,
+        distanceUnit: 'm',
+        distanceStep: 10,
+        gridSpacing: 0.5
+    }
+]
+
 // Converts an ISO-formatted time to hours with one decimal place
 const isoToHour = (isoTime) => {
     const date = new Date(isoTime);
