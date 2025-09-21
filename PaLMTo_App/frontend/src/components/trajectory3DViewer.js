@@ -52,6 +52,17 @@ const ZOOM_LEVELS = [
     }
 ]
 
+// Auto select zoom level based on camera distance
+const getZoomLevel = (cameraDistance) => {
+    for (const level of ZOOM_LEVELS) {
+        if (cameraDistance >= level.minDistance && cameraDistance < level.maxDistance) {
+            return level;
+        }
+    }
+
+    return ZOOM_LEVELS[0];  // Defaults to overview
+}
+
 // Converts an ISO-formatted time to hours with one decimal place
 const isoToHour = (isoTime) => {
     const date = new Date(isoTime);
