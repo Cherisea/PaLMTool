@@ -75,13 +75,13 @@ const isoToHour = (isoTime) => {
     return hour;
 }
 
-// Converts (lon, lat, ts) coordinate pairs into 3D coordinates
-const toXYZ = (coord, origin, minStart) => {
+// Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
+const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
     const [lon, lat, isoTime] = coord;
     
     const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
     const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
-    const z = (isoToHour(isoTime) - minStart) * gridLineStep;
+    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
     return [x, y, z];
 }
 
