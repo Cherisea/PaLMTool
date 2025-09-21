@@ -3,72 +3,12 @@ import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
-import { isoToHour, toXYZ, createGridLines} from './trajectory3DUtil';
+import { useFullscreen, isoToHour, toXYZ, createGridLines, createTimeTicks} from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
-
-// Display dynamically retrieved time ticks on z axis
-const createTimeTicks = (count, color, start) => {
-    return Array.from({ length: count }).map((_, i) => {
-        return (
-            <Text 
-                key={`time-${i}`}
-                position={[-5, -5, i * gridLineStep]}
-                fontSize={8}
-                color={color}
-                outlineColor="blue"
-                outlineWidth={0.02}
-            >
-                {i+start}:00
-            </Text>
-        )
-    })
-}
-
-// Fullscreen utility function
-const useFullscreen = (containerRef) => {
-    const [isFullscreen, setIsFullscreen] = useState(false);
-
-    // Synchronize React component's state with actual screen status
-    useEffect(() => {
-        // Setup function
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        }
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-        // Cleanup function: run at re-mount
-        return () => {
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        };
-    }, []);
-
-    // Function that executes entering and exiting fullscreen
-    const toggleFullscreen = async () => {
-        if (!document.fullscreenElement) {
-            // Enter fullscreen
-            try {
-                await containerRef.current.requestFullscreen();
-                setIsFullscreen(true);
-            } catch (err) {
-                console.error('Error attempting to enable fullscreen:', err);
-            }
-        } else {
-            //Exit fullscreen
-            try {
-                await document.exitFullscreen();
-                setIsFullscreen(false);
-            } catch (err) {
-                console.error()
-            }
-        }
-    };
-
-    return { isFullscreen, toggleFullscreen };
-}
 
 // Process input trajectory data
 const useTrajData = (trajData) => {

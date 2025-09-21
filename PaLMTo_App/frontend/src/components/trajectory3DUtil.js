@@ -1,4 +1,5 @@
-import { Line } from '@react-three/drei';
+import { Line, Text } from '@react-three/drei';
+import { useMemo, useEffect, useState, useRef } from 'react';
 
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 100m per 1 visual unit 
@@ -58,6 +59,48 @@ const getZoomLevel = (cameraDistance) => {
     return ZOOM_LEVELS[0];  // Defaults to overview
 }
 
+// Fullscreen utility function
+const useFullscreen = (containerRef) => {
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    // Synchronize React component's state with actual screen status
+    useEffect(() => {
+        // Setup function
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        }
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+        // Cleanup function: run at re-mount
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    // Function that executes entering and exiting fullscreen
+    const toggleFullscreen = async () => {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            try {
+                await containerRef.current.requestFullscreen();
+                setIsFullscreen(true);
+            } catch (err) {
+                console.error('Error attempting to enable fullscreen:', err);
+            }
+        } else {
+            //Exit fullscreen
+            try {
+                await document.exitFullscreen();
+                setIsFullscreen(false);
+            } catch (err) {
+                console.error()
+            }
+        }
+    };
+
+    return { isFullscreen, toggleFullscreen };
+}
+
 // Converts an ISO-formatted time to hours with one decimal place
 const isoToHour = (isoTime) => {
     const date = new Date(isoTime);
@@ -111,4 +154,22 @@ const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOO
     ))
 }
 
-export {ZOOM_LEVELS, getZoomLevel, isoToHour, toXYZ, createGridLines};
+// Display dynamically retrieved time ticks on z axis
+const createTimeTicks = (count, color, start) => {
+    return Array.from({ length: count }).map((_, i) => {
+        return (
+            <Text 
+                key={`time-${i}`}
+                position={[-5, -5, i * ZOOM_LEVELS[1].gridSpacing]}
+                fontSize={8}
+                color={color}
+                outlineColor="blue"
+                outlineWidth={0.02}
+            >
+                {i+start}:00
+            </Text>
+        )
+    })
+}
+
+export {getZoomLevel, useFullscreen, isoToHour, toXYZ, createGridLines, createTimeTicks};
