@@ -86,17 +86,18 @@ const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
 }
 
 // Grid line creation function
-const createGridLines = (axis, count, xrang, yrang, color="white") => {
+const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
     const getPoints = (i) => {
+        const spacing = zoomLevel.gridSpacing;
         switch (axis) {
             case 'x':
-                return [[i * gridLineStep, 0, 0], [i * gridLineStep, yrang, 0]];
+                return [[i * spacing, 0, 0], [i * spacing, yrang, 0]];
             case 'y':
-                return [[0, i * gridLineStep, 0], [xrang, i * gridLineStep, 0]];
+                return [[0, i * spacing, 0], [xrang, i * spacing, 0]];
             case 'z-x':
-                return [[0, 0, i * gridLineStep], [xrang, 0, i * gridLineStep]];
+                return [[0, 0, i * spacing], [xrang, 0, i * spacing]];
             case 'z-y':
-                return [[0, 0, i * gridLineStep], [0, yrang, i * gridLineStep]];
+                return [[0, 0, i * spacing], [0, yrang, i * spacing]];
         }
     }
 
