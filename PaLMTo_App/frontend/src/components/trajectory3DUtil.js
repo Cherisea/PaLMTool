@@ -1,4 +1,7 @@
+import { Line } from '@react-three/drei';
 
+const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
+const scaleFactor = 0.01;   // 100m per 1 visual unit 
 
 // Dynamic reference system configuration
 const ZOOM_LEVELS = [
@@ -67,4 +70,45 @@ const isoToHour = (isoTime) => {
     return hour;
 }
 
-export {ZOOM_LEVELS, getZoomLevel, isoToHour};
+// Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
+const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
+    const [lon, lat, isoTime] = coord;
+    
+    // Visual units distance on x axis 
+    const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
+
+    // Visual units distance on y axis
+    const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
+
+    // Visual units distance on z axis adjusted by spacing
+    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
+    return [x, y, z];
+}
+
+// Grid line creation function
+const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
+    const getPoints = (i) => {
+        const spacing = zoomLevel.gridSpacing;
+        switch (axis) {
+            case 'x':
+                return [[i * spacing, 0, 0], [i * spacing, yrang, 0]];
+            case 'y':
+                return [[0, i * spacing, 0], [xrang, i * spacing, 0]];
+            case 'z-x':
+                return [[0, 0, i * spacing], [xrang, 0, i * spacing]];
+            case 'z-y':
+                return [[0, 0, i * spacing], [0, yrang, i * spacing]];
+        }
+    }
+
+    return Array.from({ length: count }).map((_, i) => (
+        <Line 
+            key={`${axis}-${i}-${zoomLevel.name}`}
+            points={getPoints(i)}
+            color={color}
+            lineWidth={1}
+        />
+    ))
+}
+
+export {ZOOM_LEVELS, getZoomLevel, isoToHour, toXYZ, createGridLines};

@@ -3,48 +3,12 @@ import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
-import { ZOOM_LEVELS, isoToHour, } from './trajectory3DUtil';
+import { isoToHour, toXYZ, createGridLines} from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
-
-// Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
-const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
-    const [lon, lat, isoTime] = coord;
-    
-    const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
-    const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
-    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
-    return [x, y, z];
-}
-
-// Grid line creation function
-const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
-    const getPoints = (i) => {
-        const spacing = zoomLevel.gridSpacing;
-        switch (axis) {
-            case 'x':
-                return [[i * spacing, 0, 0], [i * spacing, yrang, 0]];
-            case 'y':
-                return [[0, i * spacing, 0], [xrang, i * spacing, 0]];
-            case 'z-x':
-                return [[0, 0, i * spacing], [xrang, 0, i * spacing]];
-            case 'z-y':
-                return [[0, 0, i * spacing], [0, yrang, i * spacing]];
-        }
-    }
-
-    return Array.from({ length: count }).map((_, i) => (
-        <Line 
-            key={`${axis}-${i}-${zoomLevel.name}`}
-            points={getPoints(i)}
-            color={color}
-            lineWidth={1}
-        />
-    ))
-}
 
 // Display dynamically retrieved time ticks on z axis
 const createTimeTicks = (count, color, start) => {
