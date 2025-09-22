@@ -213,14 +213,14 @@ const useTrajData = (trajData) => {
         // Initialize values we need
         let minLon = Infinity, maxLon = -Infinity;
         let minLat = Infinity, maxLat = -Infinity;
-        let minStart = Infinity, maxStart = -Infinity;
+        let minStart = Infinity, maxEnd = -Infinity;
 
         for (const f of trajData.features) {
             const startTime = isoToHour(f.properties.start_time);
             const endTime = isoToHour(f.properties.end_time);
 
             minStart = Math.min(minStart, startTime);
-            maxStart = Math.max(maxStart, endTime);
+            maxEnd = Math.max(maxEnd, endTime);
             for (const [lon, lat] of f.geometry.coordinates) {
                 minLon = Math.min(minLon, lon);
                 maxLon = Math.max(maxLon, lon);
@@ -233,14 +233,14 @@ const useTrajData = (trajData) => {
         minStart = Math.floor(minStart)
 
         // Maximum start time in hours rounded up
-        maxStart = Math.ceil(maxStart)
+        maxEnd = Math.ceil(maxEnd)
 
         // Longitude and latitude range in meters (rounded down)
         const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
         const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
 
         // Time range in hours
-        const timeRange = maxStart - minStart
+        const timeRange = maxEnd - minStart
         const origin = {lon: minLon, lat: minLat};
 
         const lines = trajData.features.map((f, i) => {
