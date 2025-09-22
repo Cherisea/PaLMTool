@@ -1,5 +1,5 @@
 import { Line, Text } from '@react-three/drei';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 
 const METER_PER_DEGREE = 111000;  // Meters per geographical degree(estimate)
 const SCALE_FACTOR = 0.01;   // 100m per 1 visual unit 
@@ -252,5 +252,24 @@ const useTrajData = (trajData) => {
     }, [trajData])
 };
 
+// Track camera distance from the origin
+const userCameraDistance = () => {
+    const [cameraDistance, setCameraDistance] = useState(100);
+    const cameraRef = useRef();
 
-export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData};
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (cameraRef.current) {
+                const distance = cameraRef.current.position.length();
+                setCameraDistance(distance);
+            }
+        }, 100);    // Updates every 100ms
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return { cameraDistance, cameraRef };
+}
+
+
+export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData, userCameraDistance};

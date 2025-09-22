@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
 import { SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks } from './trajectory3DUtil';
-import { useTrajData, useFullscreen, useFetchTrajData } from './trajectory3DUtil';
+import { useTrajData, useFullscreen, useFetchTrajData, userCameraDistance } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const Trajectory3DViewer = () => {
