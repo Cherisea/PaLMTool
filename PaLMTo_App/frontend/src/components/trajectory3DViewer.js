@@ -1,56 +1,14 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
-import { useMemo, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
-import { useFullscreen, isoToHour, toXYZ, createGridLines, createTimeTicks} from './trajectory3DUtil';
+import { getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
-const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
 
-// Process input trajectory data
-const useTrajData = (trajData) => {
-    return useMemo(() => {
-        if (!trajData?.features?.length) return null;
-        
-        // Initialize values we need
-        let minLon = Infinity, maxLon = -Infinity;
-        let minLat = Infinity, maxLat = -Infinity;
-        let minStart = Infinity, maxStart = -Infinity;
-
-        for (const f of trajData.features) {
-            const startTime = isoToHour(f.properties.start_time);
-            const endTime = isoToHour(f.properties.end_time);
-
-            minStart = Math.min(minStart, startTime);
-            maxStart = Math.max(maxStart, endTime);
-            for (const [lon, lat] of f.geometry.coordinates) {
-                minLon = Math.min(minLon, lon);
-                maxLon = Math.max(maxLon, lon);
-                minLat = Math.min(minLat, lat);
-                maxLat = Math.max(maxLat, lat);
-            }
-        }
-
-        minStart = Math.floor(minStart)
-        maxStart = Math.ceil(maxStart)
-
-        // Range of longitude and latitude in meters
-        const lonRange = Math.floor((maxLon - minLon) * meterPerDegree);
-        const latRange = Math.floor((maxLat - minLat) * meterPerDegree);
-        const timeRange = maxStart - minStart
-        const origin = {lon: minLon, lat: minLat};
-
-        const lines = trajData.features.map((f, i) => {
-            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin, minStart));
-            return {id: i, points};
-        })
-
-        return {lonRange, latRange, lines, timeRange, minStart}
-    }, [trajData])
-};
 
 // Custom hook for retrieving data via URL endpoint
 const useFetchTrajData = () => {

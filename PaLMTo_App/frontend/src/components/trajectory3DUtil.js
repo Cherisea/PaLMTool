@@ -1,8 +1,8 @@
 import { Line, Text } from '@react-three/drei';
-import { useMemo, useEffect, useState, useRef } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
-const meterPerDegree = 111000;  // Meters per geographical degree(estimate)
-const scaleFactor = 0.01;   // 100m per 1 visual unit 
+const METER_PER_DEGREE = 111000;  // Meters per geographical degree(estimate)
+const SCALE_FACTOR = 0.01;   // 100m per 1 visual unit 
 
 // Dynamic reference system configuration
 const ZOOM_LEVELS = [
@@ -59,6 +59,78 @@ const getZoomLevel = (cameraDistance) => {
     return ZOOM_LEVELS[0];  // Defaults to overview
 }
 
+// Converts an ISO-formatted time to hours with one decimal place
+const isoToHour = (isoTime) => {
+    const date = new Date(isoTime);
+    const hours = date.getHours();
+    const mins = date.getMinutes();
+    
+    // Round result to one decimal place
+    const hour = Math.floor((hours + mins / 60) * 10) / 10;
+
+    return hour;
+}
+
+// Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
+const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
+    const [lon, lat, isoTime] = coord;
+    
+    // Visual units distance on x axis 
+    const x = (lon - origin.lon) * METER_PER_DEGREE * SCALE_FACTOR;
+
+    // Visual units distance on y axis
+    const y = (lat - origin.lat) * METER_PER_DEGREE * SCALE_FACTOR;
+
+    // Visual units distance on z axis adjusted by spacing
+    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
+    return [x, y, z];
+}
+
+// Grid line creation function
+const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
+    const getPoints = (i) => {
+        const spacing = zoomLevel.gridSpacing;
+        switch (axis) {
+            case 'x':
+                return [[i * spacing, 0, 0], [i * spacing, yrang, 0]];
+            case 'y':
+                return [[0, i * spacing, 0], [xrang, i * spacing, 0]];
+            case 'z-x':
+                return [[0, 0, i * spacing], [xrang, 0, i * spacing]];
+            case 'z-y':
+                return [[0, 0, i * spacing], [0, yrang, i * spacing]];
+        }
+    }
+
+    return Array.from({ length: count }).map((_, i) => (
+        <Line 
+            key={`${axis}-${i}-${zoomLevel.name}`}
+            points={getPoints(i)}
+            color={color}
+            lineWidth={1}
+        />
+    ))
+}
+
+// TODO: Display dynamically retrieved time ticks on z axis
+const createTimeTicks = (count, color, start) => {
+    return Array.from({ length: count }).map((_, i) => {
+        return (
+            <Text 
+                key={`time-${i}`}
+                position={[-5, -5, i * ZOOM_LEVELS[1].gridSpacing]}
+                fontSize={8}
+                color={color}
+                outlineColor="blue"
+                outlineWidth={0.02}
+            >
+                {i+start}:00
+            </Text>
+        )
+    })
+}
+
+// ================== Custom hooks =====================
 // Fullscreen utility function
 const useFullscreen = (containerRef) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -101,75 +173,47 @@ const useFullscreen = (containerRef) => {
     return { isFullscreen, toggleFullscreen };
 }
 
-// Converts an ISO-formatted time to hours with one decimal place
-const isoToHour = (isoTime) => {
-    const date = new Date(isoTime);
-    const hours = date.getHours();
-    const mins = date.getMinutes();
-    
-    // Round result to one decimal place
-    const hour = Math.floor((hours + mins / 60) * 10) / 10;
+// Process input trajectory data
+const useTrajData = (trajData) => {
+    return useMemo(() => {
+        if (!trajData?.features?.length) return null;
+        
+        // Initialize values we need
+        let minLon = Infinity, maxLon = -Infinity;
+        let minLat = Infinity, maxLat = -Infinity;
+        let minStart = Infinity, maxStart = -Infinity;
 
-    return hour;
-}
+        for (const f of trajData.features) {
+            const startTime = isoToHour(f.properties.start_time);
+            const endTime = isoToHour(f.properties.end_time);
 
-// Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
-const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
-    const [lon, lat, isoTime] = coord;
-    
-    // Visual units distance on x axis 
-    const x = (lon - origin.lon) * meterPerDegree * scaleFactor;
-
-    // Visual units distance on y axis
-    const y = (lat - origin.lat) * meterPerDegree * scaleFactor;
-
-    // Visual units distance on z axis adjusted by spacing
-    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
-    return [x, y, z];
-}
-
-// Grid line creation function
-const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
-    const getPoints = (i) => {
-        const spacing = zoomLevel.gridSpacing;
-        switch (axis) {
-            case 'x':
-                return [[i * spacing, 0, 0], [i * spacing, yrang, 0]];
-            case 'y':
-                return [[0, i * spacing, 0], [xrang, i * spacing, 0]];
-            case 'z-x':
-                return [[0, 0, i * spacing], [xrang, 0, i * spacing]];
-            case 'z-y':
-                return [[0, 0, i * spacing], [0, yrang, i * spacing]];
+            minStart = Math.min(minStart, startTime);
+            maxStart = Math.max(maxStart, endTime);
+            for (const [lon, lat] of f.geometry.coordinates) {
+                minLon = Math.min(minLon, lon);
+                maxLon = Math.max(maxLon, lon);
+                minLat = Math.min(minLat, lat);
+                maxLat = Math.max(maxLat, lat);
+            }
         }
-    }
 
-    return Array.from({ length: count }).map((_, i) => (
-        <Line 
-            key={`${axis}-${i}-${zoomLevel.name}`}
-            points={getPoints(i)}
-            color={color}
-            lineWidth={1}
-        />
-    ))
-}
+        minStart = Math.floor(minStart)
+        maxStart = Math.ceil(maxStart)
 
-// Display dynamically retrieved time ticks on z axis
-const createTimeTicks = (count, color, start) => {
-    return Array.from({ length: count }).map((_, i) => {
-        return (
-            <Text 
-                key={`time-${i}`}
-                position={[-5, -5, i * ZOOM_LEVELS[1].gridSpacing]}
-                fontSize={8}
-                color={color}
-                outlineColor="blue"
-                outlineWidth={0.02}
-            >
-                {i+start}:00
-            </Text>
-        )
-    })
-}
+        // Range of longitude and latitude in meters
+        const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
+        const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
+        const timeRange = maxStart - minStart
+        const origin = {lon: minLon, lat: minLat};
 
-export {getZoomLevel, useFullscreen, isoToHour, toXYZ, createGridLines, createTimeTicks};
+        const lines = trajData.features.map((f, i) => {
+            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin, minStart));
+            return {id: i, points};
+        })
+
+        return {lonRange, latRange, lines, timeRange, minStart}
+    }, [trajData])
+};
+
+
+export {getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen};
