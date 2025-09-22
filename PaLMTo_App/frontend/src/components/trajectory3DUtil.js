@@ -253,4 +253,4 @@ const useTrajData = (trajData) => {
 };
 
 
-export {getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData};
+export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData};

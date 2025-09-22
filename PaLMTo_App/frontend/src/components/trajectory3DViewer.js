@@ -1,13 +1,11 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text } from '@react-three/drei';
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
-import { getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData } from './trajectory3DUtil';
+import { SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks } from './trajectory3DUtil';
+import { useTrajData, useFullscreen, useFetchTrajData } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
-
-const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
-const gridLineStep = 5;     // One grid line every 5 visual units
 
 const Trajectory3DViewer = () => {
     // Provides access to the actual div element for fullscreen
@@ -23,7 +21,7 @@ const Trajectory3DViewer = () => {
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {lonRange, latRange, lines, timeRange, minStart} = prepared;
-    const boxSize = [lonRange * scaleFactor, latRange * scaleFactor, timeRange * gridLineStep]
+    const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, timeRange * 5]
 
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
@@ -36,10 +34,10 @@ const Trajectory3DViewer = () => {
                 <pointLight position={[-25, -25, -25]} intensity={0.5} />
 
                 {/* Grid lines every 5 visual unit(500m/1h) */}
-                {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "red")}
-                {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * scaleFactor, latRange * scaleFactor, "green")}
-                {createGridLines('z-x', timeRange + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
-                {createGridLines('z-y', timeRange + 1, lonRange * scaleFactor, latRange * scaleFactor, "blue")}
+                {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red")}
+                {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "green")}
+                {createGridLines('z-x', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
+                {createGridLines('z-y', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
 
                 {/* Axis labels */}
                 <Text position={[150, 0, 0]} fontSize={10} color="red">
