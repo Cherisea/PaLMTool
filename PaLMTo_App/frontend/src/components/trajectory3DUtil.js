@@ -272,4 +272,5 @@ const useCameraDistance = () => {
 }
 
 
-export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData, useCameraDistance};
+export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks,
+    useTrajData, useFullscreen, useFetchTrajData, useCameraDistance};
