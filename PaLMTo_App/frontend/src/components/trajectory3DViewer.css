@@ -61,9 +61,9 @@
 }
 
 .zoom-info {
-  position: relative;
-  top: 620px;
-  left: 52%;
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
   transform: translateX(-50%);
   color: white;
   font-size: 12px;
@@ -72,6 +72,15 @@
   gap: 250px;
   align-items: center;
 }
+
+/* Ensure zoom-info stays at bottom in fullscreen mode */
+.container.fullscreen .zoom-info {
+  bottom: 15px;
+  left: 50%;
+  gap: 500px;
+  transform: translateX(-50%);
+}
+
 
 .zoom-level {
   color: #00e5ff;

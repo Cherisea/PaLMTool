@@ -80,9 +80,10 @@ const Trajectory3DViewer = () => {
             <div className='overlay'>
                 <div className='title'>3D Trajectory Viewer</div>
                 <div className='subtitle'>Abstract 3D representation of trajectories (Orbit to rotate/zoom)</div>
+            </div>
 
-                {/* Dynamic reference system info */}
-                <div className='zoom-info'>
+            {/* Dynamic reference system info */}
+            <div className='zoom-info'>
                     <div className='zoom-level'>Zoom Level: {zoomLevel.name}</div>
                     <div className='grid-info'>
                         Grid: {zoomLevel.distanceStep}{zoomLevel.distanceUnit} x {zoomLevel.timeStep}{zoomLevel.timeUnit}
@@ -90,7 +91,6 @@ const Trajectory3DViewer = () => {
                     <div className='distance-info'>
                         Camera Distance: {Math.round(cameraDistance)} units
                     </div>
-                </div>
             </div>
 
             {/* Fullscreen button */}
