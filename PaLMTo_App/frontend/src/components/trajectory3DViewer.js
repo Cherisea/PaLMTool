@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Line, Text } from '@react-three/drei';
+import { OrbitControls, Line, Text, PerspectiveCamera } from '@react-three/drei';
 import { useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
@@ -26,8 +26,14 @@ const Trajectory3DViewer = () => {
 
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
-            <Canvas camera={{ position: [50, -30, 50], fov: 50 }}>
+            <Canvas>
                 <color attach="background" args={['#1a1a1a']} />
+                <PerspectiveCamera 
+                    ref={cameraRef}
+                    position={[50, -30, 50]}
+                    fov={50}
+                    makeDefault
+                />
                 <OrbitControls enablePan enableZoom enableRotate />
 
                 <ambientLight intensity={0.5} />
