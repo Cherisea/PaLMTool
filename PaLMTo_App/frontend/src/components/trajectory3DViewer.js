@@ -22,6 +22,10 @@ const Trajectory3DViewer = () => {
     if (!prepared) return <div>Loading 3D visualization</div>;
 
     const {lonRange, latRange, lines, timeRange, minStart} = prepared;
+
+    // Get current zoom level
+    const zoomLevel = getZoomLevel(cameraDistance);
+
     const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, timeRange * 5]
 
     return (
@@ -34,7 +38,7 @@ const Trajectory3DViewer = () => {
                     fov={50}
                     makeDefault
                 />
-                <OrbitControls enablePan enableZoom enableRotate />
+                <OrbitControls enablePan enableZoom enableRotate minDistance={10} maxDistance={400}/>
 
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[50, 50, 25]} intensity={1} />
@@ -76,6 +80,17 @@ const Trajectory3DViewer = () => {
             <div className='overlay'>
                 <div className='title'>3D Trajectory Viewer</div>
                 <div className='subtitle'>Abstract 3D representation of trajectories (Orbit to rotate/zoom)</div>
+
+                {/* Dynamic reference system info */}
+                <div className='zoom-info'>
+                    <div className='zoom-level'>Zoom Level: {zoomLevel.name}</div>
+                    <div className='grid-info'>
+                        Grid: {zoomLevel.distanceStep}{zoomLevel.distanceUnit} x {zoomLevel.timeStep}{zoomLevel.timeUnit}
+                    </div>
+                    <div className='distance-info'>
+                        Camera Distance: {Math.round(cameraDistance)} units
+                    </div>
+                </div>
             </div>
 
             {/* Fullscreen button */}
