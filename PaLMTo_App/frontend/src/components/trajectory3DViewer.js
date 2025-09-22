@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
 import { SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks } from './trajectory3DUtil';
-import { useTrajData, useFullscreen, useFetchTrajData, userCameraDistance } from './trajectory3DUtil';
+import { useTrajData, useFullscreen, useFetchTrajData, useCameraDistance } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const Trajectory3DViewer = () => {
@@ -15,6 +15,7 @@ const Trajectory3DViewer = () => {
     const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
     const { trajData, loading, error } = useFetchTrajData();
     const prepared = useTrajData(trajData);
+    const { cameraDistance, cameraRef } = useCameraDistance(); 
     
     if (loading) return <div>Loading 3D visualization</div>;
     if (error) return <div>Error: {error}</div>;

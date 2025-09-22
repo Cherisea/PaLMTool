@@ -253,7 +253,7 @@ const useTrajData = (trajData) => {
 };
 
 // Track camera distance from the origin
-const userCameraDistance = () => {
+const useCameraDistance = () => {
     const [cameraDistance, setCameraDistance] = useState(100);
     const cameraRef = useRef();
 
@@ -272,4 +272,4 @@ const userCameraDistance = () => {
 }
 
 
-export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData, userCameraDistance};
+export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData, useCameraDistance};
