@@ -59,3 +59,31 @@
 .fullscreen-button:active {
   transform: scale(0.95);
 }
+
+.zoom-info {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.zoom-level {
+  font-weight: bold;
+  color: #00e5ff;
+  margin-bottom: 5px;
+}
+
+.grid-info {
+  color: #ffd11a;
+  margin-bottom: 3px;
+}
+
+.distance-info {
+  color: #99ff33;
+  font-size: 10px;
+}
