@@ -21,10 +21,26 @@ const Trajectory3DViewer = () => {
     if (error) return <div>Error: {error}</div>;
     if (!prepared) return <div>Loading 3D visualization</div>;
 
+    // Fetch range on all three dimensions and trajectory lines
     const {lonRange, latRange, lines, timeRange, minStart} = prepared;
 
     // Get current zoom level
     const zoomLevel = getZoomLevel(cameraDistance);
+
+    // Convert unit of distance step from meter/h to visual units
+    const distanceStepMeters = zoomLevel.distanceUnit === 'km' ? zoomLevel.distanceStep * 1000 : zoomLevel.distanceStep;
+    const distanceStepHours = zoomLevel.timeUnit === 'minute' ? zoomLevel.timeStep / 60 : zoomLevel.timeStep;
+
+    const gridSpacing = distanceStepMeters * SCALE_FACTOR;
+    
+    // Convert unit of lon and lat range from meter to visal units
+    const xUnits = lonRange * SCALE_FACTOR;
+    const yUnits = latRange * SCALE_FACTOR;
+
+    // Calculate range in visual units
+    const gridCountX = Math.floor(xUnits / gridSpacing) + 1; 
+    const gridCountY = Math.floor(yUnits / gridSpacing) + 1;
+    const gridCountZ = Math.floor(timeRange / distanceStepHours) + 1;
 
     const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, timeRange * 5]
 
