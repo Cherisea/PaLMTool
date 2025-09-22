@@ -173,6 +173,38 @@ const useFullscreen = (containerRef) => {
     return { isFullscreen, toggleFullscreen };
 }
 
+// Retrieve trajectory data via API endpoint
+const useFetchTrajData = () => {
+    const [trajData, setTrajData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error,setError] = useState(null);
+
+    // Fetch data from url endpoint
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`/trajectory/3d-view`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch trajectory data.');
+                }
+                const data = await response.json();
+                setTrajData(data);
+                setError(null);
+            } catch (err) {
+                console.error(err.message);
+                setError(err.message)
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [])
+
+    return { trajData, loading, error };
+}
+
 // Process input trajectory data
 const useTrajData = (trajData) => {
     return useMemo(() => {
@@ -196,13 +228,18 @@ const useTrajData = (trajData) => {
                 maxLat = Math.max(maxLat, lat);
             }
         }
-
+        
+        // Minimum start time in hours rounded down
         minStart = Math.floor(minStart)
+
+        // Maximum start time in hours rounded up
         maxStart = Math.ceil(maxStart)
 
-        // Range of longitude and latitude in meters
+        // Longitude and latitude range in meters (rounded down)
         const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
         const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
+
+        // Time range in hours
         const timeRange = maxStart - minStart
         const origin = {lon: minLon, lat: minLat};
 
@@ -216,4 +253,4 @@ const useTrajData = (trajData) => {
 };
 
 
-export {getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen};
+export {getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData};

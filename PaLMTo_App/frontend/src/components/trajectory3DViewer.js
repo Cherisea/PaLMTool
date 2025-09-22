@@ -3,44 +3,11 @@ import { OrbitControls, Line, Text } from '@react-three/drei';
 import { useEffect, useState, useRef } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
-import { getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen } from './trajectory3DUtil';
+import { getZoomLevel, createGridLines, createTimeTicks, useTrajData, useFullscreen, useFetchTrajData } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const scaleFactor = 0.01;   // 1 km physical distance equals to 10 visual units
 const gridLineStep = 5;     // One grid line every 5 visual units
-
-
-// Custom hook for retrieving data via URL endpoint
-const useFetchTrajData = () => {
-    const [trajData, setTrajData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error,setError] = useState(null);
-
-    // Fetch data from url endpoint
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`/trajectory/3d-view`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch trajectory data.');
-                }
-                const data = await response.json();
-                setTrajData(data);
-                setError(null);
-            } catch (err) {
-                console.error(err.message);
-                setError(err.message)
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [])
-
-    return { trajData, loading, error };
-}
 
 const Trajectory3DViewer = () => {
     // Provides access to the actual div element for fullscreen
