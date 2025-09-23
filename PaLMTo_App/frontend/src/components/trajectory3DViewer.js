@@ -27,11 +27,7 @@ const Trajectory3DViewer = () => {
     // Get current zoom level
     const zoomLevel = getZoomLevel(cameraDistance);
 
-    // Convert unit of distance step from meter/h to visual units
-    const distanceStepMeters = zoomLevel.distanceUnit === 'km' ? zoomLevel.distanceStep * 1000 : zoomLevel.distanceStep;
-    const distanceStepHours = zoomLevel.timeUnit === 'minute' ? zoomLevel.timeStep / 60 : zoomLevel.timeStep;
-
-    const gridSpacing = distanceStepMeters * SCALE_FACTOR;
+    const gridSpacing = zoomLevel.gridSpacing;
     
     // Convert unit of lon and lat range from meter to visal units
     const xUnits = lonRange * SCALE_FACTOR;
@@ -40,7 +36,6 @@ const Trajectory3DViewer = () => {
     // Calculate range in visual units
     const gridCountX = Math.floor(xUnits / gridSpacing) + 1; 
     const gridCountY = Math.floor(yUnits / gridSpacing) + 1;
-    const gridCountZ = Math.floor(timeRange / distanceStepHours) + 1;
 
     const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, timeRange * 5]
 
@@ -60,9 +55,8 @@ const Trajectory3DViewer = () => {
                 <directionalLight position={[50, 50, 25]} intensity={1} />
                 <pointLight position={[-25, -25, -25]} intensity={0.5} />
 
-                {/* Grid lines every 5 visual unit(500m/1h) */}
-                {createGridLines('x', gridCountX, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red")}
-                {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "green")}
+                {createGridLines('x', gridCountX, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red", zoomLevel)}
+                {createGridLines('y', gridCountY, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "green", zoomLevel)}
                 {createGridLines('z-x', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
                 {createGridLines('z-y', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
 
