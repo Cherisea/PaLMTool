@@ -104,17 +104,34 @@ const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel) =>
 
 // TODO: Display dynamically retrieved time ticks on z axis
 const createTimeTicks = (count, color, start, zoomLevel) => {
+    const timeUnit = zoomLevel.timeUnit;
+    const timeStep = zoomLevel.timeStep;
+
     return Array.from({ length: count }).map((_, i) => {
+        let displayValue;
+        let position;
+
+        if (timeUnit === 'hour') {
+            displayValue = `${start + i}:00`;
+            position=[-5, -5, i * zoomLevel.gridSpacing];
+        } else if (timeUnit === 'minute') {
+            const totalMins = start * 60 + i * timeStep;
+            const hours = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            displayValue = `${hours}:${mins.toString().padStart(2, '0')}`;
+            position = [-2, 2, i * zoomLevel.gridSpacing];
+        }
+
         return (
             <Text 
-                key={`time-${i}`}
-                position={[-5, -5, i * zoomLevel.gridSpacing]}
-                fontSize={8}
+                key={`time-${i}-${zoomLevel.name}`}
+                position={position}
+                fontSize={zoomLevel.name === 'Detail' ? 4 : 8}
                 color={color}
                 outlineColor="blue"
                 outlineWidth={0.02}
             >
-                {i+start}:00
+                {displayValue}
             </Text>
         )
     })
