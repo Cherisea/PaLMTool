@@ -102,7 +102,7 @@ const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel) =>
     ))
 }
 
-// TODO: Display dynamically retrieved time ticks on z axis
+// Create and display time ticks based on current zoom level
 const createTimeTicks = (count, color, start, zoomLevel) => {
     const timeUnit = zoomLevel.timeUnit;
     const timeStep = zoomLevel.timeStep;

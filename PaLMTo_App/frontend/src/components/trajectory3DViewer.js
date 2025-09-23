@@ -61,7 +61,7 @@ const Trajectory3DViewer = () => {
                 {createGridLines('z-y', zUnits + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue", zoomLevel)}
 
                 {/* Axis labels */}
-                <Text position={[150, 0, 0]} fontSize={10} color="red">
+                <Text position={[130, 0, 0]} fontSize={10} color="red">
                     Longitude
                 </Text>
                 <Text position={[0, 60, 0]} fontSize={14} color="green">
