@@ -33,18 +33,8 @@ const ZOOM_LEVELS = [
         timeUnit: 'minute',
         timeStep: 10,
         distanceUnit: 'm',
-        distanceStep: 100,
+        distanceStep: 200,
         gridSpacing: 2
-    },
-    {
-        name: 'Detail',
-        minDistance: 0,
-        maxDistance: 50,
-        timeUnit: 'minute',
-        timeStep: 1,
-        distanceUnit: 'm',
-        distanceStep: 10,
-        gridSpacing: 0.5
     }
 ]
 

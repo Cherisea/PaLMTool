@@ -54,14 +54,14 @@ const Trajectory3DViewer = () => {
                     fov={50}
                     makeDefault
                 />
-                <OrbitControls enablePan enableZoom enableRotate minDistance={10} maxDistance={400}/>
+                <OrbitControls enablePan enableZoom enableRotate minDistance={50} maxDistance={400}/>
 
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[50, 50, 25]} intensity={1} />
                 <pointLight position={[-25, -25, -25]} intensity={0.5} />
 
                 {/* Grid lines every 5 visual unit(500m/1h) */}
-                {createGridLines('x', Math.ceil(lonRange / 500) + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red")}
+                {createGridLines('x', gridCountX, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red")}
                 {createGridLines('y', Math.ceil(latRange / 500) + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "green")}
                 {createGridLines('z-x', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
                 {createGridLines('z-y', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue")}
