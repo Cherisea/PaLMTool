@@ -77,7 +77,7 @@ const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
 }
 
 // Grid line creation function
-const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOOM_LEVELS[1]) => {
+const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel) => {
     const getPoints = (i) => {
         const spacing = zoomLevel.gridSpacing;
         switch (axis) {
@@ -103,12 +103,12 @@ const createGridLines = (axis, count, xrang, yrang, color="white", zoomLevel=ZOO
 }
 
 // TODO: Display dynamically retrieved time ticks on z axis
-const createTimeTicks = (count, color, start) => {
+const createTimeTicks = (count, color, start, zoomLevel) => {
     return Array.from({ length: count }).map((_, i) => {
         return (
             <Text 
                 key={`time-${i}`}
-                position={[-5, -5, i * ZOOM_LEVELS[1].gridSpacing]}
+                position={[-5, -5, i * zoomLevel.gridSpacing]}
                 fontSize={8}
                 color={color}
                 outlineColor="blue"
