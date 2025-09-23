@@ -31,7 +31,7 @@ const ZOOM_LEVELS = [
         minDistance: 50,
         maxDistance: 100,
         timeUnit: 'minute',
-        timeStep: 10,
+        timeStep: 12,
         distanceUnit: 'm',
         distanceStep: 200,
         gridSpacing: 2
@@ -62,7 +62,7 @@ const isoToHour = (isoTime) => {
 }
 
 // Converts (lon, lat, ts) coordinate pairs into 3D coordinates with dynamic scaling
-const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
+const toXYZ = (coord, origin, minStart) => {
     const [lon, lat, isoTime] = coord;
     
     // Visual units distance on x axis 
@@ -71,8 +71,8 @@ const toXYZ = (coord, origin, minStart, zoomLevel=ZOOM_LEVELS[1]) => {
     // Visual units distance on y axis
     const y = (lat - origin.lat) * METER_PER_DEGREE * SCALE_FACTOR;
 
-    // Visual units distance on z axis adjusted by spacing
-    const z = (isoToHour(isoTime) - minStart) * zoomLevel.gridSpacing;
+    // Visual units distance on z axis adjusted by spacing(1h -> 10 visual units)
+    const z = (isoToHour(isoTime) - minStart) * 10;
     return [x, y, z];
 }
 
