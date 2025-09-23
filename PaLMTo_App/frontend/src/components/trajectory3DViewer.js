@@ -24,20 +24,20 @@ const Trajectory3DViewer = () => {
     // Fetch range on all three dimensions and trajectory lines
     const {lonRange, latRange, lines, timeRange, minStart} = prepared;
 
-    // Get current zoom level
+    // Get current zoom level and spacing of grid
     const zoomLevel = getZoomLevel(cameraDistance);
-
     const gridSpacing = zoomLevel.gridSpacing;
     
     // Convert unit of lon and lat range from meter to visal units
     const xUnits = lonRange * SCALE_FACTOR;
     const yUnits = latRange * SCALE_FACTOR;
+    const zUnits = zoomLevel.timeUnit === "hour" ? timeRange : timeRange * 60 / zoomLevel.timeStep;
 
     // Calculate range in visual units
     const gridCountX = Math.floor(xUnits / gridSpacing) + 1; 
     const gridCountY = Math.floor(yUnits / gridSpacing) + 1;
 
-    const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, timeRange * gridSpacing]
+    const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, zUnits * gridSpacing]
 
     return (
         <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
@@ -57,8 +57,8 @@ const Trajectory3DViewer = () => {
 
                 {createGridLines('x', gridCountX, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "red", zoomLevel)}
                 {createGridLines('y', gridCountY, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "green", zoomLevel)}
-                {createGridLines('z-x', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue", zoomLevel)}
-                {createGridLines('z-y', timeRange + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue", zoomLevel)}
+                {createGridLines('z-x', zUnits + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue", zoomLevel)}
+                {createGridLines('z-y', zUnits + 1, lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, "blue", zoomLevel)}
 
                 {/* Axis labels */}
                 <Text position={[150, 0, 0]} fontSize={10} color="red">
@@ -67,10 +67,10 @@ const Trajectory3DViewer = () => {
                 <Text position={[0, 60, 0]} fontSize={14} color="green">
                     Latitude
                 </Text>
-                {createTimeTicks(timeRange + 1, 'white', minStart, zoomLevel)}
+                {createTimeTicks(zUnits + 1, 'white', minStart, zoomLevel)}
 
                 {/* Transparent region bounds */}
-                <mesh position={[lonRange * 0.005, latRange * 0.005, timeRange * 5]}>
+                <mesh position={[lonRange * 0.005, latRange * 0.005, zUnits * 5]}>
                     <boxGeometry args={boxSize} />
                     <meshStandardMaterial color="#3399ff" wireframe />
                 </mesh>
