@@ -167,7 +167,7 @@
 /* ========================== Form Toggle Button ========================== */
 .form-toggle-container {
   position: absolute;
-  left: 28%;
+  left: 30%;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1000;
@@ -175,22 +175,20 @@
 }
 
 .form-box.collapsed + .form-toggle-container {
-  left: 0;
+  left: 5%;
 }
 
 .form-toggle-button {
-  width: 4px;
-  height: 20px;
-  background: #007bff;
-  border: none;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
+  width: 10px;
+  height: 40px;
+  display: flex; 
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .form-toggle-button:hover {
