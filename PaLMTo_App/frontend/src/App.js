@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useDropzone } from "react-dropzone" 
 import L from "leaflet"
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 // Two main sections of app
 import FormSection from './components/FormSection';
@@ -156,7 +157,7 @@ function App() {
             onClick={() => setIsFormCollapsed(!isFormCollapsed)}
             title={isFormCollapsed ? "Show form" : "Hide form"}
           >
-            {isFormCollapsed ? "▶" : "◀"}
+            {isFormCollapsed ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
           </button>
         </div>
         
