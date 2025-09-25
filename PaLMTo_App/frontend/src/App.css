@@ -157,6 +157,36 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ========================== Form Toggle Button ========================== */
+.form-toggle-container {
+  position: absolute;
+  left: 28%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  transition: left 0.3s ease;
+}
+
+.form-toggle-button {
+  width: 4px;
+  height: 20px;
+  background: #007bff;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.form-toggle-button:hover {
+  background: #0056b3;
+  transform: translateX(2px);
+}
+
 /* ========================== Map Section ========================== */
 .map-box {
   width: 70%;

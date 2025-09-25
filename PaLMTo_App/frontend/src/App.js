@@ -52,6 +52,9 @@ function App() {
   // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
 
+  // Track the state of collapse button
+  const [isFormCollapsed, setIsFormCollapsed] = useState(false);
+
   // Handler for text and standard file upload
   const handleChange = (e) => {
     // Extract properties of event with object destructuring
@@ -144,7 +147,18 @@ function App() {
           setGeneratedFileName={setGeneratedFileName}
           setVisualData={setVisualData}
           setHeatmapData={setHeatmapData}
+          isFormCollapsed={isFormCollapsed}
         />
+
+        <div className="form-toggle-container">
+          <button
+            className="form-toggle-button"
+            onClick={() => setIsFormCollapsed(!isFormCollapsed)}
+            title={isFormCollapsed ? "Show form" : "Hide form"}
+          >
+            {isFormCollapsed ? "▶" : "◀"}
+          </button>
+        </div>
         
         <MapSection
           mapCenter={mapCenter}
