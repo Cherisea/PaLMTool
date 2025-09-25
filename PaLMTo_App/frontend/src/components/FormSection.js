@@ -21,6 +21,7 @@ function FormSection({
   setVisualData,
   setHeatmapData,
   setFormData,
+  isFormCollapsed,
 }) {
   // State variable for stats popup window
   const [showStats, setShowStats] = useState(false);
@@ -67,7 +68,7 @@ function FormSection({
   }
 
   return (
-    <div className="form-box">
+    <div className={`form-box ${isFormCollapsed ? 'collapsed' : ''}` } >
       {/* Popup window of backend statistics */}
       <StatisticsPopup
         isOpen={showStats}
@@ -88,7 +89,8 @@ function FormSection({
       )}
 
       {/* Step indicator */}
-      <div className="step-indicator">
+      {!isFormCollapsed && (
+        <div className="step-indicator">
         {[1, 2, 3].map((stepNum) => {
           const canGoToStep = stepNum < currentStep;
 
@@ -113,34 +115,39 @@ function FormSection({
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
+      
       
       {/* Main form content */}
-      <div className="form-content">
-        <form onSubmit={e => handleUnifiedSubmit(e, currentStep)} encType='multipart/form-data'>
-          <FormSteps 
-            currentStep={currentStep}
-            formData={formData}
-            handleChange={handleChange}
-            getSampleRootProps={getSampleRootProps}
-            getSampleInputProps={getSampleInputProps}
-            isSampleDragActive={isSampleDragActive}
-            getCacheRootProps={getCacheRootProps}
-            getCacheInputProps={getCacheInputProps}
-            isCacheDragActive={isCacheDragActive}
-            isLoading={isLoading}
-            progress={progress}
-            progressMessage={progressMessage}
-            showCachePopUp={showCachePopUp}
-            setCacheFileName={setCacheFileName}
-            handleSaveCache={handleSaveCache}
-            defaultCacheFile={defaultCacheFile}
-          />
-        </form>
-      </div>
+      {!isFormCollapsed && (
+        <div className="form-content">
+          <form onSubmit={e => handleUnifiedSubmit(e, currentStep)} encType='multipart/form-data'>
+            <FormSteps 
+              currentStep={currentStep}
+              formData={formData}
+              handleChange={handleChange}
+              getSampleRootProps={getSampleRootProps}
+              getSampleInputProps={getSampleInputProps}
+              isSampleDragActive={isSampleDragActive}
+              getCacheRootProps={getCacheRootProps}
+              getCacheInputProps={getCacheInputProps}
+              isCacheDragActive={isCacheDragActive}
+              isLoading={isLoading}
+              progress={progress}
+              progressMessage={progressMessage}
+              showCachePopUp={showCachePopUp}
+              setCacheFileName={setCacheFileName}
+              handleSaveCache={handleSaveCache}
+              defaultCacheFile={defaultCacheFile}
+            />
+          </form>
+        </div>
+      )}
+      
 
       {/* Footer area */}
-      <DocLinks />
+      {!isFormCollapsed && <DocLinks />}
     </div>
   );
 }

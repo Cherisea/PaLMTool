@@ -168,6 +168,7 @@ function App() {
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
           numTrajs={formData.num_trajectories}
+          isFormCollapsed={isFormCollapsed}
         />
        
       </div>
