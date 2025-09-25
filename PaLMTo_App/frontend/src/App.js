@@ -52,6 +52,9 @@ function App() {
   // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
 
+  // View mode state(lifted from map section)
+  const [viewMode, setViewMode] = useState('trajectory');
+
   // Handler for text and standard file upload
   const handleChange = (e) => {
     // Extract properties of event with object destructuring
@@ -129,7 +132,8 @@ function App() {
   return (
     <div className="App">
       <div className="layout">
-        <FormSection
+        {viewMode !== '3d' && (
+          <FormSection
           formData={formData}
           setFormData={setFormData}
           handleChange={handleChange}
@@ -145,6 +149,7 @@ function App() {
           setVisualData={setVisualData}
           setHeatmapData={setHeatmapData}
         />
+        )}
         
         <MapSection
           mapCenter={mapCenter}
@@ -154,6 +159,8 @@ function App() {
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
           numTrajs={formData.num_trajectories}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
        
       </div>
