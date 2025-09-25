@@ -95,6 +95,13 @@
   height: 100%;
 }
 
+.form-box.collapsed {
+  width: 0;
+  padding: 0;
+  border-right: none;
+  min-width: 0;
+}
+
 .form-content {
   flex: 1; 
   display: flex;
@@ -167,6 +174,10 @@
   transition: left 0.3s ease;
 }
 
+.form-box.collapsed + .form-toggle-container {
+  left: 0;
+}
+
 .form-toggle-button {
   width: 4px;
   height: 20px;
@@ -196,6 +207,10 @@
   box-sizing: border-box;
   height: 95%; 
   min-height: 0;
+}
+
+.map-box.expanded {
+  width: 98%;
 }
 
 .map-container {
