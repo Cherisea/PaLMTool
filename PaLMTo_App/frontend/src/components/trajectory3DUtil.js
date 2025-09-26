@@ -212,8 +212,8 @@ const useFetchTrajData = () => {
     return { trajData, loading, error };
 }
 
-// Process input trajectory data
-const useTrajData = (trajData) => {
+// Process input trajectory data with optional filters
+const useTrajData = (trajData, filters = null) => {
     return useMemo(() => {
         if (!trajData?.features?.length) return null;
         
@@ -241,6 +241,48 @@ const useTrajData = (trajData) => {
 
         // Maximum start time in hours rounded up
         maxEnd = Math.ceil(maxEnd)
+
+        // Store original bounds for filtering
+        const originalBounds = {
+            minLon, maxLon,
+            minLat, maxLat,
+            minStart, maxEnd
+        };
+
+        // Apply filters if provided
+        let filteredFeatures = trajData.features;
+        if (filters) {
+            // Trajectory-level filtering
+            filteredFeatures = trajData.features.filter(f => {
+                const startTime = isoToHour(f.properties.start_time);
+                const endTime = isoToHour(f.properties.end_time);
+
+                // Temporal filter
+                if (startTime > filters.timeRange[1] || endTime < filters.timeRange[0]) {
+                    return false;
+                }
+
+                // Spatial filter -- preserve a trip if at least one point is within bounds
+                return f.geometry.coordinates.some(([lon, lat]) => {
+                    return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
+                           lat >= filters.latRange[0] && lat <= filters.latRange[1];
+                });
+            });
+
+            // Point-level filtering
+            filteredFeatures = filteredFeatures.map(f => ({
+                ...f,
+                geometry: {
+                    ...f.geometry,
+                    coordinates: f.geometry.coordinates.filter(([lon, lat, time]) => {
+                        const pointTime = isoToHour(time);
+                        return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
+                               lat >= filters.latRange[0] && lat <= filters.latRange[1] &&
+                               pointTime >= filters.timeRange[0] && pointTime <= filters.timeRange[1];
+                    })
+                }
+            })).filter(f => f.geometry.coordinates.length > 0)      // Discard trajectory that doesn't have any point left
+        }
 
         // Longitude and latitude range in meters (rounded down)
         const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
