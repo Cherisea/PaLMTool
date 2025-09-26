@@ -408,4 +408,5 @@ const use3DFilters = (originalBounds) => {
 
 
 export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks,
-    useTrajData, useFullscreen, useFetchTrajData, useCameraDistance};
+    useTrajData, useFullscreen, useFetchTrajData, useCameraDistance,
+    use3DFilters};
