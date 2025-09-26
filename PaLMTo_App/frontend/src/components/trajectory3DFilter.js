@@ -16,7 +16,7 @@ const TrajectoryFilterPanel = ({
     if (!isVisible) {
         return (
             <button 
-                className="filter-toggle"
+                className="filter-toggle-btn"
                 onClick={onToggle}
                 title="Show trajectory filters"
             >
@@ -24,7 +24,6 @@ const TrajectoryFilterPanel = ({
             </button>
         )
     }
-    return (<div>To be implemented</div>)
 };
 
 export default TrajectoryFilterPanel;
