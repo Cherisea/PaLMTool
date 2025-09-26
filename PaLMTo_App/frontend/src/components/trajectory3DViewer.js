@@ -105,6 +105,11 @@ const Trajectory3DViewer = () => {
             <div className='overlay'>
                 <div className='title'>3D Trajectory Viewer</div>
                 <div className='subtitle'>Abstract 3D representation of trajectories (Orbit to rotate/zoom)</div>
+                {isFilterActive && (
+                    <div className='filter-status'>
+                        Filtered: {lines.length} trajectories shown
+                    </div>
+                )}
             </div>
 
             {/* Filter panel */}
