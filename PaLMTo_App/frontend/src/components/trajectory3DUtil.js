@@ -361,6 +361,51 @@ const useCameraDistance = () => {
     return { cameraDistance, cameraRef };
 }
 
+// Hook for managing trajectory filters
+const use3DFilters = (originalBounds) => {
+    const [filters, setFilters] = useState(null);
+    const [isFilterActive, setIsFilterActive] = useState(false);
+
+    // Initialize filters when bounds are visible
+    useEffect(() => {
+        if (originalBounds && !filters) {
+            setFilters({
+                timeRange: [originalBounds.minStart, originalBounds.maxEnd],
+                lonRange: [originalBounds.minLon, originalBounds.maxLon],
+                latRange: [originalBounds.minLat, originalBounds.maxLat]
+            });
+        }
+    }, [originalBounds, filters]);
+
+    // Update filters when they are adjusted
+    const updateFilters = (type, range) => {
+        setFilters(prev => ({
+            ...prev,
+            [type]: range
+        }));
+    };
+
+    // Reset filters
+    const resetFilters = () => {
+        if (originalBounds) {
+            setFilters({
+                timeRange: [originalBounds.minStart, originalBounds.maxEnd],
+                lonRange: [originalBounds.minLon, originalBounds.maxLon],
+                latRange: [originalBounds.minLat, originalBounds.maxLat]
+            });
+            setIsFilterActive(false);
+        }
+    };
+
+    return {
+        filters,
+        isFilterActive,
+        setIsFilterActive,
+        updateFilters,
+        resetFilters,
+    };
+};
+
 
 export {SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks,
     useTrajData, useFullscreen, useFetchTrajData, useCameraDistance};
