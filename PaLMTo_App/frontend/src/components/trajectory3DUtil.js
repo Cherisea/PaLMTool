@@ -239,8 +239,23 @@ const useTrajData = (trajData, filters = null) => {
         // Minimum start time in hours rounded down
         minStart = Math.floor(minStart)
 
-        // Maximum start time in hours rounded up
+        // Maximum end time in hours rounded up
         maxEnd = Math.ceil(maxEnd)
+
+        const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
+        const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
+        const timeRange = maxEnd - minStart;
+
+        // Return unfiltered data if filters are not set
+        if (!filters) {
+            const origin = {lon: minLon, lat: minLat};
+            const lines = trajData.features.map((f, i) => {
+                const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin, minStart));
+                return {id: i, points};
+            })
+    
+            return {lonRange, latRange, lines, timeRange, minStart};
+        }
 
         // Store original bounds for filtering
         const originalBounds = {
@@ -251,54 +266,80 @@ const useTrajData = (trajData, filters = null) => {
 
         // Apply filters if provided
         let filteredFeatures = trajData.features;
-        if (filters) {
-            // Trajectory-level filtering
-            filteredFeatures = trajData.features.filter(f => {
-                const startTime = isoToHour(f.properties.start_time);
-                const endTime = isoToHour(f.properties.end_time);
+        // Trajectory-level filtering
+        filteredFeatures = trajData.features.filter(f => {
+            const startTime = isoToHour(f.properties.start_time);
+            const endTime = isoToHour(f.properties.end_time);
 
-                // Temporal filter
-                if (startTime > filters.timeRange[1] || endTime < filters.timeRange[0]) {
-                    return false;
-                }
+            // Temporal filter
+            if (startTime > filters.timeRange[1] || endTime < filters.timeRange[0]) {
+                return false;
+            }
 
-                // Spatial filter -- preserve a trip if at least one point is within bounds
-                return f.geometry.coordinates.some(([lon, lat]) => {
-                    return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
-                           lat >= filters.latRange[0] && lat <= filters.latRange[1];
-                });
+            // Spatial filter -- preserve a trip if at least one point is within bounds
+            return f.geometry.coordinates.some(([lon, lat]) => {
+                return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
+                        lat >= filters.latRange[0] && lat <= filters.latRange[1];
             });
+        });
 
-            // Point-level filtering
-            filteredFeatures = filteredFeatures.map(f => ({
-                ...f,
-                geometry: {
-                    ...f.geometry,
-                    coordinates: f.geometry.coordinates.filter(([lon, lat, time]) => {
-                        const pointTime = isoToHour(time);
-                        return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
-                               lat >= filters.latRange[0] && lat <= filters.latRange[1] &&
-                               pointTime >= filters.timeRange[0] && pointTime <= filters.timeRange[1];
-                    })
-                }
-            })).filter(f => f.geometry.coordinates.length > 0)      // Discard trajectory that doesn't have any point left
+        // Point-level filtering
+        filteredFeatures = filteredFeatures.map(f => ({
+            ...f,
+            geometry: {
+                ...f.geometry,
+                coordinates: f.geometry.coordinates.filter(([lon, lat, time]) => {
+                    const pointTime = isoToHour(time);
+                    return lon >= filters.lonRange[0] && lon <= filters.lonRange[1] &&
+                            lat >= filters.latRange[0] && lat <= filters.latRange[1] &&
+                            pointTime >= filters.timeRange[0] && pointTime <= filters.timeRange[1];
+                })
+            }
+        })).filter(f => f.geometry.coordinates.length > 0)      // Discard trajectory that doesn't have any point left
+        
+        // Return original bounds if no data remains after filtering
+        if (filteredFeatures.length === 0) {
+            return {
+                lonRange: 0, latRange: 0, lines: [],
+                timeRange: 0, minStart, originalBounds
+            };
+        }
+
+        // Return filtered bounds
+        let filteredMinLon = Infinity, filteredMaxLon = -Infinity;
+        let filteredMinLat = Infinity, filteredMaxLat = -Infinity;
+        let filteredMinStart = Infinity, filteredMaxEnd = -Infinity;
+
+        for (const f of filteredFeatures) {
+            const startTime = isoToHour(f.properties.start_time);
+            const endTime = isoToHour(f.properties.end_time);
+
+            filteredMinStart = Math.min(filteredMinStart, startTime);
+            filteredMaxEnd = Math.max(filteredMaxEnd, endTime);
+
+            for (const [lon, lat] of f.geometry.coordinates) {
+                filteredMinLon = Math.min(filteredMinLon, lon);
+                filteredMaxLon = Math.max(filteredMaxLon, lon)
+                filteredMinLat = Math.min(filteredMinLat, lat);
+                filteredMaxLat = Math.max(filteredMaxLat, lat);
+            }
         }
 
         // Longitude and latitude range in meters (rounded down)
-        const lonRange = Math.floor((maxLon - minLon) * METER_PER_DEGREE);
-        const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
+        const filteredLonRange = Math.floor((filteredMaxLon - filteredMinLon) * METER_PER_DEGREE);
+        const filterdLatRange = Math.floor((filteredMaxLat - filteredMinLat) * METER_PER_DEGREE);
 
         // Time range in hours
-        const timeRange = maxEnd - minStart
-        const origin = {lon: minLon, lat: minLat};
+        const filteredTimeRange = filteredMaxEnd - filteredMinStart;
+        const filteredOrigin = {lon: filteredMinLon, lat: filteredMinLat};
 
-        const lines = trajData.features.map((f, i) => {
-            const points = f.geometry.coordinates.map(coords => toXYZ(coords, origin, minStart));
+        const filteredLines = filteredFeatures.map((f, i) => {
+            const points = f.geometry.coordinates.map(coords => toXYZ(coords, filteredOrigin, filteredMinStart));
             return {id: i, points};
         })
 
-        return {lonRange, latRange, lines, timeRange, minStart}
-    }, [trajData])
+        return {filteredLonRange, filterdLatRange, filteredLines, filteredTimeRange, filteredMinStart}
+    }, [trajData, filters])
 };
 
 // Track camera distance from the origin
