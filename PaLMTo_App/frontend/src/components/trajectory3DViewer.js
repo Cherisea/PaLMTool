@@ -5,9 +5,13 @@ import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
 import { SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks } from './trajectory3DUtil';
 import { useTrajData, useFullscreen, useFetchTrajData, useCameraDistance, use3DFilters } from './trajectory3DUtil';
+import TrajectoryFilterPanel from './trajectory3DFilter';
 import './trajectory3DViewer.css';
 
 const Trajectory3DViewer = () => {
+    // Track visibility of filters
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
+
     // Provides access to the actual div element for fullscreen
     const containerRef = useRef(null);
 
@@ -113,6 +117,16 @@ const Trajectory3DViewer = () => {
             </div>
 
             {/* Filter panel */}
+            <TrajectoryFilterPanel 
+                filters={filters}
+                updateFilters={updateFilters}
+                resetFilters={resetFilters}
+                originalBounds={originalBounds}
+                isVisible={isFilterVisible}
+                onToggle={() => setIsFilterVisible(!isFilterVisible)}
+                isFilterActive={isFilterActive}
+                setIsFilterActive={setIsFilterActive}
+            />
             
 
             {/* Dynamic reference system info */}
