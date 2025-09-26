@@ -1,10 +1,10 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line, Text, PerspectiveCamera } from '@react-three/drei';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { FiMaximize2, FiMinimize2 } from 'react-icons/fi';
 
 import { SCALE_FACTOR, getZoomLevel, createGridLines, createTimeTicks } from './trajectory3DUtil';
-import { useTrajData, useFullscreen, useFetchTrajData, useCameraDistance } from './trajectory3DUtil';
+import { useTrajData, useFullscreen, useFetchTrajData, useCameraDistance, use3DFilters } from './trajectory3DUtil';
 import './trajectory3DViewer.css';
 
 const Trajectory3DViewer = () => {
@@ -14,7 +14,21 @@ const Trajectory3DViewer = () => {
     // Utilize custom hooks
     const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
     const { trajData, loading, error } = useFetchTrajData();
-    const prepared = useTrajData(trajData);
+
+    // Get original bounds without filters
+    const unfiltered= useTrajData(trajData);
+    const originalBounds = unfiltered?.originalBounds;
+
+    // Initialize filter management 
+    const {
+        filters,
+        isFilterActive,
+        setIsFilterActive,
+        updateFilters,
+        resetFilters,
+    } = use3DFilters(originalBounds);
+
+    const prepared = useTrajData(trajData, isFilterActive ? filters : null);
     const { cameraDistance, cameraRef } = useCameraDistance(); 
     
     if (loading) return <div>Loading 3D visualization</div>;
