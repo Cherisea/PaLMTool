@@ -246,6 +246,13 @@ const useTrajData = (trajData, filters = null) => {
         const latRange = Math.floor((maxLat - minLat) * METER_PER_DEGREE);
         const timeRange = maxEnd - minStart;
 
+        // Store original bounds for filtering
+        const originalBounds = {
+            minLon, maxLon,
+            minLat, maxLat,
+            minStart, maxEnd
+        };
+
         // Return unfiltered data if filters are not set
         if (!filters) {
             const origin = {lon: minLon, lat: minLat};
@@ -254,15 +261,8 @@ const useTrajData = (trajData, filters = null) => {
                 return {id: i, points};
             })
     
-            return {lonRange, latRange, lines, timeRange, minStart};
+            return {lonRange, latRange, lines, timeRange, minStart, originalBounds};
         }
-
-        // Store original bounds for filtering
-        const originalBounds = {
-            minLon, maxLon,
-            minLat, maxLat,
-            minStart, maxEnd
-        };
 
         // Apply filters if provided
         let filteredFeatures = trajData.features;
