@@ -87,10 +87,14 @@ const Trajectory3DViewer = () => {
 
             </Canvas>
 
+            {/* 3D viewer title overlay */}
             <div className='overlay'>
                 <div className='title'>3D Trajectory Viewer</div>
                 <div className='subtitle'>Abstract 3D representation of trajectories (Orbit to rotate/zoom)</div>
             </div>
+
+            {/* Filter panel */}
+            
 
             {/* Dynamic reference system info */}
             <div className='zoom-info'>
