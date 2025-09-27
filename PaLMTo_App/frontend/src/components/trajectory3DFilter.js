@@ -20,7 +20,7 @@ const TrajectoryFilterPanel = ({
                 onClick={onToggle}
                 title="Show trajectory filters"
             >
-                <FiFilter size={16} />
+                <FiFilter size={20} />
             </button>
         )
     }
