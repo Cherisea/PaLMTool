@@ -80,7 +80,17 @@ const TrajectoryFilterPanel = ({
                             max={originalBounds.maxEnd}
                             step={0.1}
                             value={filters.timeRange[0]}
-                            
+                            onChange={(e) => handleRangeUpdate('timeRange', 0, e.target.value)}
+                            className="range-slider range-slider-start"
+                        />
+                        <input 
+                            type='range'
+                            min={originalBounds.minStart}
+                            max={originalBounds.maxEnd}
+                            step={0.1}
+                            value={filters.timeRange[1]}
+                            onChange={(e) => handleRangeUpdate('timeRange', 1, e.target.value)}
+                            className="range-slider range-slider-end"
                         />
                     </div>
                 </div>
