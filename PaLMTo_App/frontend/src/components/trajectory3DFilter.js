@@ -20,6 +20,11 @@ const TrajectoryFilterPanel = ({
         return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
     };
 
+    // Convert coordinate to string with 6 decimal places(about 0.1 meter)
+    const formatCoord = (coord, decimals = 6) => {
+        return coord.toFixed(decimals);
+    }
+
     // Handle range update
     const handleRangeUpdate = (type, index, value) => {
         const newRange = [...filters[type]];
