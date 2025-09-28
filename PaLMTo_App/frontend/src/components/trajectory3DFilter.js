@@ -20,6 +20,14 @@ const TrajectoryFilterPanel = ({
         return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
     };
 
+    // Handle range update
+    const handleRangeUpdate = (type, index, value) => {
+        const newRange = [...filters[type]];
+        newRange[index] = parseFloat(value);
+        updateFilters(type, newRange);
+        setIsFilterActive(true);
+    }
+
     if (!isVisible) {
         return (
             <button 
