@@ -13,7 +13,7 @@ const TrajectoryFilterPanel = ({
 }) => {
     if (!filters || !originalBounds ) return null;
 
-    // Format hours expressed as fractional number as whole-number hours and mins
+    // Convert hours to a string expression formmated as hr:min
     const formatTime = (hour) => {
         const hr = Math.floor(hour);
         const min = (hour - hr) * 60
@@ -31,6 +31,21 @@ const TrajectoryFilterPanel = ({
         newRange[index] = parseFloat(value);
         updateFilters(type, newRange);
         setIsFilterActive(true);
+    }
+
+    // Handle adjustments to coords
+    const handleCoordAdjust = (type, index, direction) => {
+        const step = type === 'timeRange' ? 0.1 : 0.0001;
+        const newVal = filters[type][index] + (direction === 'up' ? step : -step);
+
+        // Clamp to bounds
+        const min = type === 'timeRange' ? originalBounds.minStart :
+            type === 'lonRange' ? originalBounds.minLon : originalBounds.minLat;
+        const max = type === 'timeRange' ? originalBounds.maxEnd :
+            type === 'lonRange' ? originalBounds.maxLon : originalBounds.maxLat;
+
+        const clampedVal = Math.max(min, Math.min(newVal, max));
+        handleRangeUpdate(type, index, clampedVal);
     }
 
     if (!isVisible) {
@@ -101,28 +116,23 @@ const TrajectoryFilterPanel = ({
 
                 {/* Longitude range filter */}
                 <div className="filter-group">
-                    <label className="filter-label">
-                        Longitude: {filters.lonRange[0]} - {filters.lonRange[1]}
-                    </label>
-                    <div className="range-sliders">
-                        <input
-                            type="range"
-                            min={originalBounds.minLon}
-                            max={originalBounds.maxLon}
-                            step={0.0001}
-                            value={filters.lonRange[0]}
-                            onChange={(e) => handleRangeUpdate('lonRange', 0, e.target.value)}
-                            className="range-slider range-slider-start"
-                        />
-                        <input
-                            type="range"
-                            min={originalBounds.minLon}
-                            max={originalBounds.maxLon}
-                            step={0.0001}
-                            value={filters.latRange[1]}
-                            onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
-                            className="range-slider range-slider-end"
-                        />
+                    <label className="filter-label">Longitude Range</label>
+                    <div className="precise-inputs">
+                        <div className="input-group">
+                            <label className="input-label">Start</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                    type="number"
+                                    value={formatCoord(filters.lonRange[0])}
+                                    onChange={(e) => handleRangeUpdate('lonRange', 0, e.target.value)}
+                                    step="0.0001"
+                                    min={originalBounds.minLon}
+                                    max={originalBounds.maxLon}
+                                    className="precise-input"
+                                />
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
 
