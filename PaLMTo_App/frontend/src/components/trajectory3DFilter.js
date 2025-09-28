@@ -133,6 +133,22 @@ const TrajectoryFilterPanel = ({
                                 
                             </div>
                         </div>
+
+                        <div className="input-group">
+                            <label className="input-label">End</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                    type="number"
+                                    value={formatCoord(filters.lonRange[1])}
+                                    onChange={(e) => handleRangeUpdate('lonRange', 1, e.target.value)}
+                                    step="0.0001"
+                                    min={originalBounds.minLon}
+                                    max={originalBounds.maxLon}
+                                    className="precise-input"
+                                />
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -62,7 +62,7 @@
   position: absolute;
   top: 12px;
   right: 80px;
-  width: 220px;
+  width: 250px;
   background: rgba(0, 0, 0, 0.9);
   border: 1px solid #333;
   border-radius: 8px;
@@ -189,6 +189,13 @@
 .range-slider-end::-moz-range-thumb {
   background: #33cc66;
 }
+
+/* Precise Input Controls */
+.precise-inputs {
+  display: flex;
+  gap: 10px;
+}
+
 
 /* ==================== Fullscreen ================== */
 .fullscreen-button {
