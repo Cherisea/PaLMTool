@@ -13,6 +13,13 @@ const TrajectoryFilterPanel = ({
 }) => {
     if (!filters || !originalBounds ) return null;
 
+    // Format hours expressed as fractional number as whole-number hours and mins
+    const formatTime = (hour) => {
+        const hr = Math.floor(hour);
+        const min = (hour - hr) * 60
+        return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+    };
+
     if (!isVisible) {
         return (
             <button 
@@ -50,6 +57,27 @@ const TrajectoryFilterPanel = ({
                         <FiX size={16} />
                     </button>
                 </div>
+            </div>
+
+            <div className="filter-content">
+                {/* Time range filter */}
+                <div className="filter-group">
+                    <label className="filter-label">
+                        Time Range: {formatTime(filters.timeRange[0])} - {formatTime(filters.timeRange[1])}
+                    </label>
+                    <div className="range-sliders">
+                        <input 
+                            type='range'
+                            min={originalBounds.minStart}
+                            max={originalBounds.maxEnd}
+                            step={0.1}
+                            value={filters.timeRange[0]}
+                            
+                        />
+                    </div>
+                </div>
+
+
             </div>
 
 
