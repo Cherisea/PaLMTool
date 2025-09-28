@@ -45,8 +45,7 @@ const TrajectoryFilterPanel = ({
             {/* Filter panel metadata */}
             <div className="filter-header">
                 <div className="filter-title">
-                    <FiFilter size={16} />
-                    <span>Trajectory Filters</span>
+                    <p>Trajectory Filters</p>
                 </div>
                 <div className="filter-actions">
                     <button
@@ -112,8 +111,8 @@ const TrajectoryFilterPanel = ({
                         />
                         <input
                             type="range"
-                            min={originalBounds.minLat}
-                            max={originalBounds.maxLat}
+                            min={originalBounds.minLon}
+                            max={originalBounds.maxLon}
                             step={0.0001}
                             value={filters.latRange[1]}
                             onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
