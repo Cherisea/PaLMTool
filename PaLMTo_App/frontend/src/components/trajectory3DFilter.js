@@ -95,6 +95,32 @@ const TrajectoryFilterPanel = ({
                     </div>
                 </div>
 
+                {/* Longitude range filter */}
+                <div className="filter-group">
+                    <label className="filter-label">
+                        Longitude: {filters.lonRange[0]} - {filters.lonRange[1]}
+                    </label>
+                    <div className="range-sliders">
+                        <input
+                            type="range"
+                            min={originalBounds.minLon}
+                            max={originalBounds.maxLon}
+                            step={0.0001}
+                            value={filters.lonRange[0]}
+                            onChange={(e) => handleRangeUpdate('lonRange', 0, e.target.value)}
+                            className="range-slider range-slider-start"
+                        />
+                        <input
+                            type="range"
+                            min={originalBounds.minLat}
+                            max={originalBounds.maxLat}
+                            step={0.0001}
+                            value={filters.latRange[1]}
+                            onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
+                            className="range-slider range-slider-end"
+                        />
+                    </div>
+                </div>
 
             </div>
 
