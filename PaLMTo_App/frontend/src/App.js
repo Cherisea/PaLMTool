@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useDropzone } from "react-dropzone" 
 import L from "leaflet"
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 // Two main sections of app
 import FormSection from './components/FormSection';
@@ -51,6 +52,9 @@ function App() {
 
   // Declare a state variable for center of map
   const [mapCenter, setMapCenter] = useState([41.1579, -8.63]);
+
+  // Track the state of collapse button
+  const [isFormCollapsed, setIsFormCollapsed] = useState(false);
 
   // Handler for text and standard file upload
   const handleChange = (e) => {
@@ -129,7 +133,7 @@ function App() {
   return (
     <div className="App">
       <div className="layout">
-        <FormSection
+          <FormSection
           formData={formData}
           setFormData={setFormData}
           handleChange={handleChange}
@@ -144,7 +148,18 @@ function App() {
           setGeneratedFileName={setGeneratedFileName}
           setVisualData={setVisualData}
           setHeatmapData={setHeatmapData}
+          isFormCollapsed={isFormCollapsed}
         />
+
+        <div className="form-toggle-container">
+          <button
+            className="form-toggle-button"
+            onClick={() => setIsFormCollapsed(!isFormCollapsed)}
+            title={isFormCollapsed ? "Show form" : "Hide form"}
+          >
+            {isFormCollapsed ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
+          </button>
+        </div>
         
         <MapSection
           mapCenter={mapCenter}
@@ -154,6 +169,7 @@ function App() {
           heatmapData={heatmapData}
           generatedFileName={generatedFileName}
           numTrajs={formData.num_trajectories}
+          isFormCollapsed={isFormCollapsed}
         />
        
       </div>

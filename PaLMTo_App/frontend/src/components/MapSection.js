@@ -64,7 +64,7 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName }) 
+  heatmapData, generatedFileName, isFormCollapsed }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -212,7 +212,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Show default view if a response hasn't been received 
   if (!visualData) {
     return (
-      <div className="map-box">
+      <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`}>
         <LocationSelectionMap 
           mapCenter={mapCenter}
           locationCoordinates={locationCoordinates}
@@ -223,7 +223,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   }
 
   return (
-    <div className="map-box" style={{ position: 'relative' }}>
+    <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>

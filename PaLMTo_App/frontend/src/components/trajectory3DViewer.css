@@ -5,6 +5,16 @@
   min-height: 700px;  
 }
 
+.container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #1a1a1a;
+}
+
 .overlay {
     position: absolute;
     top: 12px;
@@ -21,4 +31,254 @@
 .subtitle {
   font-size: 14px;
   opacity: 0.9;
+}
+
+/* ==================== Filter Panel ================== */
+.filter-toggle-btn {
+  position: absolute;
+  top: 16px;
+  right: 80px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #00e5ff;
+  color: #00e5ff;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  transition: all 0.3s ease;
+}
+
+.filter-toggle-btn:hover {
+  background: rgba(0, 229, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.filter-panel {
+  position: absolute;
+  top: 12px;
+  right: 80px;
+  width: 250px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  z-index: 15;
+  color: white;
+  font-size: 14px;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 7px;
+  border-bottom: 1px solid #e4a7a7;
+  margin-bottom: 10px;
+}
+
+.filter-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #00e5ff;
+  margin: 0;
+}
+
+.filter-actions {
+  display: flex;
+  margin: 0;
+}
+
+.filter-reset-btn, .filter-close-btn {
+  background: transparent;
+  cursor: pointer;
+  margin: 5px;
+  padding: 3px;
+}
+
+.filter-reset-btn:hover {
+  background-color: transparent;
+  border-color: #ffd11a;
+  color: #ffd11a;
+}
+
+.filter-close-btn:hover {
+  background-color: transparent;
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+}
+
+.filter-content {
+  padding: 10px;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Time Input Styles */
+.time-inputs {
+  display: flex;
+}
+
+.time-group {
+  flex: 1;
+}
+
+.time-input-row {
+  display: flex;
+  align-items: center;
+} 
+
+.time-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.time-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #00e5ff;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+}
+
+.time-input:hover {
+  border-color: #777;
+}
+
+.time-separator {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 2px;
+}
+
+/* Precise Input Controls */
+.precise-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.precise-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: white;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.precise-input:focus {
+  outline: none;
+  border-color: #00e5ff;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+}
+
+.precise-input:hover {
+  border-color: #777;
+}
+
+/* ==================== Fullscreen ================== */
+.fullscreen-button {
+  position: absolute;
+  top: -20px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid white;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+.fullscreen-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.fullscreen-button:active {
+  transform: scale(0.95);
+}
+
+.zoom-info {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 12px;
+  line-height: 1.4;
+  display: flex;
+  gap: 250px;
+  align-items: center;
+}
+
+/* Ensure zoom-info stays at bottom in fullscreen mode */
+.container.fullscreen .zoom-info {
+  bottom: 15px;
+  left: 50%;
+  gap: 500px;
+  transform: translateX(-50%);
+}
+
+
+.zoom-level {
+  color: #00e5ff;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.grid-info {
+  color: #ffd11a;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.distance-info {
+  color: #99ff33;
+  margin-bottom: 0;
+  white-space: nowrap;
 }

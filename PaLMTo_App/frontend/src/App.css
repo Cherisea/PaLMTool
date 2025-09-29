@@ -95,6 +95,13 @@
   height: 100%;
 }
 
+.form-box.collapsed {
+  width: 0;
+  padding: 0;
+  border-right: none;
+  min-width: 0;
+}
+
 .form-content {
   flex: 1; 
   display: flex;
@@ -157,6 +164,38 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ========================== Form Toggle Button ========================== */
+.form-toggle-container {
+  position: absolute;
+  left: 30%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  transition: left 0.3s ease;
+}
+
+.form-box.collapsed + .form-toggle-container {
+  left: 5%;
+}
+
+.form-toggle-button {
+  width: 10px;
+  height: 40px;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.form-toggle-button:hover {
+  background: #0056b3;
+  transform: translateX(2px);
+}
+
 /* ========================== Map Section ========================== */
 .map-box {
   width: 70%;
@@ -166,6 +205,10 @@
   box-sizing: border-box;
   height: 95%; 
   min-height: 0;
+}
+
+.map-box.expanded {
+  width: 98%;
 }
 
 .map-container {
