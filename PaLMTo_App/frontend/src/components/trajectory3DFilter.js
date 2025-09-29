@@ -140,10 +140,10 @@ const TrajectoryFilterPanel = ({
                                         type="number"
                                         value={startTime.hr}
                                         onChange={(e) => handleTimeUpdate(0, 'hours', e.target.value)}
-                                        min={originalBounds.minStart}
-                                        max={originalBounds.maxEnd}
+                                        min={0}
+                                        max={23}
                                         step={1}
-                                        readOnly
+                                        onKeyDown={preventTyping}
                                         className="time-input hour-input"
                                         placeholder="HH"
                                     />
@@ -154,10 +154,10 @@ const TrajectoryFilterPanel = ({
                                         type="number"
                                         value={startTime.min}
                                         onChange={(e) => handleTimeUpdate(0, 'mins', e.target.value)}
-                                        min={originalBounds.minStart}
-                                        max={originalBounds.maxEnd}
+                                        min={0}
+                                        max={59}
                                         step={30}
-                                        readOnly
+                                        onKeyDown={preventTyping}
                                         className="time-input minute-input"
                                         placeholder="MM"
                                     />
@@ -173,10 +173,10 @@ const TrajectoryFilterPanel = ({
                                         type="number"
                                         value={endTime.hr}
                                         onChange={(e) => handleTimeUpdate(1, 'hours', e.target.value)}
-                                        min={originalBounds.minStart}
-                                        max={originalBounds.maxEnd}
+                                        min={0}
+                                        max={23}
                                         step={1}
-                                        readOnly
+                                        onKeyDown={preventTyping}
                                         className="time-input hour-input"
                                         placeholder="HH"
                                     />
@@ -187,10 +187,10 @@ const TrajectoryFilterPanel = ({
                                         type="number"
                                         value={endTime.min}
                                         onChange={(e) => handleTimeUpdate(1, 'mins', e.target.value)}
-                                        min={originalBounds.minStart}
-                                        max={originalBounds.maxEnd}
-                                        step={1}
-                                        readOnly
+                                        min={0}
+                                        max={59}
+                                        step={30}
+                                        onKeyDown={preventTyping}
                                         className="time-input minute-input"
                                         placeholder="MM"
                                     />
