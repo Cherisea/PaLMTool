@@ -123,6 +123,34 @@ const TrajectoryFilterPanel = ({
                             </div>
                         </div>
 
+                        <div className="time-group">
+                            <label className="input-label">End</label>
+                            <div className="time-input-row">
+                                <div className="time-input-container">
+                                    <input 
+                                        type="number"
+                                        value={endTime.hr}
+                                        onChange={() => console.log('End time clicked')}
+                                        min={originalBounds.minStart}
+                                        max={originalBounds.maxEnd}
+                                        className="time-input hour-input"
+                                        placeholder="HH"
+                                    />
+                                    <span className="time-separator">:</span>
+                                </div>
+                                <div className="time-input-container">
+                                    <input 
+                                        type="number"
+                                        value={endTime.min}
+                                        min={originalBounds.minStart}
+                                        max={originalBounds.maxEnd}
+                                        className="time-input minute-input"
+                                        placeholder="MM"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
