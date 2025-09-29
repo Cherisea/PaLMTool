@@ -17,7 +17,7 @@ const TrajectoryFilterPanel = ({
     const formatTime = (hour) => {
         const hr = Math.floor(hour);
         const min = (hour - hr) * 60
-        return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+        return `${hr.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
     };
 
     // Convert coordinate to string with 6 decimal places(about 0.1 meter)
@@ -89,28 +89,37 @@ const TrajectoryFilterPanel = ({
             <div className="filter-content">
                 {/* Time range filter */}
                 <div className="filter-group">
-                    <label className="filter-label">
-                        Time Range: {formatTime(filters.timeRange[0])} - {formatTime(filters.timeRange[1])}
-                    </label>
-                    <div className="range-sliders">
-                        <input 
-                            type='range'
-                            min={originalBounds.minStart}
-                            max={originalBounds.maxEnd}
-                            step={0.1}
-                            value={filters.timeRange[0]}
-                            onChange={(e) => handleRangeUpdate('timeRange', 0, e.target.value)}
-                            className="range-slider range-slider-start"
-                        />
-                        <input 
-                            type='range'
-                            min={originalBounds.minStart}
-                            max={originalBounds.maxEnd}
-                            step={0.1}
-                            value={filters.timeRange[1]}
-                            onChange={(e) => handleRangeUpdate('timeRange', 1, e.target.value)}
-                            className="range-slider range-slider-end"
-                        />
+                    <label className="filter-label">Time Range</label>
+                    <div className="precise-inputs">
+                        <div className="input-group">
+                            <label className="input-label">Start</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                    type="number"
+                                    value={formatTime(filters.minStart)}
+                                    onChange={(e) => handleRangeUpdate('timeRange', 0, e.target.value)}
+                                    step="0.1"
+                                    min={originalBounds.minStart}
+                                    max={originalBounds.maxEnd}
+                                    className="precise-input"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="input-group">
+                            <label className="input-label">End</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                    type="number"
+                                    value={formatTime(filters.maxEnd)}
+                                    onChange={(e) => handleRangeUpdate('timeRange', 1, e.target.value)}
+                                    step="0.1"
+                                    min={originalBounds.minStart}
+                                    max={originalBounds.maxEnd}
+                                    className="precise-input"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
