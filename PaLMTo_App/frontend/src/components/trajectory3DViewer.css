@@ -129,6 +129,54 @@
   color: #ccc;
 }
 
+/* Time Input Styles */
+.time-inputs {
+  display: flex;
+}
+
+.time-group {
+  flex: 1;
+}
+
+.time-input-row {
+  display: flex;
+  align-items: center;
+} 
+
+.time-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.time-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #00e5ff;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+}
+
+.time-input:hover {
+  border-color: #777;
+}
+
+.time-separator {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 2px;
+}
+
 /* Precise Input Controls */
 .precise-inputs {
   display: flex;

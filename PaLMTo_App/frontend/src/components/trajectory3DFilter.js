@@ -13,11 +13,11 @@ const TrajectoryFilterPanel = ({
 }) => {
     if (!filters || !originalBounds ) return null;
 
-    // Convert hours to a string expression formmated as hr:min
-    const formatTime = (hour) => {
+    // Convert decimal hours to hours followed by minutes
+    const decimalToTime = (hour) => {
         const hr = Math.floor(hour);
         const min = (hour - hr) * 60
-        return `${hr.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+        return {hr, min};
     };
 
     // Convert coordinate to string with 6 decimal places(about 0.1 meter)
@@ -48,6 +48,9 @@ const TrajectoryFilterPanel = ({
         handleRangeUpdate(type, index, clampedVal);
     }
 
+    const startTime = decimalToTime(filters.timeRange[0]);
+    const endTime = decimalToTime(filters.timeRange[1]);
+    
     if (!isVisible) {
         return (
             <button 
@@ -90,36 +93,36 @@ const TrajectoryFilterPanel = ({
                 {/* Time range filter */}
                 <div className="filter-group">
                     <label className="filter-label">Time Range</label>
-                    <div className="precise-inputs">
-                        <div className="input-group">
+                    <div className="time-inputs">
+                        <div className="time-group">
                             <label className="input-label">Start</label>
-                            <div className="input-with-buttons">
-                                <input 
-                                    type="number"
-                                    value={formatTime(filters.minStart)}
-                                    onChange={(e) => handleRangeUpdate('timeRange', 0, e.target.value)}
-                                    step="0.1"
-                                    min={originalBounds.minStart}
-                                    max={originalBounds.maxEnd}
-                                    className="precise-input"
-                                />
+                            <div className="time-input-row">
+                                <div className="time-input-container">
+                                    <input 
+                                        type="number"
+                                        value={startTime.hr}
+                                        onChange={() => {console.log("Start time selected")}}
+                                        min={originalBounds.minStart}
+                                        max={originalBounds.maxEnd}
+                                        className="time-input hour-input"
+                                        placeholder="HH"
+                                    />
+                                    <span className="time-separator">:</span>
+                                </div>
+                                <div className="time-input-container">
+                                    <input 
+                                        type="number"
+                                        value={startTime.min}
+                                        onChange={() => {console.log("Start time selected")}}
+                                        min={originalBounds.minStart}
+                                        max={originalBounds.maxEnd}
+                                        className="time-input minute-input"
+                                        placeholder="MM"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="input-group">
-                            <label className="input-label">End</label>
-                            <div className="input-with-buttons">
-                                <input 
-                                    type="number"
-                                    value={formatTime(filters.maxEnd)}
-                                    onChange={(e) => handleRangeUpdate('timeRange', 1, e.target.value)}
-                                    step="0.1"
-                                    min={originalBounds.minStart}
-                                    max={originalBounds.maxEnd}
-                                    className="precise-input"
-                                />
-                            </div>
-                        </div>
                     </div>
                 </div>
 
