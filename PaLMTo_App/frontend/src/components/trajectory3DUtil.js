@@ -338,7 +338,12 @@ const useTrajData = (trajData, filters = null) => {
             return {id: i, points};
         })
 
-        return {filteredLonRange, filterdLatRange, filteredLines, filteredTimeRange, filteredMinStart}
+        return {
+            lonRange: filteredLonRange, 
+            latRange: filterdLatRange, 
+            lines: filteredLines, 
+            timeRange: filteredTimeRange, 
+            minStart: filteredMinStart}
     }, [trajData, filters])
 };
 
