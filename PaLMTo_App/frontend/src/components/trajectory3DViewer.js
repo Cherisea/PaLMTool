@@ -126,6 +126,7 @@ const Trajectory3DViewer = () => {
                 onToggle={() => setIsFilterVisible(!isFilterVisible)}
                 isFilterActive={isFilterActive}
                 setIsFilterActive={setIsFilterActive}
+                zoomLevel={zoomLevel}
             />
             
 

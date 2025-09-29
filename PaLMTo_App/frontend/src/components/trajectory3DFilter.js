@@ -9,7 +9,8 @@ const TrajectoryFilterPanel = ({
     isVisible,
     onToggle,
     isFilterActive,
-    setIsFilterActive
+    setIsFilterActive,
+    zoomLevel
 }) => {
     if (!filters || !originalBounds ) return null;
 
@@ -142,10 +143,11 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(0, 'hours', e.target.value)}
                                         min={0}
                                         max={23}
-                                        step={1}
+                                        step={zoomLevel?.timeUnit === 'hour' ? 1 : 0}
                                         onKeyDown={preventTyping}
                                         className="time-input hour-input"
                                         placeholder="HH"
+                                        disabled={zoomLevel?.timeUnit === 'minute'}
                                     />
                                     <span className="time-separator">:</span>
                                 </div>
@@ -156,10 +158,11 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(0, 'mins', e.target.value)}
                                         min={0}
                                         max={59}
-                                        step={30}
+                                        step={zoomLevel?.timeStep || 30}
                                         onKeyDown={preventTyping}
                                         className="time-input minute-input"
                                         placeholder="MM"
+                                        disabled={zoomLevel?.timeUnit === 'hour'}
                                     />
                                 </div>
                             </div>
@@ -175,10 +178,11 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(1, 'hours', e.target.value)}
                                         min={0}
                                         max={23}
-                                        step={1}
+                                        step={zoomLevel?.timeUnit === 'hour' ? 1 : 0}
                                         onKeyDown={preventTyping}
                                         className="time-input hour-input"
                                         placeholder="HH"
+                                        disabled={zoomLevel?.timeUnit === 'minute'}
                                     />
                                     <span className="time-separator">:</span>
                                 </div>
@@ -189,10 +193,11 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(1, 'mins', e.target.value)}
                                         min={0}
                                         max={59}
-                                        step={30}
+                                        step={zoomLevel?.timeStep || 30}
                                         onKeyDown={preventTyping}
                                         className="time-input minute-input"
                                         placeholder="MM"
+                                        disabled={zoomLevel?.timeUnit === 'hour'}
                                     />
                                 </div>
                             </div>
