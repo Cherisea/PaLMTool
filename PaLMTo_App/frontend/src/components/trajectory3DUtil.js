@@ -308,7 +308,7 @@ const useTrajData = (trajData, filters = null) => {
         // Return filtered bounds
         let filteredMinLon = Infinity, filteredMaxLon = -Infinity;
         let filteredMinLat = Infinity, filteredMaxLat = -Infinity;
-        let filteredMinStart = Infinity, filteredMaxEnd = -Infinity;
+        let filteredMinStart = filters.timeRange[0], filteredMaxEnd = filters.timeRange[1];
 
         for (const f of filteredFeatures) {
             const startTime = isoToHour(f.properties.start_time);
