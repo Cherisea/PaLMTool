@@ -62,6 +62,7 @@ const TrajectoryFilterPanel = ({
         const newRange = [...filters.timeRange];
         newRange[index] = clampedTime;
         updateFilters('timeRange', newRange);
+        setIsFilterActive(true);
     }
 
     // Handle adjustments to coords
@@ -132,7 +133,7 @@ const TrajectoryFilterPanel = ({
                                     <input 
                                         type="number"
                                         value={startTime.hr}
-                                        onChange={() => {console.log("Start time selected")}}
+                                        onChange={(e) => handleTimeUpdate(0, 'hours', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
                                         className="time-input hour-input"
@@ -144,7 +145,7 @@ const TrajectoryFilterPanel = ({
                                     <input 
                                         type="number"
                                         value={startTime.min}
-                                        onChange={() => {console.log("Start time selected")}}
+                                        onChange={(e) => handleTimeUpdate(0, 'mins', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
                                         className="time-input minute-input"
@@ -161,7 +162,7 @@ const TrajectoryFilterPanel = ({
                                     <input 
                                         type="number"
                                         value={endTime.hr}
-                                        onChange={() => console.log('End time clicked')}
+                                        onChange={(e) => handleTimeUpdate(1, 'hours', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
                                         className="time-input hour-input"
@@ -173,6 +174,7 @@ const TrajectoryFilterPanel = ({
                                     <input 
                                         type="number"
                                         value={endTime.min}
+                                        onChange={(e) => handleTimeUpdate(1, 'mins', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
                                         className="time-input minute-input"
