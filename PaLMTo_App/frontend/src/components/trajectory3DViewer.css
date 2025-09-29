@@ -196,6 +196,37 @@
   gap: 10px;
 }
 
+.input-label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.precise-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: white;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.precise-input:focus {
+  outline: none;
+  border-color: #00e5ff;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+}
+
+.precise-input:hover {
+  border-color: #777;
+}
 
 /* ==================== Fullscreen ================== */
 .fullscreen-button {
