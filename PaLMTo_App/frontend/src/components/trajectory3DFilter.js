@@ -136,6 +136,8 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(0, 'hours', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
+                                        step={1}
+                                        readOnly
                                         className="time-input hour-input"
                                         placeholder="HH"
                                     />
@@ -148,6 +150,8 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(0, 'mins', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
+                                        step={30}
+                                        readOnly
                                         className="time-input minute-input"
                                         placeholder="MM"
                                     />
@@ -165,6 +169,8 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(1, 'hours', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
+                                        step={1}
+                                        readOnly
                                         className="time-input hour-input"
                                         placeholder="HH"
                                     />
@@ -177,6 +183,8 @@ const TrajectoryFilterPanel = ({
                                         onChange={(e) => handleTimeUpdate(1, 'mins', e.target.value)}
                                         min={originalBounds.minStart}
                                         max={originalBounds.maxEnd}
+                                        step={1}
+                                        readOnly
                                         className="time-input minute-input"
                                         placeholder="MM"
                                     />
