@@ -65,6 +65,12 @@ const TrajectoryFilterPanel = ({
         setIsFilterActive(true);
     }
 
+    // Block manual typing but allow spinner and navigation keys
+    const preventTyping = (e) => {
+        const allowed = ['Tab', 'Shift', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+        if (!allowed.includes(e.key)) e.preventDefault();
+    }
+
     // Handle adjustments to coords
     const handleCoordAdjust = (type, index, direction) => {
         const step = type === 'timeRange' ? 0.1 : 0.0001;
