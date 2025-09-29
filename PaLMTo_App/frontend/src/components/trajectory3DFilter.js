@@ -20,6 +20,11 @@ const TrajectoryFilterPanel = ({
         return {hr, min};
     };
 
+    // Convert separate hours and minutes to decimal hours
+    const timeToDecimal = (hour, min) => {
+        return hour + (min / 60); 
+    } 
+
     // Convert coordinate to string with 6 decimal places(about 0.1 meter)
     const formatCoord = (coord, decimals = 6) => {
         return coord.toFixed(decimals);
@@ -31,6 +36,32 @@ const TrajectoryFilterPanel = ({
         newRange[index] = parseFloat(value);
         updateFilters(type, newRange);
         setIsFilterActive(true);
+    }
+
+    // Handle adjustments to time range
+    const handleTimeUpdate = (index, timeType, value) => {
+        // Extract hour and min part from time to be changed
+        const currTime = decimalToTime(filters.timeRange[index]);
+        let newHours = currTime.hr;
+        let newMins = currTime.min;
+
+        if (timeType === 'hours') {
+            newHours = parseInt(value || 0);
+        } else if (timeType === 'mins') {
+            newMins = parseInt(value || 0);
+            newMins = Math.max(0, Math.min(59, newMins));
+        }
+
+        const newDecimalTime = timeToDecimal(newHours, newMins);
+
+        // Clamp to bounds
+        const min = originalBounds.minStart;
+        const max = originalBounds.maxEnd;
+        const clampedTime = Math.max(min, Math.min(max, newDecimalTime));
+
+        const newRange = [...filters.timeRange];
+        newRange[index] = clampedTime;
+        updateFilters('timeRange', newRange);
     }
 
     // Handle adjustments to coords
