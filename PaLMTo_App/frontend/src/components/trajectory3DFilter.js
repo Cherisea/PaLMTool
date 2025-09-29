@@ -154,29 +154,38 @@ const TrajectoryFilterPanel = ({
 
                 {/* Latitude range filter */}
                 <div className="filter-group">
-                    <label className="filter-label">
-                        Latitude: {filters.latRange[0]} - {filters.latRange[1]}
-                    </label>
-
-                    <div className="range-sliders">
-                        <input 
-                            type="range"
-                            min={originalBounds.minLat}
-                            max={originalBounds.maxLat}
-                            step={0.0001}
-                            value={filters.latRange[0]}
-                            onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
-                            className="range-slider range-slider-start"
-                        />
-                        <input 
-                            type="range"
-                            min={originalBounds.minLat}
-                            max={originalBounds.maxLat}
-                            step={0.0001}
-                            value={filters.latRange[1]}
-                            onChange={(e) => handleRangeUpdate('latRange', 1, e.target.value)}
-                            className="range-slider range-slider-end"
-                        />
+                    <label className="filter-label">Latitude Range</label>
+                    <div className="precise-inputs">
+                        <div className="input-group">
+                            <label className="input-label">Start</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                type="number"
+                                min={originalBounds.minLat}
+                                max={originalBounds.maxLat}
+                                step={0.0001}
+                                value={formatCoord(filters.latRange[0])}
+                                onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
+                                className="precise-input"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="input-group">
+                            <label className="input-label">End</label>
+                            <div className="input-with-buttons">
+                                <input 
+                                type="number"
+                                min={originalBounds.minLat}
+                                max={originalBounds.maxLat}
+                                step={0.0001}
+                                value={filters.latRange[1]}
+                                onChange={(e) => handleRangeUpdate('latRange', 1, e.target.value)}
+                                className="precise-input"
+                                />
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
