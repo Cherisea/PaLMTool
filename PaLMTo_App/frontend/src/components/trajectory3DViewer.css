@@ -36,8 +36,8 @@
 /* ==================== Filter Panel ================== */
 .filter-toggle-btn {
   position: absolute;
-  top: 16px;
-  right: 80px;
+  bottom: 16px;
+  right: 10px;
   background: rgba(0, 0, 0, 0.8);
   border: 1px solid #00e5ff;
   color: #00e5ff;
@@ -60,10 +60,10 @@
 
 .filter-panel {
   position: absolute;
-  top: 12px;
-  right: 80px;
+  bottom: 40px;
+  right: 20px;
   width: 270px;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.4);
   border: 1px solid #333;
   border-radius: 8px;
   backdrop-filter: blur(10px);
