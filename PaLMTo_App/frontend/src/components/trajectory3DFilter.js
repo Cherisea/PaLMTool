@@ -218,6 +218,7 @@ const TrajectoryFilterPanel = ({
                                     value={formatCoord(filters.lonRange[0])}
                                     onChange={(e) => handleRangeUpdate('lonRange', 0, e.target.value)}
                                     step="0.0001"
+                                    onKeyDown={preventTyping}
                                     min={originalBounds.minLon}
                                     max={originalBounds.maxLon}
                                     className="precise-input"
@@ -234,6 +235,7 @@ const TrajectoryFilterPanel = ({
                                     value={formatCoord(filters.lonRange[1])}
                                     onChange={(e) => handleRangeUpdate('lonRange', 1, e.target.value)}
                                     step="0.0001"
+                                    onKeyDown={preventTyping}
                                     min={originalBounds.minLon}
                                     max={originalBounds.maxLon}
                                     className="precise-input"
@@ -256,6 +258,7 @@ const TrajectoryFilterPanel = ({
                                 min={originalBounds.minLat}
                                 max={originalBounds.maxLat}
                                 step={0.0001}
+                                onKeyDown={preventTyping}
                                 value={formatCoord(filters.latRange[0])}
                                 onChange={(e) => handleRangeUpdate('latRange', 0, e.target.value)}
                                 className="precise-input"
@@ -271,6 +274,7 @@ const TrajectoryFilterPanel = ({
                                 min={originalBounds.minLat}
                                 max={originalBounds.maxLat}
                                 step={0.0001}
+                                onKeyDown={preventTyping}
                                 value={filters.latRange[1]}
                                 onChange={(e) => handleRangeUpdate('latRange', 1, e.target.value)}
                                 className="precise-input"
