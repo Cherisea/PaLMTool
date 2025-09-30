@@ -34,7 +34,17 @@ const TrajectoryFilterPanel = ({
     // Handle range update
     const handleRangeUpdate = (type, index, value) => {
         const newRange = [...filters[type]];
-        newRange[index] = parseFloat(value);
+        const newVal = parseFloat(value);
+
+        // Validate new start doesn't exceed end 
+        if (index === 0) {  // Filtered start time
+            const endVal = newRange[1];
+            newRange[index] = Math.min(newVal, endVal);
+        } else {    // Filtered end time
+            const startVal = newRange[0];
+            newRange[index] = Math.max(newVal, startVal);
+        }
+
         updateFilters(type, newRange);
         setIsFilterActive(true);
     }
@@ -61,7 +71,15 @@ const TrajectoryFilterPanel = ({
         const clampedTime = Math.max(min, Math.min(max, newDecimalTime));
 
         const newRange = [...filters.timeRange];
-        newRange[index] = clampedTime;
+        // Verify start doesn't exceed end and end doesn't go below start
+        if (index === 0) {
+            const endTime = newRange[1];
+            newRange[index] = Math.min(clampedTime, endTime);
+        } else {
+            const startTime = newRange[0];
+            newRange[index] = Math.max(clampedTime, startTime);
+        }
+
         updateFilters('timeRange', newRange);
         setIsFilterActive(true);
     }
@@ -70,21 +88,6 @@ const TrajectoryFilterPanel = ({
     const preventTyping = (e) => {
         const allowed = ['Tab', 'Shift', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
         if (!allowed.includes(e.key)) e.preventDefault();
-    }
-
-    // Handle adjustments to coords
-    const handleCoordAdjust = (type, index, direction) => {
-        const step = type === 'timeRange' ? 0.1 : 0.0001;
-        const newVal = filters[type][index] + (direction === 'up' ? step : -step);
-
-        // Clamp to bounds
-        const min = type === 'timeRange' ? originalBounds.minStart :
-            type === 'lonRange' ? originalBounds.minLon : originalBounds.minLat;
-        const max = type === 'timeRange' ? originalBounds.maxEnd :
-            type === 'lonRange' ? originalBounds.maxLon : originalBounds.maxLat;
-
-        const clampedVal = Math.max(min, Math.min(newVal, max));
-        handleRangeUpdate(type, index, clampedVal);
     }
 
     const startTime = decimalToTime(filters.timeRange[0]);
