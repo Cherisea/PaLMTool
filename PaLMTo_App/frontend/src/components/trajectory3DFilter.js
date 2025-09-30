@@ -139,7 +139,7 @@ const TrajectoryFilterPanel = ({
                                 <div className="time-input-container">
                                     <input 
                                         type="number"
-                                        value={startTime.hr}
+                                        value={zoomLevel?.timeUnit === 'hour' ? startTime.hr : ''}
                                         onChange={(e) => handleTimeUpdate(0, 'hours', e.target.value)}
                                         min={0}
                                         max={23}
@@ -154,7 +154,7 @@ const TrajectoryFilterPanel = ({
                                 <div className="time-input-container">
                                     <input 
                                         type="number"
-                                        value={startTime.min}
+                                        value={zoomLevel?.timeUnit === 'minute' ? startTime.min : ''}
                                         onChange={(e) => handleTimeUpdate(0, 'mins', e.target.value)}
                                         min={0}
                                         max={59}
@@ -174,7 +174,7 @@ const TrajectoryFilterPanel = ({
                                 <div className="time-input-container">
                                     <input 
                                         type="number"
-                                        value={endTime.hr}
+                                        value={zoomLevel?.timeUnit === 'hour' ? endTime.hr : ''}
                                         onChange={(e) => handleTimeUpdate(1, 'hours', e.target.value)}
                                         min={0}
                                         max={23}
@@ -189,7 +189,7 @@ const TrajectoryFilterPanel = ({
                                 <div className="time-input-container">
                                     <input 
                                         type="number"
-                                        value={endTime.min}
+                                        value={zoomLevel?.timeUnit === 'minute' ? endTime.min : ''}
                                         onChange={(e) => handleTimeUpdate(1, 'mins', e.target.value)}
                                         min={0}
                                         max={59}

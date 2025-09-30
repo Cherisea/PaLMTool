@@ -170,6 +170,17 @@
   border-color: #777;
 }
 
+.time-input:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #333;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.time-input:disabled:hover {
+  border-color: #ee0e0e;
+}
+
 .time-separator {
   color: #ccc;
   font-size: 14px;
