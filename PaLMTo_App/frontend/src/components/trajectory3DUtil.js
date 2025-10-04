@@ -308,16 +308,9 @@ const useTrajData = (trajData, filters = null) => {
         // Return filtered bounds
         let filteredMinLon = Infinity, filteredMaxLon = -Infinity;
         let filteredMinLat = Infinity, filteredMaxLat = -Infinity;
-        let filteredMinStart = Infinity, filteredMaxEnd = -Infinity;
 
         for (const f of filteredFeatures) {
-            const startTime = isoToHour(f.properties.start_time);
-            const endTime = isoToHour(f.properties.end_time);
-
-            filteredMinStart = Math.min(filteredMinStart, startTime);
-            filteredMaxEnd = Math.max(filteredMaxEnd, endTime);
-
-            for (const [lon, lat] of f.geometry.coordinates) {
+            for (const [lon, lat, _] of f.geometry.coordinates) {
                 filteredMinLon = Math.min(filteredMinLon, lon);
                 filteredMaxLon = Math.max(filteredMaxLon, lon)
                 filteredMinLat = Math.min(filteredMinLat, lat);
@@ -330,11 +323,11 @@ const useTrajData = (trajData, filters = null) => {
         const filterdLatRange = Math.floor((filteredMaxLat - filteredMinLat) * METER_PER_DEGREE);
 
         // Time range in hours
-        const filteredTimeRange = filteredMaxEnd - filteredMinStart;
+        const filteredTimeRange = filters.timeRange[1] - filters.timeRange[0];
         const filteredOrigin = {lon: filteredMinLon, lat: filteredMinLat};
 
         const filteredLines = filteredFeatures.map((f, i) => {
-            const points = f.geometry.coordinates.map(coords => toXYZ(coords, filteredOrigin, filteredMinStart));
+            const points = f.geometry.coordinates.map(coords => toXYZ(coords, filteredOrigin, filters.timeRange[0]));
             return {id: i, points};
         })
 
@@ -343,7 +336,7 @@ const useTrajData = (trajData, filters = null) => {
             latRange: filterdLatRange, 
             lines: filteredLines, 
             timeRange: filteredTimeRange, 
-            minStart: filteredMinStart}
+            minStart: filters.timeRange[0]}
     }, [trajData, filters])
 };
 
