@@ -72,7 +72,7 @@ function App() {
   // Handler for the first drop zone files
   const handleSampleFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    const maxSize = 500 * 1024 * 1024;
+    const maxSize = 700 * 1024 * 1024;
 
     if (file.size > maxSize) {
       alert('File is too large. Maximum size is 500 MB.');
