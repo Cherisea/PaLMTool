@@ -5,21 +5,12 @@ import 'leaflet-draw';
 
 import './rectangleDrawer.css';
 
-// Customie edit toolbar text
-L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
-L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
-
 // Disable permanent label on draw control
 L.drawLocal.draw.toolbar.buttons.rectangle = '';
 
 // Customize tooltip text that follows drawing crosshair
 L.drawLocal.draw.handlers.rectangle.tooltip = {
     start: 'Click and drag'
-};
-
-// Customize tooltip text that follows edit crosshair
-L.drawLocal.edit.handlers.remove.tooltip = {
-    text: ''
 };
 
 function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
@@ -47,32 +38,12 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                 circle: false,
                 marker: false,
                 circlemarker: false
-            },
-            edit: {
-                featureGroup: drawnItems,
-                remove: true
             }
         });
-
-        // A function that updates the visibility of toolbars
-        const updateEditToolbar = () => {
-            const editToolBar = document.querySelector('.leaflet-draw-toolbar.leaflet-bar:has(.leaflet-draw-edit-edit)');
-
-            if (editToolBar) {
-                if (drawnItems.getLayers().length > 0) {
-                    editToolBar.style.display = 'block';
-                } else {
-                    editToolBar.style.display = 'none';
-                }
-            }
-        }
 
         // Controls drawing component 
         if (isEnabled) {
             map.addControl(drawControl);
-
-            // Hide toolbar initially
-            setTimeout(updateEditToolbar, 1);
 
             // Add hover-only tooltip on rectangle icon
             setTimeout(() => {
@@ -82,10 +53,6 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                 }
             }, 0)
         }
-
-        // Update toolbar when items are added
-        drawnItems.on('layeradd', updateEditToolbar);
-        drawnItems.on('layerremove', updateEditToolbar);
 
         // Handle rectangle creation
         const handleDrawCreated = (e) => {
