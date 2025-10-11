@@ -25,10 +25,6 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                 circle: false,
                 marker: false,
                 circlemarker: false
-            },
-            edit: {
-                featureGroup: new L.FeatureGroup(),
-                remove: true
             }
         });
 
