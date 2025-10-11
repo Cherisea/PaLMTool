@@ -9,14 +9,14 @@ import './rectangleDrawer.css';
 L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
 L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
 
-function RectangleDrawer({ onRectangleDrawn, isEnabled=true }) {
+// Disable permanent label on draw control
+L.drawLocal.draw.toolbar.buttons.rectangle = '';
+
+function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     const map = useMap();
 
     useEffect(() => {
         if (!map) return;
-
-        // Disable permanent label on draw control
-        L.drawLocal.draw.toolbar.buttons.rectangle = '';
 
         // Create a feature group to store drawn rectangles
         const drawnItems = new L.FeatureGroup();
@@ -107,7 +107,7 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled=true }) {
             }
         };
 
-    }, [map, isEnabled]);
+    }, [map]);
 
     return null;
 }
