@@ -75,7 +75,7 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, isFormCollapsed }) 
+  heatmapData, generatedFileName, isFormCollapsed, onAreaSelected }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -91,6 +91,20 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Declare a state variable for current file name
   const [pendingDownloadFile, setPendingDownloadFile] = useState('');
+
+  // Decalre a state variable for rectangle selection
+  const [selectedArea, setSelectedArea] = useState(null);
+
+  // Declare a state variable for showing selected area
+  const [showAreaSelection, setShowAreaSelection] = useState(false);
+
+  // Handle rectangle selection
+  const handleRectangleDrawn = (bounds) => {
+    setSelectedArea(bounds);
+    if (onAreaSelected) {
+      onAreaSelected(bounds);
+    }
+  }
 
   // Function that control bounce effect of download button
   const triggerBounce = () => {
