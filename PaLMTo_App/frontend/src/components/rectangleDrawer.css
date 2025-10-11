@@ -3,14 +3,37 @@
     border: none;
   }
 
-  .leaflet-draw-draw-rectangle {
-    border: 3px solid #ee0505 !important;
-  }
+.leaflet-draw-draw-rectangle {
+  /* Remove any existing border */
+  border: none !important;
+  
+  /* Center the icon within the button */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Set button size */
+  width: 30px;
+  height: 30px;
+}
 
-  /* Completely hide the actions toolbar */
-/* .leaflet-draw-actions,
-.leaflet-draw-actions li,
-.leaflet-draw-actions ul {
-  display: none !important;
-  visibility: hidden !important;
-} */
+  /* Style the rectangle icon itself */
+.leaflet-draw-draw-rectangle:before {
+  /* Reduce icon size */
+  font-size: 16px !important;
+  
+  /* Center the icon */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Fill with solid color */
+  color: #ee0505 !important;
+  background-color: #ee0505 !important;
+  
+  /* Make it a solid rectangle */
+  content: "■" !important; /* Solid square character */
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 2px !important;
+}

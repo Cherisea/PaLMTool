@@ -12,7 +12,7 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         if (!map) return;
 
         // Disable permanent label on draw control
-        L.drawLocal.draw.toolbar.buttons.rectangle = "";
+        L.drawLocal.draw.toolbar.buttons.rectangle = '';
 
         // Create a feature group to store drawn rectangles
         const drawnItems = new L.FeatureGroup();
