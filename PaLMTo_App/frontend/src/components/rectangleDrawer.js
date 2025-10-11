@@ -12,6 +12,16 @@ L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
 // Disable permanent label on draw control
 L.drawLocal.draw.toolbar.buttons.rectangle = '';
 
+// Customize tooltip text that follows drawing crosshair
+L.drawLocal.draw.handlers.rectangle.tooltip = {
+    start: 'Click and drag'
+};
+
+// Customize tooltip text that follows edit crosshair
+L.drawLocal.edit.handlers.remove.tooltip = {
+    text: ''
+};
+
 function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     const map = useMap();
 
