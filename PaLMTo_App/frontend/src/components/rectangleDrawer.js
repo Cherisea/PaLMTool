@@ -51,8 +51,6 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                     rectangleButton.setAttribute('title', 'Select a rectangle area');
                 }
             }, 0)
-        } else {
-            map.removeControl(drawControl);
         }
 
         // Handle rectangle creation
@@ -80,10 +78,12 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         return () => {
             // Clean up
             map.off(L.Draw.Event.CREATED, handleDrawCreated);
-            map.removeControl(drawControl);
+            if (isEnabled) {
+                map.removeControl(drawControl);
+            }
         };
 
-    }, [map, isEnabled, onRectangleDrawn]);
+    }, [map, isEnabled]);
 
     return null;
 }

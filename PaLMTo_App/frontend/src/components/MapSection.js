@@ -101,6 +101,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Handle rectangle selection
   const handleRectangleDrawn = (bounds) => {
     setSelectedArea(bounds);
+    // Elevate selected bounds to first level component
     if (onAreaSelected) {
       onAreaSelected(bounds);
     }
