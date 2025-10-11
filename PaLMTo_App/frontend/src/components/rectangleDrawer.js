@@ -5,6 +5,10 @@ import 'leaflet-draw';
 
 import './rectangleDrawer.css';
 
+// Customie edit toolbar text
+L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
+L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
+
 function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     const map = useMap();
 
@@ -57,8 +61,8 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         if (isEnabled) {
             map.addControl(drawControl);
 
-              // Hide toolbar initially
-            setTimeout(updateEditToolbar, 100);
+            // Hide toolbar initially
+            setTimeout(updateEditToolbar, 1);
 
             // Add hover-only tooltip on rectangle icon
             setTimeout(() => {
