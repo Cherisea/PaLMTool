@@ -1,11 +1,16 @@
 /* Style the toolbar container */
 .leaflet-draw-toolbar.leaflet-bar {
     border: none;
+    box-shadow: none !important;
+    padding: 0 !important;
   }
 
 .leaflet-draw-draw-rectangle {
   /* Remove any existing border */
   border: none !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
   
   /* Center the icon within the button */
   display: flex !important;
@@ -15,6 +20,10 @@
   /* Set button size */
   width: 30px;
   height: 30px;
+
+  /* Ensure background fills completely */
+  background: white !important;
+  border-radius: 0 !important;
 }
 
   /* Style the rectangle icon itself */
@@ -26,13 +35,10 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  
-  /* Fill with solid color */
-  color: #ee0505 !important;
-  background-color: #ee0505 !important;
+  background-color: #101010 !important;
   
   /* Make it a solid rectangle */
-  content: "■" !important; /* Solid square character */
+  content: "■" !important;
   width: 16px !important;
   height: 16px !important;
   border-radius: 2px !important;
