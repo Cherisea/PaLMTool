@@ -281,6 +281,8 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="blue"
             showDownload={false}
+            showRectangleDrawer={showAreaSelection}
+            onRectangleDrawn={handleRectangleDrawn}
           />
           <TrajectoryMap
             title="Generated Trajectories"
