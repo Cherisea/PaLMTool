@@ -113,7 +113,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
         className={`area-selection-btn ${showAreaSelection ? 'active' : ''}`}
         onClick={() => setShowAreaSelection(!showAreaSelection)}
       >
-        {showAreaSelection ? 'Cancel Selection' : 'Select Area'}
+        {showAreaSelection ? 'Cancel' : 'Select Area'}
       </button>
     </div>
   );
