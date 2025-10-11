@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import Trajectory3DViewer from "./trajectory3DViewer";
+import RectangleDrawer from "./rectangleDrawer";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -20,7 +21,8 @@ const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect
   </div>
 );
 
-const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false}) => (
+const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false, 
+  showRectangleDrawer=false, onRectangleDrawn}) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -31,7 +33,16 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
         />
 
         <GeoJSON data={data} style={{ color, weight: 2 }} />
+
+        {/* Add rectangle drawer for original trajectory map only */}
+        {showRectangleDrawer && (
+          <RectangleDrawer 
+            onRectangleDrawn={onRectangleDrawn}
+            isEnabled={showRectangleDrawer}
+          />
+        )}
       </MapContainer>
+
 
       {/* Download button overlay */}
       {showDownload && onDownload && (
