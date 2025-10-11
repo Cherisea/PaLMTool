@@ -39,6 +39,36 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             map.removeControl(drawControl);
         }
 
-    })
+        // Handle rectangle creation
+        const handleDrawCreated = (e) => {
+            const { layer } = e;
+            const bounds = layer.getBounds();
 
+            // Extract coordinates
+            const rectangleBounds = {
+                north: bounds.getNorth(),
+                south: bounds.getSouth(),
+                east: bounds.getEast(),
+                west: bounds.getWest()
+            };
+
+            onRectangleDrawn(rectangleBounds);
+
+            // Remove rectangle after selection
+            map.removeLayer(layer);
+        };
+
+        map.on(L.Draw.Event.CREATED, handleDrawCreated);
+
+        return () => {
+            // Clean up
+            map.off(L.Draw.Event.CREATED, handleDrawCreated);
+            map.removeControl(drawControl);
+        };
+
+    }, [map, isEnabled, onRectangleDrawn]);
+
+    return null;
 }
+
+export default RectangleDrawer;
