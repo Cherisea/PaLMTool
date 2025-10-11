@@ -8,9 +8,9 @@
   }
 
   /* Completely hide the actions toolbar */
-.leaflet-draw-actions,
+/* .leaflet-draw-actions,
 .leaflet-draw-actions li,
 .leaflet-draw-actions ul {
   display: none !important;
   visibility: hidden !important;
-}
+} */
