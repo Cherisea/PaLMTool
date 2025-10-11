@@ -9,7 +9,7 @@ import './rectangleDrawer.css';
 L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
 L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
 
-function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
+function RectangleDrawer({ onRectangleDrawn, isEnabled=true }) {
     const map = useMap();
 
     useEffect(() => {

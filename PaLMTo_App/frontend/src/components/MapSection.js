@@ -95,9 +95,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Decalre a state variable for rectangle selection
   const [selectedArea, setSelectedArea] = useState(null);
 
-  // Declare a state variable for showing selected area
-  const [showAreaSelection, setShowAreaSelection] = useState(false);
-
   // Handle rectangle selection
   const handleRectangleDrawn = (bounds) => {
     setSelectedArea(bounds);
@@ -106,18 +103,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       onAreaSelected(bounds);
     }
   }
-
-  // A button that enables/disables area selection
-  const AreaSelectionButton = () => (
-    <div className="area-selection-controls">
-      <button
-        className={`area-selection-btn ${showAreaSelection ? 'active' : ''}`}
-        onClick={() => setShowAreaSelection(!showAreaSelection)}
-      >
-        {showAreaSelection ? 'Cancel' : 'Select'}
-      </button>
-    </div>
-  );
 
   // Function that control bounce effect of download button
   const triggerBounce = () => {
@@ -262,7 +247,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
-      <AreaSelectionButton />
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
@@ -295,7 +279,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="blue"
             showDownload={false}
-            showRectangleDrawer={showAreaSelection}
+            showRectangleDrawer={true}
             onRectangleDrawn={handleRectangleDrawn}
           />
           <TrajectoryMap
