@@ -115,17 +115,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       >
         {showAreaSelection ? 'Cancel Selection' : 'Select Area'}
       </button>
-      {selectedArea && (
-        <div style={{
-          marginTop: '5px',
-          padding: '5px',
-          backgroundColor: 'white',
-          borderRadius: '4px',
-          fontSize: '12px'
-        }}>
-          Area selected
-        </div>
-      )}
     </div>
   );
 
