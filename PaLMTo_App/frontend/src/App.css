@@ -231,6 +231,10 @@
   cursor: pointer;
 }
 
+.area-selection-btn.active {
+  background-color: #6c757d;
+}
+
 .map-container {
   flex: 1;  /* Take remaining space */
   min-height: 650px;  /* Minimum height */
