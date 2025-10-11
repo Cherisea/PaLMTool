@@ -14,6 +14,10 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         // Disable permanent label on draw control
         L.drawLocal.draw.toolbar.buttons.rectangle = "";
 
+        // Create a feature group to store drawn rectangles
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
         // Initialize drawing tool 
         const drawControl = new L.Control.Draw({
             position: 'topright',
@@ -29,6 +33,10 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                 circle: false,
                 marker: false,
                 circlemarker: false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
             }
         });
 
@@ -50,6 +58,10 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         // Handle rectangle creation
         const handleDrawCreated = (e) => {
             const { layer } = e;
+
+            // Add drawn rectangle to layer
+            drawnItems.addLayer(layer)
+
             const bounds = layer.getBounds();
 
             // Extract coordinates
@@ -61,9 +73,6 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             };
 
             onRectangleDrawn(rectangleBounds);
-
-            // Remove rectangle after selection
-            map.removeLayer(layer);
         };
 
         map.on(L.Draw.Event.CREATED, handleDrawCreated);
