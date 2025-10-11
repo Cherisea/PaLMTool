@@ -11,7 +11,7 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     useEffect(() => {
         if (!map) return;
 
-        // Set custom text on draw control
+        // Disable permanent label on draw control
         L.drawLocal.draw.toolbar.buttons.rectangle = "";
 
         // Initialize drawing tool 

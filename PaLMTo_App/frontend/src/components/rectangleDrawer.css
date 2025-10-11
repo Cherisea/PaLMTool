@@ -6,3 +6,11 @@
   .leaflet-draw-draw-rectangle {
     border: 3px solid #ee0505 !important;
   }
+
+  /* Completely hide the actions toolbar */
+.leaflet-draw-actions,
+.leaflet-draw-actions li,
+.leaflet-draw-actions ul {
+  display: none !important;
+  visibility: hidden !important;
+}
