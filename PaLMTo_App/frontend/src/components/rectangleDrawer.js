@@ -3,6 +3,8 @@ import { useMap } from "react-leaflet";
 import L from 'leaflet';
 import 'leaflet-draw';
 
+import './rectangleDrawer.css';
+
 function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     const map = useMap();
 
@@ -18,7 +20,6 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             draw: {
                 rectangle: {
                     shapeOptions: {
-                        color: '#ff0000',
                         weight: 2,
                         fillOpacity: 0.1
                     }

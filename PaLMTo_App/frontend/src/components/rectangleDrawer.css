@@ -1,0 +1,8 @@
+/* Style the toolbar container */
+.leaflet-draw-toolbar.leaflet-bar {
+    border: none;
+  }
+
+  .leaflet-draw-draw-rectangle {
+    border: 3px solid #ee0505 !important;
+  }
