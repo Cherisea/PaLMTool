@@ -106,6 +106,29 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     }
   }
 
+  // A button that enables/disables area selection
+  const AreaSelectionButton = () => (
+    <div className="area-selection-controls">
+      <button
+        className={`area-selection-btn ${showAreaSelection ? 'active' : ''}`}
+        onClick={() => setShowAreaSelection(!showAreaSelection)}
+      >
+        {showAreaSelection ? 'Cancel Selection' : 'Select Area'}
+      </button>
+      {selectedArea && (
+        <div style={{
+          marginTop: '5px',
+          padding: '5px',
+          backgroundColor: 'white',
+          borderRadius: '4px',
+          fontSize: '12px'
+        }}>
+          Area selected
+        </div>
+      )}
+    </div>
+  );
+
   // Function that control bounce effect of download button
   const triggerBounce = () => {
     setBounceDownload(true);
@@ -249,6 +272,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
+      <AreaSelectionButton />
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
