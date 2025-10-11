@@ -215,6 +215,22 @@
   width: 98%;
 }
 
+.area-selection-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 400px; 
+  z-index: 1000;
+}
+
+.area-selection-btn {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .map-container {
   flex: 1;  /* Take remaining space */
   min-height: 650px;  /* Minimum height */
