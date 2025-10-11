@@ -9,6 +9,9 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
     useEffect(() => {
         if (!map) return;
 
+        // Set custom text on draw control
+        L.drawLocal.draw.toolbar.buttons.rectangle = "";
+
         // Initialize drawing tool 
         const drawControl = new L.Control.Draw({
             position: 'topright',
@@ -31,6 +34,14 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
         // Controls drawing component 
         if (isEnabled) {
             map.addControl(drawControl);
+
+            // Add hover-only tooltip on rectangle icon
+            setTimeout(() => {
+                const rectangleButton = document.querySelector('.leaflet-draw-draw-rectangle');
+                if (rectangleButton) {
+                    rectangleButton.setAttribute('title', 'Select a rectangle area');
+                }
+            }, 0)
         } else {
             map.removeControl(drawControl);
         }
