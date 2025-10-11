@@ -20,7 +20,7 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
 
         // Initialize drawing tool 
         const drawControl = new L.Control.Draw({
-            position: 'topright',
+            position: 'topleft',
             draw: {
                 rectangle: {
                     shapeOptions: {
@@ -40,9 +40,25 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             }
         });
 
+        // A function that updates the visibility of toolbars
+        const updateEditToolbar = () => {
+            const editToolBar = document.querySelector('.leaflet-draw-toolbar.leaflet-bar:has(.leaflet-draw-edit-edit)');
+
+            if (editToolBar) {
+                if (drawnItems.getLayers().length > 0) {
+                    editToolBar.style.display = 'block';
+                } else {
+                    editToolBar.style.display = 'none';
+                }
+            }
+        }
+
         // Controls drawing component 
         if (isEnabled) {
             map.addControl(drawControl);
+
+              // Hide toolbar initially
+            setTimeout(updateEditToolbar, 100);
 
             // Add hover-only tooltip on rectangle icon
             setTimeout(() => {
@@ -52,6 +68,10 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
                 }
             }, 0)
         }
+
+        // Update toolbar when items are added
+        drawnItems.on('layeradd', updateEditToolbar);
+        drawnItems.on('layerremove', updateEditToolbar);
 
         // Handle rectangle creation
         const handleDrawCreated = (e) => {
