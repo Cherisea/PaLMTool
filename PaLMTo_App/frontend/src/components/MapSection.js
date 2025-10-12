@@ -138,13 +138,31 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Decalre a state variable for rectangle selection
   const [selectedArea, setSelectedArea] = useState(null);
 
+  // Declare a state variable for the visibility of popup window
+  const [showAreaGenerationPopup, setShowAreaGenerationPopup] = useState(false);
+
   // Handle rectangle selection
   const handleRectangleDrawn = (bounds) => {
     setSelectedArea(bounds);
-    // Elevate selected bounds to first level component
+    setShowAreaGenerationPopup(true);
+  }
+
+  // Handle for generate event in popup window
+  const handleAreaGenerate = () => {
+    // Elevate selected bounds to App.js
     if (onAreaSelected) {
-      onAreaSelected(bounds);
+      onAreaSelected(selectedArea);
     }
+
+    // Hide popup window
+    setShowAreaGenerationPopup(false);
+    setSelectedArea(false);
+  }
+
+  // Handler for cancel event in popup window
+  const handleAreaCancel = () => {
+    setShowAreaGenerationPopup(false);
+    setSelectedArea(null);
   }
 
   // Function that control bounce effect of download button
@@ -290,6 +308,13 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
+      {showAreaGenerationPopup && (
+        <AreaGenerationPopup 
+          selectedArea={selectedArea}
+          onGenerate={handleAreaGenerate}
+          onCancel={handleAreaCancel}
+        />
+      )}
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
