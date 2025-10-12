@@ -91,11 +91,16 @@ const AreaGenerationPopup = ({ selectedArea, onGenerate, onCancel }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-        <h3>Generate from Selected Area</h3>
 
         <div>
-          <p>Selected Area Bounds:</p>
-          <div>
+          <p style={{ marginBottom: '15px', fontWeight: 'bold' }}>Selected Area Bounds</p>
+          <div style={{ 
+            backgroundColor: '#f8f9fa', 
+            padding: '10px', 
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontFamily: 'monospace'
+          }}>
             <div><strong>North:</strong> {formattedBounds.north}</div>
             <div><strong>South:</strong> {formattedBounds.south}</div>
             <div><strong>East:</strong> {formattedBounds.east}</div>
@@ -103,7 +108,7 @@ const AreaGenerationPopup = ({ selectedArea, onGenerate, onCancel }) => {
           </div>
         </div>
 
-        <p>
+        <p style={{ marginBottom: '0' }}>
           Generate new trajectories from data in selected area?
         </p>
 
