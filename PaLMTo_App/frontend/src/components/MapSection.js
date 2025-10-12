@@ -73,6 +73,49 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
+const AreaGenerationPopup = ({ selectedArea, onGenerate, onCancel }) => {
+  if (!selectedArea) return null;
+
+  // Format bounds for display
+  const formatBounds = (bounds) => {
+    return {
+      north: bounds.north.toFixed(6),
+      south: bounds.south.toFixed(6),
+      east: bounds.east.toFixed(6),
+      west: bounds.west.toFixed(6)
+    };
+  };
+
+  const formattedBounds = formatBounds(selectedArea);
+
+  return (
+    <div className="popup-overlay">
+      <div className="popup-content">
+        <h3>Generate from Selected Area</h3>
+
+        <div>
+          <p>Selected Area Bounds:</p>
+          <div>
+            <div><strong>North:</strong> {formattedBounds.north}</div>
+            <div><strong>South:</strong> {formattedBounds.south}</div>
+            <div><strong>East:</strong> {formattedBounds.east}</div>
+            <div><strong>West:</strong> {formattedBounds.west}</div>
+          </div>
+        </div>
+
+        <p>
+          Generate new trajectories from data in selected area?
+        </p>
+
+        <div className="popup-actions">
+          <button type="button" onClick={onGenerate}>Generate</button>
+          <button type="button" className="danger-button" onClick={onCancel}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
   heatmapData, generatedFileName, isFormCollapsed, onAreaSelected }) 
