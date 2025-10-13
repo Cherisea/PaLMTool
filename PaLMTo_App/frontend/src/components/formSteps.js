@@ -241,14 +241,7 @@ function FormSteps({
 
             {/* Display a warning if cache file was previously loaded */}
             {formData.cache_file_loaded && (
-              <div className="warning-notification" style={{
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffeaa7',
-                color: '#856404',
-                padding: '10px',
-                borderRadius: '4px',
-                marginBottom: '10px'
-              }}>
+              <div className="selected-area-warning" >
                 <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
                 Please use the original trajectory file instead.
               </div>
@@ -313,7 +306,7 @@ function FormSteps({
       </div>
 
       <div className="button-container">
-        <button type='submit' disabled={isLoading}>
+        <button type='submit' disabled={isLoading || (selectedArea && formData.cache_file_loaded) }>
           {isLoading ? 'Generating...' : 'Generate'}
           {isLoading && (
             <div className="progress-container">
