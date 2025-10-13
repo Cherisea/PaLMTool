@@ -73,54 +73,6 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
   </div>
 );
 
-const AreaGenerationPopup = ({ selectedArea, onGenerate, onCancel }) => {
-  if (!selectedArea) return null;
-
-  // Format bounds for display
-  const formatBounds = (bounds) => {
-    return {
-      north: bounds.north.toFixed(6),
-      south: bounds.south.toFixed(6),
-      east: bounds.east.toFixed(6),
-      west: bounds.west.toFixed(6)
-    };
-  };
-
-  const formattedBounds = formatBounds(selectedArea);
-
-  return (
-    <div className="popup-overlay">
-      <div className="popup-content">
-
-        <div>
-          <p style={{ marginBottom: '15px', fontWeight: 'bold' }}>Selected Area Bounds</p>
-          <div style={{ 
-            backgroundColor: '#f8f9fa', 
-            padding: '10px', 
-            borderRadius: '4px',
-            fontSize: '14px',
-            fontFamily: 'monospace'
-          }}>
-            <div><strong>North:</strong> {formattedBounds.north}</div>
-            <div><strong>South:</strong> {formattedBounds.south}</div>
-            <div><strong>East:</strong> {formattedBounds.east}</div>
-            <div><strong>West:</strong> {formattedBounds.west}</div>
-          </div>
-        </div>
-
-        <p style={{ marginBottom: '0' }}>
-          Generate new trajectories from data in selected area?
-        </p>
-
-        <div className="popup-actions">
-          <button type="button" onClick={onGenerate}>Generate</button>
-          <button type="button" className="danger-button" onClick={onCancel}>Cancel</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
   heatmapData, generatedFileName, isFormCollapsed }) 
@@ -143,27 +95,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
   // Decalre a state variable for rectangle selection
   const [selectedArea, setSelectedArea] = useState(null);
 
-  // Declare a state variable for the visibility of popup window
-  const [showAreaGenerationPopup, setShowAreaGenerationPopup] = useState(false);
-
   // Handle rectangle selection
   const handleRectangleDrawn = (bounds) => {
     setSelectedArea(bounds);
-    setShowAreaGenerationPopup(true);
-  }
-
-  // Handle for generate event in popup window
-  const handleAreaGenerate = () => {
-
-    // Hide popup window
-    setShowAreaGenerationPopup(false);
-    setSelectedArea(false);
-  }
-
-  // Handler for cancel event in popup window
-  const handleAreaCancel = () => {
-    setShowAreaGenerationPopup(false);
-    setSelectedArea(null);
   }
 
   // Function that control bounce effect of download button
@@ -309,13 +243,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   return (
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
-      {showAreaGenerationPopup && (
-        <AreaGenerationPopup 
-          selectedArea={selectedArea}
-          onGenerate={handleAreaGenerate}
-          onCancel={handleAreaCancel}
-        />
-      )}
 
       {viewMode === '3d' ? (
         <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
