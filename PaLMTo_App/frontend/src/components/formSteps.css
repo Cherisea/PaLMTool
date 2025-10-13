@@ -70,6 +70,24 @@
   font-weight: 600;
 }
 
+.selected-area-info { 
+  background-color: #f8f9fa;
+  padding: 10px; 
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: monospace;
+  margin-bottom: 0;
+}
+
+.selected-area-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px
+}
+
 .form-group {
   display: flex;
   flex-direction: column;

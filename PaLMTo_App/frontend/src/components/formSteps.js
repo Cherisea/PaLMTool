@@ -221,7 +221,7 @@ function FormSteps({
   // STEP 3: Trajectory generation parameters
   const renderStep3 = () => (
     <div className="step-content">
-      {formData.cache_file_loaded && (
+      {formData.cache_file_loaded && !selectedArea && (
         <div className="cache-info-section">
           <h3>Cached Model</h3>
           <p>Loaded cache file: <strong>{formData.cache_file.name}</strong></p>
@@ -232,14 +232,7 @@ function FormSteps({
       {selectedArea && (
         <div className="cache-info-section">
           <h3>Selected Area for Filtered Generation</h3>
-            <div style={{ 
-              backgroundColor: '#f8f9fa', 
-              padding: '10px', 
-              borderRadius: '4px',
-              fontSize: '14px',
-              fontFamily: 'monospace',
-              marginBottom: '10px'
-            }}>
+            <div className="selected-area-info">
               <div><strong>North:</strong> {selectedArea.north.toFixed(6)}</div>
               <div><strong>South:</strong> {selectedArea.south.toFixed(6)}</div>
               <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
