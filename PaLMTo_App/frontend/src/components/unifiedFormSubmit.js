@@ -291,48 +291,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
     };
 
-    // Handler for generating trajectories from filtered area
-    const handleAreaFilteredSubmit = async (areaBounds) => {
-        if (!areaBounds) {
-            setNotification({
-                type: 'error',
-                message: 'Please select an area first'
-            });
-            return;
-        }
-
-        const payload = new FormData();
-        payload.append("cache_file", formData.cache_file);
-        payload.append("num_trajectories", formData.num_trajectories);
-        payload.append("generation_method", formData.generation_method);
-        payload.append("north", areaBounds.north);
-        payload.append("south", areaBounds.south);
-        payload.append("east", areaBounds.east);
-        payload.append("west", areaBounds.west);
-
-        if (formData.generation_method != "point_to_point" && formData.trajectory_len) {
-            payload.append("trajectory_len", formData.trajectory_len);
-        }
-        console.log("Request Payload: ", payload);
-
-        try {
-            const csrftoken = getCookie('csrttoken');
-            const response = await submitFormData('trajectory/generate/filtered-area', payload, csrftoken);
-
-            const taskId = response.data.task_id;
-            handleProgressUpdates(taskId, 3);
-        } catch (error) {
-            setNotification({
-                type: 'error',
-                message: 'Failed to generate area-filtered trajectories'
-            });
-        }
-
-    }
-
     return {
         handleUnifiedSubmit,
-        handleAreaFilteredSubmit,
         notification,
         isLoading,
         progress,
