@@ -61,6 +61,13 @@ function App() {
 
   const handleAreaSelected = (areaBounds) => {
     setSelectedArea(areaBounds);
+
+    // Clear cache file when area is selected since we need csv file
+    setFormData(prev => ({
+      ...prev,
+      cache_file: null,
+      cache_file_loaded: false
+    }));
   }
 
   // Handler for text and standard file upload
