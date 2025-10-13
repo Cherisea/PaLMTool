@@ -68,6 +68,27 @@ function FormSteps({
   // STEP 2: Model training
   const renderStep2 = () => (
     <div className="step-content">
+      {/* Show selected area info if an area is selected */}
+      {selectedArea && (
+        <div className="cache-info-section">
+          <h3>Selected Area for Filtered Generation</h3>
+            <div className="selected-area-info">
+              <div><strong>North:</strong> {selectedArea.north.toFixed(6)}</div>
+              <div><strong>South:</strong> {selectedArea.south.toFixed(6)}</div>
+              <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
+              <div><strong>West:</strong> {selectedArea.west.toFixed(6)}</div>
+            </div>
+
+            {/* Display a warning if cache file was previously loaded */}
+            {formData.cache_file_loaded && (
+              <div className="selected-area-warning" >
+                <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
+                Please use the original trajectory file instead.
+              </div>
+            )}
+        </div>
+      )}
+
       <div className="form-group">
         <label className="required">
           File Upload
@@ -151,7 +172,7 @@ function FormSteps({
 
       <div className="button-container">
         <button type="submit" 
-                disabled={!formData.cache_file && (!formData.file || !formData.cell_size) }
+                disabled={!formData.cache_file && (!formData.file || !formData.cell_size) || (selectedArea && formData.cache_file_loaded) }
         >
           {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (
@@ -221,31 +242,10 @@ function FormSteps({
   // STEP 3: Trajectory generation parameters
   const renderStep3 = () => (
     <div className="step-content">
-      {formData.cache_file_loaded && !selectedArea && (
+      {formData.cache_file_loaded && (
         <div className="cache-info-section">
           <h3>Cached Model</h3>
           <p>Loaded cache file: <strong>{formData.cache_file.name}</strong></p>
-        </div>
-      )}
-
-      {/* Show selected area info if an area is selected */}
-      {selectedArea && (
-        <div className="cache-info-section">
-          <h3>Selected Area for Filtered Generation</h3>
-            <div className="selected-area-info">
-              <div><strong>North:</strong> {selectedArea.north.toFixed(6)}</div>
-              <div><strong>South:</strong> {selectedArea.south.toFixed(6)}</div>
-              <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
-              <div><strong>West:</strong> {selectedArea.west.toFixed(6)}</div>
-            </div>
-
-            {/* Display a warning if cache file was previously loaded */}
-            {formData.cache_file_loaded && (
-              <div className="selected-area-warning" >
-                <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
-                Please use the original trajectory file instead.
-              </div>
-            )}
         </div>
       )}
 
@@ -306,7 +306,7 @@ function FormSteps({
       </div>
 
       <div className="button-container">
-        <button type='submit' disabled={isLoading || (selectedArea && formData.cache_file_loaded) }>
+        <button type='submit' disabled={isLoading}>
           {isLoading ? 'Generating...' : 'Generate'}
           {isLoading && (
             <div className="progress-container">

@@ -51,10 +51,10 @@ function FormSection({
     setHeatmapData,
     setFormData);
   
-  // Jump/stay at step 3 if an sub-area is selected
+  // Jump to step 2 if an sub-area is selected
   useEffect(() => {
-    if (selectedArea && currentStep != 3) {
-      setCurrentStep(3);
+    if (selectedArea && currentStep != 2) {
+      setCurrentStep(2);
     }
   }, [selectedArea, currentStep]);
 
