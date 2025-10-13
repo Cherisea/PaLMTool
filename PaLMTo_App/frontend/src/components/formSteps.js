@@ -17,7 +17,8 @@ function FormSteps({
   showCachePopUp,
   setCacheFileName,
   handleSaveCache,
-  defaultCacheFile
+  defaultCacheFile,
+  selectedArea
 }) {
   const [showSaveInput, setShowSaveInput] = useState(false);
 
@@ -224,6 +225,41 @@ function FormSteps({
         <div className="cache-info-section">
           <h3>Cached Model</h3>
           <p>Loaded cache file: <strong>{formData.cache_file.name}</strong></p>
+        </div>
+      )}
+
+      {/* Show selected area info if an area is selected */}
+      {selectedArea && (
+        <div className="cache-info-section">
+          <h3>Selected Area for Filtered Generation</h3>
+            <div style={{ 
+              backgroundColor: '#f8f9fa', 
+              padding: '10px', 
+              borderRadius: '4px',
+              fontSize: '14px',
+              fontFamily: 'monospace',
+              marginBottom: '10px'
+            }}>
+              <div><strong>North:</strong> {selectedArea.north.toFixed(6)}</div>
+              <div><strong>South:</strong> {selectedArea.south.toFixed(6)}</div>
+              <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
+              <div><strong>West:</strong> {selectedArea.west.toFixed(6)}</div>
+            </div>
+
+            {/* Display a warning if cache file was previously loaded */}
+            {formData.cache_file_loaded && (
+              <div className="warning-notification" style={{
+                backgroundColor: '#fff3cd',
+                border: '1px solid #ffeaa7',
+                color: '#856404',
+                padding: '10px',
+                borderRadius: '4px',
+                marginBottom: '10px'
+              }}>
+                <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
+                Please use the original trajectory file instead.
+              </div>
+            )}
         </div>
       )}
 
