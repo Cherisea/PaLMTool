@@ -56,14 +56,6 @@ function App() {
   // Track the state of collapse button
   const [isFormCollapsed, setIsFormCollapsed] = useState(false);
 
-  // Track state of selected area
-  const [selectedArea, setSelectedArea] = useState(null);
-
-  // Handler for area selection
-  const handleAreaSelected = (bounds) => {
-    setSelectedArea(bounds);
-  }
-
   // Handler for text and standard file upload
   const handleChange = (e) => {
     // Extract properties of event with object destructuring
@@ -178,7 +170,6 @@ function App() {
           generatedFileName={generatedFileName}
           numTrajs={formData.num_trajectories}
           isFormCollapsed={isFormCollapsed}
-          onAreaSelected={handleAreaSelected}
         />
        
       </div>

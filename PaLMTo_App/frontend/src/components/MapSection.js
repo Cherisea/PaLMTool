@@ -123,7 +123,7 @@ const AreaGenerationPopup = ({ selectedArea, onGenerate, onCancel }) => {
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, isFormCollapsed, onAreaSelected }) 
+  heatmapData, generatedFileName, isFormCollapsed }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -154,10 +154,6 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Handle for generate event in popup window
   const handleAreaGenerate = () => {
-    // Elevate selected bounds to App.js
-    if (onAreaSelected) {
-      onAreaSelected(selectedArea);
-    }
 
     // Hide popup window
     setShowAreaGenerationPopup(false);
