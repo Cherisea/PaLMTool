@@ -49,7 +49,7 @@ function FormSection({
     setGeneratedFileName,
     setVisualData,
     setHeatmapData,
-    setFormData);
+    setFormData, selectedArea);
   
   // Jump to step 2 if an sub-area is selected
   useEffect(() => {
