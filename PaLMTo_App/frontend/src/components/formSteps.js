@@ -166,13 +166,20 @@ function FormSteps({
           step="50"
           min="50"
           required 
-          disabled={!!formData.cache_file}
+          disabled={!!formData.cache_file && !selectedArea }
         />
       </div>
 
       <div className="button-container">
         <button type="submit" 
-                disabled={!formData.cache_file && (!formData.file || !formData.cell_size) || (selectedArea && formData.cache_file_loaded) }
+                disabled={
+                  // Regular case: need file and cell_size param
+                  (!formData.cache_file && (!formData.file || !formData.cell_size)) || 
+                  // Area-filtered case: need file, cell_size and area bounds
+                  (selectedArea && (!formData.file || !formData.cell_size)) ||
+                  // Cache file case: just need cache file
+                  (selectedArea && formData.cache_file_loaded) 
+                }
         >
           {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (
