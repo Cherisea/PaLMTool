@@ -156,6 +156,7 @@ function App() {
           setVisualData={setVisualData}
           setHeatmapData={setHeatmapData}
           isFormCollapsed={isFormCollapsed}
+          selectedArea={selectedArea}   // Pass selected area from map section to form section
         />
 
         <div className="form-toggle-container">
