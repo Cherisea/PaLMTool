@@ -332,6 +332,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
     return {
         handleUnifiedSubmit,
+        handleAreaFilteredSubmit,
         notification,
         isLoading,
         progress,
