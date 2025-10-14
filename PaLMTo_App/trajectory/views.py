@@ -601,26 +601,34 @@ class NgramGenerationView(APIView):
            entirely in the bounds, keep it partially.
         
         """
+        print(f"Filter Bounds: {north}N, {south}S, {west}W, {east}E")
+        print(f"Rows before Filtering: {len(df)}")
         filtered_rows = []
 
         for _, row in df.iterrows():
             # Creates a copy of original trip
-            trip = row['geometry'][:]
+            trip = row['geometry']
 
-            area_mask = (
-                (trip.apply(lambda p: p[0] >= south)) &
-                (trip.apply(lambda p: p[0] <= north)) &
-                (trip.apply(lambda p: p[1] >= west)) &
-                (trip.apply(lambda p: p[1] <= east))
-            )
+            # Evaluate a string representation of list to list
+            if isinstance(trip, str):
+                trip = ast.literal_eval(trip)
 
-            filtered_trip = trip[area_mask]
+            filtered_trip = [
+                point for point in trip
+                if (south <= point[1] <= north and
+                    west <= point[0] <= east)
+            ]
 
-            if len(filtered_trip) >= 3:
-                filtered_rows.append(filtered_trip)
+            # Only keep trips that have at least 3 coord pairs left
+            if len(filtered_trip) >= 2:
+                filtered_rows.append({
+                    'trip_id': row['trip_id'],
+                    'geometry': filtered_trip
+                })
         
+        print(f"Rows after Filtering: {len(filtered_rows)}")
         if filtered_rows:
-            return pd.concat(filtered_rows, ignore_index=True)
+            return pd.DataFrame(filtered_rows)
         else:
             return df.iloc[0:0].copy()
 
