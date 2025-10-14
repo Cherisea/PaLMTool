@@ -527,6 +527,76 @@ class NgramGenerationView(APIView):
                     'type': 'error',
                     'message': f'Error during processing: {str(e)}'
                 })
+
+    def _process_to_ngrams_filtered(self, data, queue, uploaded_file_path):
+        """Generate ngram dictionaries from area-filtered trajectories. This is another version of its namesake method
+           designed to handle a slightly different request.
+        """
+        global STATS
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Reading and filtering trajectories by area',
+            'progress': 20
+        })
+
+        # Get area bounds
+        north = float(data.get('north'))
+        south = float(data.get('south'))
+        east = float(data.get('east'))
+        west = float(data.get('west'))
+
+        cell_size = int(data['cell_size'])
+        df = pd.read_csv(uploaded_file_path)
+        df['geometry'] = df['geometry'].apply(ast.literal_eval)
+
+        # Filter trajectories within the specified area
+        filtered_df = self._filter_trajectories_by_area(df, north, south, east, west)
+
+        if len(filtered_df) == 0:
+            raise ValueError("No trajectories found in the selected area")
+
+        queue.put({
+            'type': 'progress',
+            'message': f'Found {len(filtered_df)} trajectoriesin selected area',
+            'progress': 30
+        })
+
+        # Extract study area from filtered data
+        study_area = extract_boundary(filtered_df)
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Creating tokens and grid from filtered data',
+            'progress': 40
+        })
+
+        # Create tokens and n-grams from filtered data
+        TokenCreator = ConvertToToken(filtered_df, study_area, cell_size=cell_size)
+        tokens = TokenCreator.create_tokens()
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Generating n-grams from filtered tokens',
+            'progress': 60
+        })
+
+        NgramCreator = NgramGenerator(tokens)
+        ngrams = NgramCreator.create_ngrams()
+        start_end_points = NgramCreator.get_start_end_points()
+        grid = TokenCreator.get_grid()
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Converting to sentence format',
+            'progress': 80
+        })
+
+        sentence_df = TokenCreator.convert_to_sentence()
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
+
+
             
     def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
