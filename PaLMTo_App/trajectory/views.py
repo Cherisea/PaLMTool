@@ -453,7 +453,7 @@ class NgramGenerationView(APIView):
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
     
-    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name):
+    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name, is_area_filtered=False):
         """Send live progress updates while orchestrating operations involved in ngram creation.
 
         Args:
@@ -461,6 +461,7 @@ class NgramGenerationView(APIView):
             task_id(str): a unique identifier for frontend to track progress updates
             uploaded_file_path(str): path of uploaded trajectory file saved in disk
             uploaded_file_name(str): name of saved trajectory file
+            is_area_filtered(bool): a flag indicating if a request targets area-filtered generation
         """
         try:
             if task_id not in PROGRESS_QUEUES:
@@ -478,7 +479,12 @@ class NgramGenerationView(APIView):
 
             cell_size = int(data['cell_size'])
 
-            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
+            if is_area_filtered:
+                ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams_filtered(
+                    data, queue, uploaded_file_path)
+            else:
+                ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
+                    data, queue, uploaded_file_path)
 
             cached_data = {
                 'ngrams': ngrams,
