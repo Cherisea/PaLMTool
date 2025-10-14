@@ -595,9 +595,35 @@ class NgramGenerationView(APIView):
         sentence_df = TokenCreator.convert_to_sentence()
 
         return ngrams, start_end_points, grid, sentence_df, study_area
+    
+    def _filter_trajectories_by_area(self, df, north, south, east, west):
+        """Filter trajectories by specified coord bounds. If a trip doesn't fall
+           entirely in the bounds, keep it partially.
+        
+        """
+        filtered_rows = []
 
+        for _, row in df.iterrows():
+            # Creates a copy of original trip
+            trip = row['geometry'][:]
 
-            
+            area_mask = (
+                (trip.apply(lambda p: p[0] >= south)) &
+                (trip.apply(lambda p: p[0] <= north)) &
+                (trip.apply(lambda p: p[1] >= west)) &
+                (trip.apply(lambda p: p[1] <= east))
+            )
+
+            filtered_trip = trip[area_mask]
+
+            if len(filtered_trip) >= 3:
+                filtered_rows.append(filtered_trip)
+        
+        if filtered_rows:
+            return pd.concat(filtered_rows, ignore_index=True)
+        else:
+            return df.iloc[0:0].copy()
+
     def _process_to_ngrams(self, data, queue, uploaded_file_path):
         """Generate ngram dictionaries with progress updates
 
