@@ -5,7 +5,6 @@ from .views import MapMatchingView, NgramGenerationView, ProgressView, rename_ca
 
 urlpatterns = [
     path('generate/', GenerationConfigView.as_view(), name='generate'),
-    path('generate/filtered-area', GenerationConfigView.as_view(), name='generate-filtered-area'),
     path('generate/ngrams', NgramGenerationView.as_view(), name='generate_ngrams'),
     path('download/<str:filename>', download_files, name='download_files'),
     path('3d-view/', Trajectory3DView.as_view(), name="3d-view"),

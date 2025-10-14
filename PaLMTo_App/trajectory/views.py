@@ -419,6 +419,9 @@ class NgramGenerationView(APIView):
         """
         # Read content of uploaded file into memory before it's closed
         data = request.data
+
+        # Check if this is an area-filtered request
+        is_area_filtered = any(key in data for key in ['north', 'south', 'east', 'west'])
         uploaded_file = data['file']
         file_name = uploaded_file.name
 
@@ -438,7 +441,7 @@ class NgramGenerationView(APIView):
         # Start processing in backend thread
         thread = threading.Thread(
             target=self._process_with_progress,
-            args=(data, task_id, file_path, file_name)
+            args=(data, task_id, file_path, file_name, is_area_filtered)
         )
 
         # Allows main process to exit without waiting
