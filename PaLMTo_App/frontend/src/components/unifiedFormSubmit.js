@@ -247,15 +247,13 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 } else {      
                     // Check if request comes from area-filtered generation
                     if (!!selectedArea) {
-                        endpoint = '/trajectory/generate/filtered-area';
                         payload.append("north", selectedArea.north);
                         payload.append("south", selectedArea.south);
                         payload.append("east", selectedArea.east);
                         payload.append("west", selectedArea.west);
-                    } else {
-                        endpoint = '/trajectory/generate/ngrams';
                     }
-                    
+
+                    endpoint = '/trajectory/generate/ngrams';
                     payload.append("cell_size", formData.cell_size);
                     payload.append("file", formData.file);
                     setIsLoading(true);
