@@ -84,7 +84,7 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             }
         };
 
-    }, [map]);
+    }, [map, onRectangleDrawn, isEnabled]);
 
     return null;
 }

@@ -53,7 +53,7 @@ function FormSection({
   
   // Jump to step 2 if an sub-area is selected
   useEffect(() => {
-    if (selectedArea && currentStep != 2) {
+    if (selectedArea && currentStep !== 2) {
       setCurrentStep(2);
     }
   }, [selectedArea, currentStep]);
