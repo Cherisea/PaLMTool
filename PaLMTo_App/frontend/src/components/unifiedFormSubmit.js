@@ -195,7 +195,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
             // Build ngram dict only in step 2 and if csv file is uploaded
             if (currentStep === 2) {
-                if (!!formData.cache_file) {
+                if (!!formData.cache_file && !selectedArea) {
                     // Load stats from cache file
                     const csrftoken = getCookie('csrftoken');
 
