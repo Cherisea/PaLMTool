@@ -478,13 +478,8 @@ class NgramGenerationView(APIView):
             time.sleep(1)
 
             cell_size = int(data['cell_size'])
-
-            if is_area_filtered:
-                ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams_filtered(
-                    data, queue, uploaded_file_path)
-            else:
-                ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
-                    data, queue, uploaded_file_path)
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
+                    data, queue, uploaded_file_path, is_area_filtered)
 
             cached_data = {
                 'ngrams': ngrams,
@@ -643,12 +638,13 @@ class NgramGenerationView(APIView):
         else:
             return df.iloc[0:0].copy()
 
-    def _process_to_ngrams(self, data, queue, uploaded_file_path):
+    def _process_to_ngrams(self, data, queue, uploaded_file_path, filtered):
         """Generate ngram dictionaries with progress updates
 
         Args:
             queue(queue.Queue): thread-safe FIFO queue object for passing info between background 
                 thread and SSE view.
+            filtered(bool): a flag indicating if this method should filter input trajectory
         """
         global STATS
 
@@ -659,9 +655,32 @@ class NgramGenerationView(APIView):
             })
         
         cell_size = int(data['cell_size'])
+
+        if filtered:
+            # Get area bounds
+            north = float(data.get('north'))
+            south = float(data.get('south'))
+            east = float(data.get('east'))
+            west = float(data.get('west'))
+
         df = pd.read_csv(uploaded_file_path)
         # Convert geometry column to Python list
         df['geometry'] = df['geometry'].apply(ast.literal_eval)
+
+        if filtered:
+            # Filter trajectories within the specified area
+            filtered_df = self._filter_trajectories_by_area(df, north, south, east, west)
+
+            if len(filtered_df) == 0:
+                raise ValueError("No trajectories found in the selected area")
+
+            queue.put({
+                'type': 'progress',
+                'message': f'Found {len(filtered_df)} trajectories in selected area',
+                'progress': 30
+            })
+            df = filtered_df
+
         study_area = extract_boundary(df)
 
         queue.put({
@@ -669,7 +688,7 @@ class NgramGenerationView(APIView):
             'message': 'Creating tokens and grid',
             'progress': 40
         })
-     
+
         TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
 
         # Capture stdout from create_tokens method
