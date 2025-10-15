@@ -523,121 +523,6 @@ class NgramGenerationView(APIView):
                     'message': f'Error during processing: {str(e)}'
                 })
 
-    def _process_to_ngrams_filtered(self, data, queue, uploaded_file_path):
-        """Generate ngram dictionaries from area-filtered trajectories. This is another version of its namesake method
-           designed to handle a slightly different request.
-        """
-        global STATS
-
-        queue.put({
-            'type': 'progress',
-            'message': 'Reading and filtering trajectories by area',
-            'progress': 20
-        })
-
-        # Get area bounds
-        north = float(data.get('north'))
-        south = float(data.get('south'))
-        east = float(data.get('east'))
-        west = float(data.get('west'))
-
-        cell_size = int(data['cell_size'])
-        df = pd.read_csv(uploaded_file_path)
-        df['geometry'] = df['geometry'].apply(ast.literal_eval)
-
-        # Filter trajectories within the specified area
-        filtered_df = self._filter_trajectories_by_area(df, north, south, east, west)
-
-        if len(filtered_df) == 0:
-            raise ValueError("No trajectories found in the selected area")
-
-        queue.put({
-            'type': 'progress',
-            'message': f'Found {len(filtered_df)} trajectories in selected area',
-            'progress': 30
-        })
-
-        # Extract study area from filtered data
-        study_area = extract_boundary(filtered_df)
-
-        queue.put({
-            'type': 'progress',
-            'message': 'Creating tokens and grid from filtered data',
-            'progress': 40
-        })
-
-        # Create tokens and n-grams from filtered data
-        TokenCreator = ConvertToToken(filtered_df, study_area, cell_size=cell_size)
-
-        # Capture stdout from create_tokens method
-        f = StringIO()
-        with redirect_stdout(f):
-            grid, sentence_df = TokenCreator.create_tokens()
-        content = f.getvalue()
-        STATS["cellsCreated"] = int(content.strip().split(":")[1])
-        STATS["totalPairs"] = int(filtered_df['geometry'].apply(len).sum())
-
-        queue.put({
-            'type': 'progress',
-            'message': 'Generating n-grams from filtered tokens',
-            'progress': 60
-        })
-
-        ngram_model = NgramGenerator(sentence_df)
-
-        # Capture stdout from create_ngrams method
-        f.seek(0)
-        with redirect_stdout(f):
-            ngrams, start_end_points = ngram_model.create_ngrams()
-        content = f.getvalue()
-        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
-        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
-
-        queue.put({
-            'type': 'progress',
-            'message': 'Converting to sentence format',
-            'progress': 80
-        })
-
-        return ngrams, start_end_points, grid, sentence_df, study_area
-    
-    def _filter_trajectories_by_area(self, df, north, south, east, west):
-        """Filter trajectories by specified coord bounds. If a trip doesn't fall
-           entirely in the bounds, keep it partially.
-        
-        """
-        print(f"Rows before Filtering: {len(df)}")
-        filtered_rows = []
-
-        for _, row in df.iterrows():
-            # Creates a copy of original trip
-            trip = row['geometry']
-
-            # Evaluate a string representation of list to list
-            if isinstance(trip, str):
-                trip = ast.literal_eval(trip)
-
-            filtered_trip = [
-                point for point in trip
-                if (south <= point[1] <= north and
-                    west <= point[0] <= east)
-            ]
-
-            # Only keep trips that have at least 3 coord pairs left
-            if len(filtered_trip) >= 2:
-                filtered_rows.append({
-                    'trip_id': row['trip_id'],
-                    'geometry': filtered_trip
-                })
-        
-        print(f"Rows after Filtering: {len(filtered_rows)}")
-        if filtered_rows:
-            filtered_df = pd.DataFrame(filtered_rows)
-            print(f"Filtered Dataframe(top 5): {filtered_df.head(5)}")
-            return filtered_df
-        else:
-            return df.iloc[0:0].copy()
-
     def _process_to_ngrams(self, data, queue, uploaded_file_path, filtered):
         """Generate ngram dictionaries with progress updates
 
@@ -724,6 +609,43 @@ class NgramGenerationView(APIView):
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
+    def _filter_trajectories_by_area(self, df, north, south, east, west):
+        """Filter trajectories by specified coord bounds. If a trip doesn't fall
+           entirely in the bounds, keep it partially.
+        
+        """
+        print(f"Rows before Filtering: {len(df)}")
+        filtered_rows = []
+
+        for _, row in df.iterrows():
+            # Creates a copy of original trip
+            trip = row['geometry']
+
+            # Evaluate a string representation of list to list
+            if isinstance(trip, str):
+                trip = ast.literal_eval(trip)
+
+            filtered_trip = [
+                point for point in trip
+                if (south <= point[1] <= north and
+                    west <= point[0] <= east)
+            ]
+
+            # Only keep trips that have at least 3 coord pairs left
+            if len(filtered_trip) >= 2:
+                filtered_rows.append({
+                    'trip_id': row['trip_id'],
+                    'geometry': filtered_trip
+                })
+        
+        print(f"Rows after Filtering: {len(filtered_rows)}")
+        if filtered_rows:
+            filtered_df = pd.DataFrame(filtered_rows)
+            print(f"Filtered Dataframe(top 5): {filtered_df.head(5)}")
+            return filtered_df
+        else:
+            return df.iloc[0:0].copy()
+
 class Trajectory3DView(APIView):
     """
         A class for handling frontend request that renders 3D visualization 
