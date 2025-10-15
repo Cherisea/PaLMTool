@@ -558,7 +558,7 @@ class NgramGenerationView(APIView):
 
         queue.put({
             'type': 'progress',
-            'message': f'Found {len(filtered_df)} trajectoriesin selected area',
+            'message': f'Found {len(filtered_df)} trajectories in selected area',
             'progress': 30
         })
 
@@ -573,7 +573,14 @@ class NgramGenerationView(APIView):
 
         # Create tokens and n-grams from filtered data
         TokenCreator = ConvertToToken(filtered_df, study_area, cell_size=cell_size)
-        tokens = TokenCreator.create_tokens()
+
+        # Capture stdout from create_tokens method
+        f = StringIO()
+        with redirect_stdout(f):
+            grid, sentence_df = TokenCreator.create_tokens()
+        content = f.getvalue()
+        STATS["cellsCreated"] = int(content.strip().split(":")[1])
+        STATS["totalPairs"] = int(df['geometry'].apply(len).sum())
 
         queue.put({
             'type': 'progress',
@@ -581,18 +588,21 @@ class NgramGenerationView(APIView):
             'progress': 60
         })
 
-        NgramCreator = NgramGenerator(tokens)
-        ngrams = NgramCreator.create_ngrams()
-        start_end_points = NgramCreator.get_start_end_points()
-        grid = TokenCreator.get_grid()
+        ngram_model = NgramGenerator(sentence_df)
+
+        # Capture stdout from create_ngrams method
+        f.seek(0)
+        with redirect_stdout(f):
+            ngrams, start_end_points = ngram_model.create_ngrams()
+        content = f.getvalue()
+        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
 
         queue.put({
             'type': 'progress',
             'message': 'Converting to sentence format',
             'progress': 80
         })
-
-        sentence_df = TokenCreator.convert_to_sentence()
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
@@ -601,7 +611,6 @@ class NgramGenerationView(APIView):
            entirely in the bounds, keep it partially.
         
         """
-        print(f"Filter Bounds: {north}N, {south}S, {west}W, {east}E")
         print(f"Rows before Filtering: {len(df)}")
         filtered_rows = []
 
@@ -628,7 +637,9 @@ class NgramGenerationView(APIView):
         
         print(f"Rows after Filtering: {len(filtered_rows)}")
         if filtered_rows:
-            return pd.DataFrame(filtered_rows)
+            filtered_df = pd.DataFrame(filtered_rows)
+            print(f"Filtered Dataframe(top 5): {filtered_df.head(5)}")
+            return filtered_df
         else:
             return df.iloc[0:0].copy()
 
