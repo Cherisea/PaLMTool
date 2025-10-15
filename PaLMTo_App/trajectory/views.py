@@ -565,6 +565,7 @@ class NgramGenerationView(APIView):
                 'progress': 30
             })
             df = filtered_df
+            time.sleep(2)
 
         study_area = extract_boundary(df)
 
