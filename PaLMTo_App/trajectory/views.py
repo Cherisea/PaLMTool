@@ -25,9 +25,7 @@ import time
 import pickle
 import json
 import threading
-import requests
 import pandas as pd
-import geopandas as gpd
 from queue import Queue, Empty
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
@@ -783,111 +781,6 @@ class Trajectory3DView(APIView):
             'type': 'FeatureCollection',
             'features': features
         }
-
-class MapMatchingView(APIView):
-    """
-        A class for mapping trajectory trip to actual road network
-    """
-    def post(self, request):
-        # Get file name from request
-        file_name = request.data.get('filename')
-        percentage = request.data.get('percentage', 1.0)
-
-        if not file_name:
-            return Response({"Error": "No file name provided"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Get full file path
-        file_path = os.path.join(settings.MEDIA_ROOT, "generated", file_name)
-
-        if not os.path.exists(file_path):
-            return Response({"Error": f"File {file_path} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            matched_trajs = []
-            df = pd.read_csv(file_path)
-            df['geometry'] = df['geometry'].apply(ast.literal_eval)
-            sub_df = df.sample(frac=percentage/100, random_state=404)
-
-            for _, row in sub_df.iterrows():
-                traj = row['geometry']
-
-                # Convert trajectory into OSRM-complaint format
-                traj_trip = []
-                for coord in traj:
-                    traj_trip.append(f"{coord[0]},{coord[1]}")
-                osrm_str = ";".join(traj_trip)
-                osrm_url = "http://router.project-osrm.org/match/v1/driving/"
-                full_url = f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson"
-
-                # Make request to OSRM
-                response = requests.get(full_url, timeout=10)
-
-                if response.status_code == 200:
-                    matched_data = response.json()
-
-                    if 'matchings' in matched_data and matched_data['matchings']:
-                        matching = matched_data['matchings'][0]
-
-                        # Create GeoJSON feature for frontend
-                        matched_feature = {
-                            'type': 'Feature',
-                            'properties': {
-                                'trip_id': row['trip_id'],
-                                'confidence': matching.get('confidence', 0),
-                                'distance': matching.get('distance', 0),
-                                'duration': matching.get('duration', 0)
-                            },
-                            'geometry': matching['geometry']
-                        }
-                        matched_trajs.append(matched_feature)
-
-            matched_filename = self.save_matched_trajs(matched_trajs)
-            map_data = {'type': 'FeatureCollection', 'features': matched_trajs}
-
-            return Response({
-                'map_data': map_data,
-                'output_file': matched_filename
-            }, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-    def save_matched_trajs(self, matched_data, save_dir="matched"):
-        """
-            Save trajectories snapped to actual roads in a csv file.
-
-            matched_data: GeoJSON feature collection data with matched trajectories and
-                          related attributes
-            save_dir: media sub-folder for saving csv file 
-        """
-        file_id = uuid.uuid4()
-        out_filename = f'matched_trajectories_{file_id}.csv'
-        subdir = os.path.join(settings.MEDIA_ROOT, save_dir)
-
-        os.makedirs(subdir, exist_ok=True)
-        full_path = os.path.join(subdir, out_filename)
-
-        csv_data = []
-        for feature in matched_data:
-            trip_id = feature['properties']['trip_id']
-            confidence = feature['properties']['confidence']
-            distance = feature['properties']['distance']
-            duration = feature['properties']['duration']
-
-            coords = feature['geometry']['coordinates']
-            geometry_str = str(coords)
-
-            csv_data.append({
-                "trip_id": trip_id,
-                "confidence": confidence,
-                "distance": distance,
-                "duration": duration,
-                "geometry": geometry_str
-            })
-
-        df = pd.DataFrame(csv_data)
-        df.to_csv(full_path, index=False)
-
-        return out_filename
 
 class CacheStatsView(APIView):
     """Extract stats data from a cached ngram file.
