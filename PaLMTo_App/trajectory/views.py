@@ -473,7 +473,6 @@ class GenerationConfigView(APIView):
         else:
             return pd.DataFrame(columns=traj_gdf.columns)
 
-
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
