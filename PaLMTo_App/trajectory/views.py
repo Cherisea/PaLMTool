@@ -650,7 +650,6 @@ class NgramGenerationView(APIView):
         print(f"Rows after Filtering: {len(filtered_rows)}")
         if filtered_rows:
             filtered_df = pd.DataFrame(filtered_rows)
-            print(f"Filtered Dataframe(top 5): {filtered_df.head(5)}")
             return filtered_df
         else:
             return df.iloc[0:0].copy()
