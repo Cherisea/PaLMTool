@@ -106,6 +106,17 @@ class GenerationConfigView(APIView):
             
             queue = PROGRESS_QUEUES[task_id]
 
+            # Check if this is a filter-area request
+            filtered = any(key in data for key in ['north', 'south', 'east', 'west'])
+            area_bounds = None
+            if filtered:
+                area_bounds = {
+                    'north': float(data.get('north')),
+                    'south': float(data.get('south')),
+                    'east': float(data.get('east')),
+                    'west': float(data.get('west'))
+                }
+
             queue.put({
                 'type': 'progress',
                 'message': 'Starting trajectory generation process',
@@ -136,7 +147,7 @@ class GenerationConfigView(APIView):
                 'progress': 40
             })
             time.sleep(1)
-            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data, area_bounds)
 
             queue.put({
                 'type': 'progress',
