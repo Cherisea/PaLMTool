@@ -343,7 +343,7 @@ class GenerationConfigView(APIView):
                 'message': 'Filtering generated trajectories to selected area',
                 'progress': 55
             })
-        
+
             filtered_new_trajs_gdf = self._filter_trajectories_by_area(
                 new_trajs_gdf,
                 area_bounds['north'],
@@ -445,7 +445,7 @@ class GenerationConfigView(APIView):
         """Filter generated trajectories to ensure they stay within specified bounds.
 
         Args:
-            traj_gdf(GeoDataFrame): unfiltered generated trajectories
+            traj_gdf(DataFrame): unfiltered generated trajectories
             north, south, east, west(float): geographical coordinates representing area bounds
         
         Returns:
@@ -469,12 +469,11 @@ class GenerationConfigView(APIView):
                     "trip_id": row['trip_id'],
                     "geometry": points_in_bounds
                 })
-        
-        print(f"Top Rows in Filtered Trajs: {filtered_rows[:3]}")
+
         if filtered_rows:
-            return gpd.GeoDataFrame(filtered_rows, crs=traj_gdf.crs)
+            return pd.DataFrame(filtered_rows)
         else:
-            return gpd.GeoDataFrame(columns=traj_gdf.columns, crs=traj_gdf.crs)
+            return pd.DataFrame(columns=traj_gdf.columns)
 
 
 class NgramGenerationView(APIView):
