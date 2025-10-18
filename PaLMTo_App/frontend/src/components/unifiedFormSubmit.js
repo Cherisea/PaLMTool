@@ -265,14 +265,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 payload.append("generation_method", formData.generation_method);
                 payload.append("cache_file", formData.cache_file);
 
-                // Add area bounds if user requests a filtered generation
-                if (!!selectedArea) {
-                    payload.append("north", selectedArea.north);
-                    payload.append("south", selectedArea.south);
-                    payload.append("east", selectedArea.east);
-                    payload.append("west", selectedArea.west);
-                }
-
                 if (formData.generation_method !== "point_to_point" && formData.trajectory_len) {
                     payload.append("trajectory_len", formData.trajectory_len);
                 }
