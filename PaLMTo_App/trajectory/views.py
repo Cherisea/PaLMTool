@@ -27,6 +27,7 @@ import json
 import threading
 import requests
 import pandas as pd
+import geopandas as gpd
 from queue import Queue, Empty
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
@@ -439,6 +440,42 @@ class GenerationConfigView(APIView):
                     os.remove(cache_path)
                 except Exception as e:
                     pass
+
+    def _filter_trajectories_by_area(self, traj_gdf, north, south, east, west):
+        """Filter generated trajectories to ensure they stay within specified bounds.
+
+        Args:
+            traj_gdf(GeoDataFrame): unfiltered generated trajectories
+            north, south, east, west(float): geographical coordinates representing area bounds
+        
+        Returns:
+            GeoDataFrame; filtered trajectories
+        """
+        if len(traj_gdf) == 0:
+            return traj_gdf
+        
+        filtered_rows = []
+
+        for _, row in traj_gdf.iterrows():
+            geometry = row['geometry']
+
+            points_in_bounds = [
+                point for point in geometry
+                if (south <= point.y <= north and west <= point.x <= east)
+            ]
+
+            if len(points_in_bounds) >= 2:
+                filtered_rows.append({
+                    "trip_id": row['trip_id'],
+                    "geometry": points_in_bounds
+                })
+        
+        print(f"Top Rows in Filtered Trajs: {filtered_rows[:3]}")
+        if filtered_rows:
+            return gpd.GeoDataFrame(filtered_rows, crs=traj_gdf.crs)
+        else:
+            return gpd.GeoDataFrame(columns=traj_gdf.columns, crs=traj_gdf.crs)
+
 
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
