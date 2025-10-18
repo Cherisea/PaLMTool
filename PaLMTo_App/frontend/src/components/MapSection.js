@@ -271,7 +271,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       ) : (
         <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <TrajectoryMap
-            key={generatedFileName}
+            key={`original-${generatedFileName || 'default'}`}
             title="Original Trajectories"
             data={visualData.original}
             center={visualData.center}
@@ -281,7 +281,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             onRectangleDrawn={handleRectangleDrawn}
           />
           <TrajectoryMap
-            key={generatedFileName}
+            key={`generated-${generatedFileName || 'default'}`}
             title="Generated Trajectories"
             data={visualData.generated}
             center={visualData.center}
