@@ -29,8 +29,9 @@ function RectangleDrawer({ onRectangleDrawn, isEnabled }) {
             draw: {
                 rectangle: {
                     shapeOptions: {
-                        weight: 2,
-                        fillOpacity: 0.1
+                        weight: 4,
+                        color: '#ffff00',
+                        fillOpacity: 0.3
                     }
                 },
                 polyline: false,
