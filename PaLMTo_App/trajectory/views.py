@@ -105,17 +105,6 @@ class GenerationConfigView(APIView):
             
             queue = PROGRESS_QUEUES[task_id]
 
-            # Check if this is a filter-area request
-            filtered = any(key in data for key in ['north', 'south', 'east', 'west'])
-            area_bounds = None
-            if filtered:
-                area_bounds = {
-                    'north': float(data.get('north')),
-                    'south': float(data.get('south')),
-                    'east': float(data.get('east')),
-                    'west': float(data.get('west'))
-                }
-
             queue.put({
                 'type': 'progress',
                 'message': 'Starting trajectory generation process',
@@ -146,7 +135,7 @@ class GenerationConfigView(APIView):
                 'progress': 40
             })
             time.sleep(1)
-            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data, area_bounds)
+            sentence_df, study_area, new_trajs, new_trajs_gdf = self. _process_traj_generation(data, queue, cached_data)
 
             queue.put({
                 'type': 'progress',
@@ -284,7 +273,7 @@ class GenerationConfigView(APIView):
         else:
             raise serializers.ValidationError(serializer.errors)
     
-    def _process_traj_generation(self, data, queue, cached_data, area_bounds):
+    def _process_traj_generation(self, data, queue, cached_data):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
 
         This method loads cached n-gram data and related objects and generate new trajectories 
@@ -333,24 +322,6 @@ class GenerationConfigView(APIView):
         else:
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
-
-        # Apply area filtering to generated trajectories if area bounds are provided
-        if area_bounds:
-            queue.put({
-                'type': 'progress',
-                'message': 'Filtering generated trajectories to selected area',
-                'progress': 55
-            })
-
-            filtered_new_trajs_gdf = self._filter_trajectories_by_area(
-                new_trajs_gdf,
-                area_bounds['north'],
-                area_bounds['south'],
-                area_bounds['east'],
-                area_bounds['west']
-            )
-
-            new_trajs_gdf = filtered_new_trajs_gdf
 
         return sentence_df, study_area, new_trajs, new_trajs_gdf
  
@@ -438,40 +409,6 @@ class GenerationConfigView(APIView):
                     os.remove(cache_path)
                 except Exception as e:
                     pass
-
-    def _filter_trajectories_by_area(self, traj_gdf, north, south, east, west):
-        """Filter generated trajectories to ensure they stay within specified bounds.
-
-        Args:
-            traj_gdf(DataFrame): unfiltered generated trajectories
-            north, south, east, west(float): geographical coordinates representing area bounds
-        
-        Returns:
-            GeoDataFrame; filtered trajectories
-        """
-        if len(traj_gdf) == 0:
-            return traj_gdf
-        
-        filtered_rows = []
-
-        for _, row in traj_gdf.iterrows():
-            geometry = row['geometry']
-
-            points_in_bounds = [
-                point for point in geometry
-                if (south <= point.y <= north and west <= point.x <= east)
-            ]
-
-            if len(points_in_bounds) >= 2:
-                filtered_rows.append({
-                    "trip_id": row['trip_id'],
-                    "geometry": points_in_bounds
-                })
-
-        if filtered_rows:
-            return pd.DataFrame(filtered_rows)
-        else:
-            return pd.DataFrame(columns=traj_gdf.columns)
 
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
