@@ -56,6 +56,13 @@ function App() {
   // Track the state of collapse button
   const [isFormCollapsed, setIsFormCollapsed] = useState(false);
 
+  // Record selected area passed from map section
+  const [selectedArea, setSelectedArea] = useState(null);
+
+  const handleAreaSelected = (areaBounds) => {
+    setSelectedArea(areaBounds);
+  }
+
   // Handler for text and standard file upload
   const handleChange = (e) => {
     // Extract properties of event with object destructuring
@@ -72,7 +79,7 @@ function App() {
   // Handler for the first drop zone files
   const handleSampleFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    const maxSize = 500 * 1024 * 1024;
+    const maxSize = 700 * 1024 * 1024;
 
     if (file.size > maxSize) {
       alert('File is too large. Maximum size is 500 MB.');
@@ -149,6 +156,7 @@ function App() {
           setVisualData={setVisualData}
           setHeatmapData={setHeatmapData}
           isFormCollapsed={isFormCollapsed}
+          selectedArea={selectedArea}   // Pass selected area from map section to form section
         />
 
         <div className="form-toggle-container">
@@ -170,6 +178,7 @@ function App() {
           generatedFileName={generatedFileName}
           numTrajs={formData.num_trajectories}
           isFormCollapsed={isFormCollapsed}
+          onAreaSelected={handleAreaSelected}
         />
        
       </div>

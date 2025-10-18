@@ -17,7 +17,8 @@ function FormSteps({
   showCachePopUp,
   setCacheFileName,
   handleSaveCache,
-  defaultCacheFile
+  defaultCacheFile,
+  selectedArea
 }) {
   const [showSaveInput, setShowSaveInput] = useState(false);
 
@@ -67,6 +68,27 @@ function FormSteps({
   // STEP 2: Model training
   const renderStep2 = () => (
     <div className="step-content">
+      {/* Show selected area info if an area is selected */}
+      {selectedArea && (
+        <div className="cache-info-section">
+          <h3>Selected Area for Filtered Generation</h3>
+            <div className="selected-area-info">
+              <div><strong>North:</strong> {selectedArea.north.toFixed(6)}</div>
+              <div><strong>South:</strong> {selectedArea.south.toFixed(6)}</div>
+              <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
+              <div><strong>West:</strong> {selectedArea.west.toFixed(6)}</div>
+            </div>
+
+            {/* Display a warning if cache file was previously loaded */}
+            {formData.cache_file_loaded && (
+              <div className="selected-area-warning" >
+                <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
+                Please use the original trajectory file instead.
+              </div>
+            )}
+        </div>
+      )}
+
       <div className="form-group">
         <label className="required">
           File Upload
@@ -144,13 +166,20 @@ function FormSteps({
           step="50"
           min="50"
           required 
-          disabled={!!formData.cache_file}
+          disabled={!!formData.cache_file && !selectedArea }
         />
       </div>
 
       <div className="button-container">
         <button type="submit" 
-                disabled={!formData.cache_file && (!formData.file || !formData.cell_size) }
+                disabled={
+                  // Regular case: need file and cell_size param
+                  (!formData.cache_file && (!formData.file || !formData.cell_size)) || 
+                  // Area-filtered case: need file, cell_size and area bounds
+                  (selectedArea && (!formData.file || !formData.cell_size)) ||
+                  // Cache file case: just need cache file
+                  (selectedArea && formData.cache_file_loaded) 
+                }
         >
           {formData.cache_file ? 'Load' : 'Train'}
           {isLoading && (

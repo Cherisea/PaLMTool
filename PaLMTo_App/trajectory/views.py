@@ -25,7 +25,6 @@ import time
 import pickle
 import json
 import threading
-import requests
 import pandas as pd
 from queue import Queue, Empty
 from datetime import datetime, timedelta
@@ -287,6 +286,8 @@ class GenerationConfigView(APIView):
                 - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
                 - "cache_file" (str): Filename of the cached n-gram data.
             queue(Queue): queue for storing progress updates
+            cached_data(Dict): cached ngram data 
+            area_bounds(Dict): optional area bounds for filtering generated trajectories
         
         Returns:
             tuple:
@@ -321,6 +322,7 @@ class GenerationConfigView(APIView):
         else:
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+
         return sentence_df, study_area, new_trajs, new_trajs_gdf
  
     def save_trajectory(self, trajs, config_instance, save_dir="generated"):
@@ -419,6 +421,9 @@ class NgramGenerationView(APIView):
         """
         # Read content of uploaded file into memory before it's closed
         data = request.data
+
+        # Check if this is an area-filtered request
+        is_area_filtered = any(key in data for key in ['north', 'south', 'east', 'west'])
         uploaded_file = data['file']
         file_name = uploaded_file.name
 
@@ -438,7 +443,7 @@ class NgramGenerationView(APIView):
         # Start processing in backend thread
         thread = threading.Thread(
             target=self._process_with_progress,
-            args=(data, task_id, file_path, file_name)
+            args=(data, task_id, file_path, file_name, is_area_filtered)
         )
 
         # Allows main process to exit without waiting
@@ -450,7 +455,7 @@ class NgramGenerationView(APIView):
             "message": "Processing started"
         }, status=status.HTTP_202_ACCEPTED)
     
-    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name):
+    def _process_with_progress(self, data, task_id, uploaded_file_path, uploaded_file_name, is_area_filtered=False):
         """Send live progress updates while orchestrating operations involved in ngram creation.
 
         Args:
@@ -458,6 +463,7 @@ class NgramGenerationView(APIView):
             task_id(str): a unique identifier for frontend to track progress updates
             uploaded_file_path(str): path of uploaded trajectory file saved in disk
             uploaded_file_name(str): name of saved trajectory file
+            is_area_filtered(bool): a flag indicating if a request targets area-filtered generation
         """
         try:
             if task_id not in PROGRESS_QUEUES:
@@ -474,8 +480,8 @@ class NgramGenerationView(APIView):
             time.sleep(1)
 
             cell_size = int(data['cell_size'])
-
-            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(data, queue, uploaded_file_path)
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
+                    data, queue, uploaded_file_path, is_area_filtered)
 
             cached_data = {
                 'ngrams': ngrams,
@@ -496,7 +502,15 @@ class NgramGenerationView(APIView):
                 'progress': 90
             })
 
-            filename = f'cache_{cell_size}.pkl'
+            if is_area_filtered:
+                north = float(data.get('north'))
+                south = float(data.get('south'))
+                east = float(data.get('east'))
+                west = float(data.get('west'))
+                filename = f'cache_{cell_size}_filtered_{north}_{south}_{east}_{west}.pkl'
+            else:
+                filename = f'cache_{cell_size}_unfiltered.pkl'
+
             subdir = os.path.join(settings.MEDIA_ROOT, "cache")
             os.makedirs(subdir, exist_ok=True)
 
@@ -518,13 +532,14 @@ class NgramGenerationView(APIView):
                     'type': 'error',
                     'message': f'Error during processing: {str(e)}'
                 })
-            
-    def _process_to_ngrams(self, data, queue, uploaded_file_path):
+
+    def _process_to_ngrams(self, data, queue, uploaded_file_path, filtered):
         """Generate ngram dictionaries with progress updates
 
         Args:
             queue(queue.Queue): thread-safe FIFO queue object for passing info between background 
                 thread and SSE view.
+            filtered(bool): a flag indicating if this method should filter input trajectory
         """
         global STATS
 
@@ -535,9 +550,33 @@ class NgramGenerationView(APIView):
             })
         
         cell_size = int(data['cell_size'])
+
+        if filtered:
+            # Get area bounds
+            north = float(data.get('north'))
+            south = float(data.get('south'))
+            east = float(data.get('east'))
+            west = float(data.get('west'))
+
         df = pd.read_csv(uploaded_file_path)
         # Convert geometry column to Python list
         df['geometry'] = df['geometry'].apply(ast.literal_eval)
+
+        if filtered:
+            # Filter trajectories within the specified area
+            filtered_df = self._filter_trajectories_by_area(df, north, south, east, west)
+
+            if len(filtered_df) == 0:
+                raise ValueError("No trajectories found in the selected area")
+
+            queue.put({
+                'type': 'progress',
+                'message': f'Found {len(filtered_df)} trajectories in selected area',
+                'progress': 30
+            })
+            df = filtered_df
+            time.sleep(2)
+
         study_area = extract_boundary(df)
 
         queue.put({
@@ -545,7 +584,7 @@ class NgramGenerationView(APIView):
             'message': 'Creating tokens and grid',
             'progress': 40
         })
-     
+
         TokenCreator = ConvertToToken(df, study_area, cell_size=cell_size)
 
         # Capture stdout from create_tokens method
@@ -581,6 +620,42 @@ class NgramGenerationView(APIView):
 
         return ngrams, start_end_points, grid, sentence_df, study_area
     
+    def _filter_trajectories_by_area(self, df, north, south, east, west):
+        """Filter trajectories by specified coord bounds. If a trip doesn't fall
+           entirely in the bounds, keep it partially.
+        
+        """
+        print(f"Rows before Filtering: {len(df)}")
+        filtered_rows = []
+
+        for _, row in df.iterrows():
+            # Creates a copy of original trip
+            trip = row['geometry']
+
+            # Evaluate a string representation of list to list
+            if isinstance(trip, str):
+                trip = ast.literal_eval(trip)
+
+            filtered_trip = [
+                point for point in trip
+                if (south <= point[1] <= north and
+                    west <= point[0] <= east)
+            ]
+
+            # Only keep trips that have at least 3 coord pairs left
+            if len(filtered_trip) >= 2:
+                filtered_rows.append({
+                    'trip_id': row['trip_id'],
+                    'geometry': filtered_trip
+                })
+        
+        print(f"Rows after Filtering: {len(filtered_rows)}")
+        if filtered_rows:
+            filtered_df = pd.DataFrame(filtered_rows)
+            return filtered_df
+        else:
+            return df.iloc[0:0].copy()
+
 class Trajectory3DView(APIView):
     """
         A class for handling frontend request that renders 3D visualization 
@@ -642,111 +717,6 @@ class Trajectory3DView(APIView):
             'type': 'FeatureCollection',
             'features': features
         }
-
-class MapMatchingView(APIView):
-    """
-        A class for mapping trajectory trip to actual road network
-    """
-    def post(self, request):
-        # Get file name from request
-        file_name = request.data.get('filename')
-        percentage = request.data.get('percentage', 1.0)
-
-        if not file_name:
-            return Response({"Error": "No file name provided"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Get full file path
-        file_path = os.path.join(settings.MEDIA_ROOT, "generated", file_name)
-
-        if not os.path.exists(file_path):
-            return Response({"Error": f"File {file_path} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            matched_trajs = []
-            df = pd.read_csv(file_path)
-            df['geometry'] = df['geometry'].apply(ast.literal_eval)
-            sub_df = df.sample(frac=percentage/100, random_state=404)
-
-            for _, row in sub_df.iterrows():
-                traj = row['geometry']
-
-                # Convert trajectory into OSRM-complaint format
-                traj_trip = []
-                for coord in traj:
-                    traj_trip.append(f"{coord[0]},{coord[1]}")
-                osrm_str = ";".join(traj_trip)
-                osrm_url = "http://router.project-osrm.org/match/v1/driving/"
-                full_url = f"{osrm_url}{osrm_str}?overview=full&annotations=true&geometries=geojson"
-
-                # Make request to OSRM
-                response = requests.get(full_url, timeout=10)
-
-                if response.status_code == 200:
-                    matched_data = response.json()
-
-                    if 'matchings' in matched_data and matched_data['matchings']:
-                        matching = matched_data['matchings'][0]
-
-                        # Create GeoJSON feature for frontend
-                        matched_feature = {
-                            'type': 'Feature',
-                            'properties': {
-                                'trip_id': row['trip_id'],
-                                'confidence': matching.get('confidence', 0),
-                                'distance': matching.get('distance', 0),
-                                'duration': matching.get('duration', 0)
-                            },
-                            'geometry': matching['geometry']
-                        }
-                        matched_trajs.append(matched_feature)
-
-            matched_filename = self.save_matched_trajs(matched_trajs)
-            map_data = {'type': 'FeatureCollection', 'features': matched_trajs}
-
-            return Response({
-                'map_data': map_data,
-                'output_file': matched_filename
-            }, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"Error": f"Failed to process {file_name}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-    def save_matched_trajs(self, matched_data, save_dir="matched"):
-        """
-            Save trajectories snapped to actual roads in a csv file.
-
-            matched_data: GeoJSON feature collection data with matched trajectories and
-                          related attributes
-            save_dir: media sub-folder for saving csv file 
-        """
-        file_id = uuid.uuid4()
-        out_filename = f'matched_trajectories_{file_id}.csv'
-        subdir = os.path.join(settings.MEDIA_ROOT, save_dir)
-
-        os.makedirs(subdir, exist_ok=True)
-        full_path = os.path.join(subdir, out_filename)
-
-        csv_data = []
-        for feature in matched_data:
-            trip_id = feature['properties']['trip_id']
-            confidence = feature['properties']['confidence']
-            distance = feature['properties']['distance']
-            duration = feature['properties']['duration']
-
-            coords = feature['geometry']['coordinates']
-            geometry_str = str(coords)
-
-            csv_data.append({
-                "trip_id": trip_id,
-                "confidence": confidence,
-                "distance": distance,
-                "duration": duration,
-                "geometry": geometry_str
-            })
-
-        df = pd.DataFrame(csv_data)
-        df.to_csv(full_path, index=False)
-
-        return out_filename
 
 class CacheStatsView(APIView):
     """Extract stats data from a cached ngram file.

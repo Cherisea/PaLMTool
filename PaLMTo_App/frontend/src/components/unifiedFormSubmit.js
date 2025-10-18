@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
-    setGeneratedFileName, setVisualData, setHeatmapData, setFormData) {
+    setGeneratedFileName, setVisualData, setHeatmapData, setFormData, selectedArea) {
     // State variable for notification message
     const [notification, setNotification] = useState(null);
 
@@ -195,7 +195,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
             // Build ngram dict only in step 2 and if csv file is uploaded
             if (currentStep === 2) {
-                if (!!formData.cache_file) {
+                if (!!formData.cache_file && !selectedArea) {
                     // Load stats from cache file
                     const csrftoken = getCookie('csrftoken');
 
@@ -244,7 +244,15 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                     setShowStats(true);
                     setIsLoading(false);
                     return;
-                } else {
+                } else {      
+                    // Check if request comes from area-filtered generation
+                    if (!!selectedArea) {
+                        payload.append("north", selectedArea.north);
+                        payload.append("south", selectedArea.south);
+                        payload.append("east", selectedArea.east);
+                        payload.append("west", selectedArea.west);
+                    }
+
                     endpoint = '/trajectory/generate/ngrams';
                     payload.append("cell_size", formData.cell_size);
                     payload.append("file", formData.file);

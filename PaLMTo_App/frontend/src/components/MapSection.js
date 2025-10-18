@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import Trajectory3DViewer from "./trajectory3DViewer";
+import RectangleDrawer from "./rectangleDrawer";
 
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
@@ -20,7 +21,8 @@ const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect
   </div>
 );
 
-const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false}) => (
+const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false, 
+  showRectangleDrawer=false, onRectangleDrawn}) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
     <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
@@ -31,7 +33,16 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
         />
 
         <GeoJSON data={data} style={{ color, weight: 2 }} />
+
+        {/* Add rectangle drawer for original trajectory map only */}
+        {showRectangleDrawer && (
+          <RectangleDrawer 
+            onRectangleDrawn={onRectangleDrawn}
+            isEnabled={showRectangleDrawer}
+          />
+        )}
       </MapContainer>
+
 
       {/* Download button overlay */}
       {showDownload && onDownload && (
@@ -64,7 +75,7 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, isFormCollapsed }) 
+  heatmapData, generatedFileName, isFormCollapsed, onAreaSelected }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
@@ -80,6 +91,15 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
 
   // Declare a state variable for current file name
   const [pendingDownloadFile, setPendingDownloadFile] = useState('');
+
+  // Handle rectangle selection
+  const handleRectangleDrawn = (bounds) => {
+    // Elevate selected area to App.js
+    if (onAreaSelected) {
+      onAreaSelected(bounds);
+    }
+    
+  }
 
   // Function that control bounce effect of download button
   const triggerBounce = () => {
@@ -251,13 +271,17 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
       ) : (
         <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
           <TrajectoryMap
+            key={`original-${generatedFileName || 'default'}`}
             title="Original Trajectories"
             data={visualData.original}
             center={visualData.center}
             color="blue"
             showDownload={false}
+            showRectangleDrawer={true}
+            onRectangleDrawn={handleRectangleDrawn}
           />
           <TrajectoryMap
+            key={`generated-${generatedFileName || 'default'}`}
             title="Generated Trajectories"
             data={visualData.generated}
             center={visualData.center}

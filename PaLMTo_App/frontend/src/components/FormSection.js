@@ -22,6 +22,7 @@ function FormSection({
   setHeatmapData,
   setFormData,
   isFormCollapsed,
+  selectedArea
 }) {
   // State variable for stats popup window
   const [showStats, setShowStats] = useState(false);
@@ -48,7 +49,14 @@ function FormSection({
     setGeneratedFileName,
     setVisualData,
     setHeatmapData,
-    setFormData);
+    setFormData, selectedArea);
+  
+  // Jump to step 2 if an sub-area is selected
+  useEffect(() => {
+    if (selectedArea && currentStep === 3) {
+      setCurrentStep(2);
+    }
+  }, [selectedArea]);
 
   // Auto-hide notification after 5 seconds
   useEffect(() => {
@@ -140,6 +148,7 @@ function FormSection({
               setCacheFileName={setCacheFileName}
               handleSaveCache={handleSaveCache}
               defaultCacheFile={defaultCacheFile}
+              selectedArea={selectedArea}
             />
           </form>
         </div>
