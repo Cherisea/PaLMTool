@@ -285,7 +285,7 @@ class GenerationConfigView(APIView):
         else:
             raise serializers.ValidationError(serializer.errors)
     
-    def _process_traj_generation(self, data, queue, cached_data):
+    def _process_traj_generation(self, data, queue, cached_data, area_bounds):
         """Generate new trajectories based on cached n-gram data and user-supplied parameters.
 
         This method loads cached n-gram data and related objects and generate new trajectories 
@@ -298,6 +298,8 @@ class GenerationConfigView(APIView):
                 - "trajectory_len" (int, optional): Desired trajectory length (required if using "length_constrained").
                 - "cache_file" (str): Filename of the cached n-gram data.
             queue(Queue): queue for storing progress updates
+            cached_data(Dict): cached ngram data 
+            area_bounds(Dict): optional area bounds for filtering generated trajectories
         
         Returns:
             tuple:
@@ -332,6 +334,25 @@ class GenerationConfigView(APIView):
         else:
             traj_generator = TrajGenerator(ngrams, start_end_points, num_trajs, grid)
             new_trajs, new_trajs_gdf = traj_generator.generate_trajs_using_origin_destination()
+
+        # Apply area filtering to generated trajectories if area bounds are provided
+        if area_bounds:
+            queue.put({
+                'type': 'progress',
+                'message': 'Filtering generated trajectories to selected area',
+                'progress': 55
+            })
+        
+            filtered_new_trajs_gdf = self._filter_trajectories_by_area(
+                new_trajs_gdf,
+                area_bounds['north'],
+                area_bounds['south'],
+                area_bounds['east'],
+                area_bounds['west']
+            )
+
+            new_trajs_gdf = filtered_new_trajs_gdf
+
         return sentence_df, study_area, new_trajs, new_trajs_gdf
  
     def save_trajectory(self, trajs, config_instance, save_dir="generated"):
