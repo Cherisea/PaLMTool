@@ -168,9 +168,7 @@ function FormSteps({
                   // Regular case: need file and cell_size param
                   (!formData.cache_file && (!formData.file || !formData.cell_size)) || 
                   // Area-filtered case: need file, cell_size and area bounds
-                  (selectedArea && (!formData.file || !formData.cell_size)) ||
-                  // Cache file case: just need cache file
-                  (selectedArea && formData.cache_file_loaded) 
+                  (selectedArea && (!formData.file || !formData.cell_size))
                 }
         >
           {formData.cache_file ? 'Load' : 'Train'}
