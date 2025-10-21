@@ -22,10 +22,18 @@ const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect
 );
 
 const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDownload=false, 
-  showRectangleDrawer=false, onRectangleDrawn}) => (
+  showRectangleDrawer=false, onRectangleDrawn, isPrivate=false }) => (
   <div style={{ flex: 1 }}>
-    <h3>{title}</h3>
-    <div className="map-container" style={{ height: 'calc(100% - 40px)', position: 'relative' }}>
+    <h3 style={{ color: isPrivate? '#999' : 'inherit' }}>
+      {title}
+      {isPrivate && <span style={{ fontSize: '14px', color: '#666', marginLeft: '4px' }}>(Hidden for privacy)</span>}
+    </h3>
+    <div className="map-container" style={{ 
+            height: 'calc(100% - 40px)', 
+            position: 'relative', 
+            opacity: isPrivate? 0.3 : 1,
+            filter: isPrivate? 'grayscale(100%)' : 'none'
+    }}>
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -277,8 +285,9 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             center={visualData.center}
             color="blue"
             showDownload={false}
-            showRectangleDrawer={true}
+            showRectangleDrawer={!cacheFileLoaded}
             onRectangleDrawn={handleRectangleDrawn}
+            isPrivate={cacheFileLoaded}
           />
           <TrajectoryMap
             key={`generated-${generatedFileName || 'default'}`}
