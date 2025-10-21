@@ -179,6 +179,7 @@ function App() {
           numTrajs={formData.num_trajectories}
           isFormCollapsed={isFormCollapsed}
           onAreaSelected={handleAreaSelected}
+          cacheFileLoaded={formData.cache_file_loaded}
         />
        
       </div>

@@ -75,7 +75,7 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
 
 // Main entry of script
 function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualData, 
-  heatmapData, generatedFileName, isFormCollapsed, onAreaSelected }) 
+  heatmapData, generatedFileName, isFormCollapsed, onAreaSelected, cacheFileLoaded }) 
 {
   // Declare a state variable for current view mode
   const [viewMode, setViewMode] = useState('trajectory');
