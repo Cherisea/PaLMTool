@@ -37,7 +37,7 @@
 /* ==================== Filter Panel ================== */
 .filter-toggle-btn {
   position: absolute;
-  bottom: 16px;
+  bottom: 35px;
   right: 10px;
   background: rgba(0, 0, 0, 0.8);
   border: 1px solid #00e5ff;
