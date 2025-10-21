@@ -7,7 +7,7 @@ import { FiDownload } from "react-icons/fi";
 import Trajectory3DViewer from "./trajectory3DViewer";
 import RectangleDrawer from "./rectangleDrawer";
 
-const PrivacyOverlay = () => (
+const PrivacyOverlay = ({ mapType }) => (
   <div style={{
           height: '100%',
           display: 'flex',
@@ -23,7 +23,7 @@ const PrivacyOverlay = () => (
         }}>
           <div>
             <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔒</div>
-            <div>Original heatmap hidden</div>
+            <div>Original {mapType} hidden</div>
             <div style={{ fontSize: '12px', marginTop: '4px' }}>for data confidentiality</div>
           </div>
   </div>
@@ -55,7 +55,7 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
             filter: isPrivate? 'grayscale(100%)' : 'none'
     }}>
       {isPrivate ? (
-        <PrivacyOverlay />
+        <PrivacyOverlay mapType="trajectory"/>
       ) : (
         <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
         <TileLayer
@@ -93,21 +93,23 @@ const HeatMap = ({ title, data, center, bounds, style, onEachFeature, isPrivate=
   <div style={{ flex: 1 }}>
     <h3 style={{ color: isPrivate? '#999' : 'inherit' }}>
       {title}
-      {isPrivate && <span style={{ fontSize: '14px', color: '#666', marginLeft: '4px' }}>(Hidden for privacy)</span>}
     </h3>
     <div className="map-container" style={{ 
         height: 'calc(100% - 40px)',
         opacity: isPrivate? 0.3 : 1,
         filter: isPrivate? 'grayscale(100%)' : 'none'
     }}>
-      <MapContainer center={center} bounds={bounds} style={{ height: "100%", width: "100%" }}>
-        <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        
-        <GeoJSON data={data} style={style} onEachFeature={onEachFeature} />
-      </MapContainer>
+      {isPrivate? (<PrivacyOverlay mapType="heatmap"/>) : (
+        <MapContainer center={center} bounds={bounds} style={{ height: "100%", width: "100%" }}>
+          <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          
+          <GeoJSON data={data} style={style} onEachFeature={onEachFeature} />
+        </MapContainer>
+      )}
+      
     </div>
   </div>
 );
