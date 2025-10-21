@@ -7,6 +7,28 @@ import { FiDownload } from "react-icons/fi";
 import Trajectory3DViewer from "./trajectory3DViewer";
 import RectangleDrawer from "./rectangleDrawer";
 
+const PrivacyOverlay = () => (
+  <div style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f5f5f5',
+          border: '2px dashed #ccc',
+          borderRadius: '8px',
+          color: '#666',
+          fontSize: '14px',
+          textAlign: 'center',
+          padding: '20px'
+        }}>
+          <div>
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔒</div>
+            <div>Original heatmap hidden</div>
+            <div style={{ fontSize: '12px', marginTop: '4px' }}>for data confidentiality</div>
+          </div>
+  </div>
+)
+
 const LocationSelectionMap = ({ mapCenter, locationCoordinates, onLocationSelect }) => (
   <div className="map-container">
     <MapContainer center={mapCenter} zoom={3} style={{ height: "100%", width: "100%" }}>
@@ -33,25 +55,7 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
             filter: isPrivate? 'grayscale(100%)' : 'none'
     }}>
       {isPrivate ? (
-        <div style={{
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-          border: '2px dashed #ccc',
-          borderRadius: '8px',
-          color: '#666',
-          fontSize: '14px',
-          textAlign: 'center',
-          padding: '20px'
-        }}>
-          <div>
-            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔒</div>
-            <div>Original heatmap hidden</div>
-            <div style={{ fontSize: '12px', marginTop: '4px' }}>for data confidentiality</div>
-          </div>
-        </div>
+        <PrivacyOverlay />
       ) : (
         <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
         <TileLayer
