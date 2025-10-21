@@ -26,14 +26,34 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
   <div style={{ flex: 1 }}>
     <h3 style={{ color: isPrivate? '#999' : 'inherit' }}>
       {title}
-      {isPrivate && <span style={{ fontSize: '14px', color: '#666', marginLeft: '4px' }}>(Hidden for privacy)</span>}
     </h3>
     <div className="map-container" style={{ 
             height: 'calc(100% - 40px)', 
             opacity: isPrivate? 0.3 : 1,
             filter: isPrivate? 'grayscale(100%)' : 'none'
     }}>
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
+      {isPrivate ? (
+        <div style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f5f5f5',
+          border: '2px dashed #ccc',
+          borderRadius: '8px',
+          color: '#666',
+          fontSize: '14px',
+          textAlign: 'center',
+          padding: '20px'
+        }}>
+          <div>
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>🔒</div>
+            <div>Original heatmap hidden</div>
+            <div style={{ fontSize: '12px', marginTop: '4px' }}>for data confidentiality</div>
+          </div>
+        </div>
+      ) : (
+        <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -48,9 +68,10 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
             isEnabled={showRectangleDrawer}
           />
         )}
-      </MapContainer>
-
-
+        </MapContainer>
+      )
+      }
+        
       {/* Download button overlay */}
       {showDownload && onDownload && (
         <div className={`download-overlay${bounce ? ' bounce' : ''}`}
