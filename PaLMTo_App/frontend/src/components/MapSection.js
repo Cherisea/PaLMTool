@@ -30,7 +30,6 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
     </h3>
     <div className="map-container" style={{ 
             height: 'calc(100% - 40px)', 
-            position: 'relative', 
             opacity: isPrivate? 0.3 : 1,
             filter: isPrivate? 'grayscale(100%)' : 'none'
     }}>
@@ -65,10 +64,17 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
   </div>
 );
 
-const HeatMap = ({ title, data, center, bounds, style, onEachFeature }) => (
+const HeatMap = ({ title, data, center, bounds, style, onEachFeature, isPrivate=false }) => (
   <div style={{ flex: 1 }}>
-    <h3>{title}</h3>
-    <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
+    <h3 style={{ color: isPrivate? '#999' : 'inherit' }}>
+      {title}
+      {isPrivate && <span style={{ fontSize: '14px', color: '#666', marginLeft: '4px' }}>(Hidden for privacy)</span>}
+    </h3>
+    <div className="map-container" style={{ 
+        height: 'calc(100% - 40px)',
+        opacity: isPrivate? 0.3 : 1,
+        filter: isPrivate? 'grayscale(100%)' : 'none'
+    }}>
       <MapContainer center={center} bounds={bounds} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -266,6 +272,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
             bounds={heatmapData.bounds}
             style={heatmapStyle}
             onEachFeature={onEachFeature}
+            isPrivate={cacheFileLoaded}
           />
           <HeatMap
             title="Generated Trajectories Heatmap"
