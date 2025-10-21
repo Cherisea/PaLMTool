@@ -207,7 +207,7 @@
   flex-direction: column;
   padding: 1rem 0 1rem 1.5rem;
   box-sizing: border-box;
-  height: 95%; 
+  height: 100%; 
   min-height: 0;
 }
 
@@ -218,6 +218,9 @@
 .map-container {
   flex: 1;  /* Take remaining space */
   min-height: 650px;  /* Minimum height */
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .view-buttons-container {
@@ -226,7 +229,7 @@
   gap: 10px;
   background: #f8f9fa;
   width: 0;
-  margin: 95px auto;
+  margin: 20px auto;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
@@ -276,7 +279,7 @@
 /* Download overlay styling */
 .download-overlay {
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   right: 5px;
   width: 48px;
   height: 48px;
@@ -334,4 +337,48 @@
   0%, 100% { transform: translateY(0);}
   10%, 30%, 50%, 70%, 90% { transform: translateY(-10px);}
   20%, 40%, 60%, 80% { transform: translateY(0);}
+}
+
+/* Add responsive breakpoints */
+@media (max-width: 1200px) {
+  .layout {
+    width: 95vw;
+    height: 96 vw;
+  }
+
+  .map-container {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .map-box {
+    padding: 0.5rem;
+    height: 100vh;
+  }
+
+  .map-container {
+    min-height: 0;
+    flex: 1;
+  }
+
+  .view-buttons-container {
+    margin: 5px auto; 
+    padding: 8px 15px;
+  }
+  
+  .view-button {
+    min-width: 100px;
+    padding: 8px 8px;
+  }
+  
+  .view-button-text {
+    font-size: 11px;
+  }
 }

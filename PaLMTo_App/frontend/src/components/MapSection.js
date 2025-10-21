@@ -25,7 +25,7 @@ const TrajectoryMap = ({ title, data, center, color, onDownload, bounce, showDow
   showRectangleDrawer=false, onRectangleDrawn}) => (
   <div style={{ flex: 1 }}>
     <h3>{title}</h3>
-    <div className="map-container" style={{ height: 'calc(100% - 40px)' }}>
+    <div className="map-container" style={{ height: 'calc(100% - 40px)', position: 'relative' }}>
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -246,11 +246,11 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
 
       {viewMode === '3d' ? (
-        <div style={{ display: 'flex', height: '600px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', height: '100%', marginTop: '10px' }}>
           <Trajectory3DViewer />
         </div>
       ) : viewMode === 'heatmap' && heatmapData ? (
-        <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '20px', height: '100%', marginTop: '10px' }}>
           <HeatMap
             title="Original Trajectories Heatmap"
             data={heatmapData.original}
@@ -269,7 +269,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
           />
         </div>
       ) : (
-        <div style={{ display: 'flex', gap: '20px', height: '600px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '20px', height: '100%', marginTop: '10px' }}>
           <TrajectoryMap
             key={`original-${generatedFileName || 'default'}`}
             title="Original Trajectories"
