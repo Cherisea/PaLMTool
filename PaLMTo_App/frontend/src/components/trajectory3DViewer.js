@@ -58,7 +58,9 @@ const Trajectory3DViewer = () => {
     const boxSize = [lonRange * SCALE_FACTOR, latRange * SCALE_FACTOR, zUnits * gridSpacing]
 
     return (
-        <div ref={containerRef} className={`container ${isFullscreen ? 'fullscreen' : ''}` }>
+        <div ref={containerRef} 
+             className={`container ${isFullscreen ? 'fullscreen' : ''}` }
+        >
             <Canvas>
                 <color attach="background" args={['#1a1a1a']} />
                 <PerspectiveCamera 

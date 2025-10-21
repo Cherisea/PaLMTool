@@ -246,7 +246,7 @@ function MapSection({ mapCenter, locationCoordinates, onLocationSelect, visualDa
     <div className={`map-box ${isFormCollapsed ? 'expanded' : ''}`} style={{ position: 'relative' }}>
 
       {viewMode === '3d' ? (
-        <div style={{ display: 'flex', height: '100%', marginTop: '10px' }}>
+        <div style={{ display: 'flex', height: 'calc(100% - 100px)', marginTop: '10px' }}>
           <Trajectory3DViewer />
         </div>
       ) : viewMode === 'heatmap' && heatmapData ? (
