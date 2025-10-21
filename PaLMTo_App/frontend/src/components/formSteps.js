@@ -78,14 +78,6 @@ function FormSteps({
               <div><strong>East:</strong> {selectedArea.east.toFixed(6)}</div>
               <div><strong>West:</strong> {selectedArea.west.toFixed(6)}</div>
             </div>
-
-            {/* Display a warning if cache file was previously loaded */}
-            {formData.cache_file_loaded && (
-              <div className="selected-area-warning" >
-                <strong>Warning:</strong> Filtered trajecotry generation from cache files is not supported. 
-                Please use the original trajectory file instead.
-              </div>
-            )}
         </div>
       )}
 
