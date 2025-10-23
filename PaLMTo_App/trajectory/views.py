@@ -244,10 +244,6 @@ class GenerationConfigView(APIView):
         else:
             file_path = cached_data['file_path']
             file_name = cached_data['file_name']
-        
-            print(f"===================DEBUG================")
-            print(f"Original File: {file_path}")
-            print(f"File exists: {os.path.exists(file_path)}")
 
             try:
                 f = open(file_path, 'rb')
@@ -672,7 +668,7 @@ class NgramGenerationView(APIView):
         """
         print("========================Ngram System Performance Report======================")
         print(f"Coord points processed: {points:,}")
-        print(f"Time elapsed: {duration:3f} seconds\n")
+        print(f"Time elapsed: {duration:.3f} seconds\n")
 
 class Trajectory3DView(APIView):
     """
