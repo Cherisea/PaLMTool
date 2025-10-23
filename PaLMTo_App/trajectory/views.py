@@ -15,6 +15,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 # System libraries
 import os
 import uuid
+import time
 import shutil
 from io import StringIO
 from contextlib import redirect_stdout
@@ -478,7 +479,8 @@ class NgramGenerationView(APIView):
                 'progress': 10
             })
             time.sleep(1)
-
+            
+            start_time = time.perf_counter()
             cell_size = int(data['cell_size'])
             ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
                     data, queue, uploaded_file_path, is_area_filtered)
@@ -526,6 +528,10 @@ class NgramGenerationView(APIView):
                 'stats': STATS,
                 'cache_file': filename
             })
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
+            print(f"Points processed: {STATS['totalPairs']:,}, Ngram generation time: {elapsed_time:.3f} sec")
+
         except Exception as e:
             if task_id in PROGRESS_QUEUES:
                 PROGRESS_QUEUES[task_id].put({
