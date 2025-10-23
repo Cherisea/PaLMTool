@@ -530,7 +530,7 @@ class NgramGenerationView(APIView):
             })
             end_time = time.perf_counter()
             elapsed_time = end_time - start_time
-            print(f"Points processed: {STATS['totalPairs']:,}, Ngram generation time: {elapsed_time:.3f} sec")
+            self.report_perform(STATS['totalPairs'], elapsed_time)
 
         except Exception as e:
             if task_id in PROGRESS_QUEUES:
@@ -661,6 +661,18 @@ class NgramGenerationView(APIView):
             return filtered_df
         else:
             return df.iloc[0:0].copy()
+
+    def report_perform(self, points, duration):
+        """Display execution info to compare system performance on datasets 
+           of different sizes. 
+        
+        Args:
+            num_points: total number of points processed in file 
+            duration: execution time of ngram generation process with input data 
+        """
+        print("========================Ngram System Performance Report======================")
+        print(f"Coord points processed: {points:,}")
+        print(f"Time elapsed: {duration:3f} seconds\n")
 
 class Trajectory3DView(APIView):
     """
