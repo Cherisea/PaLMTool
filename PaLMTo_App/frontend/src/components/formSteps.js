@@ -242,7 +242,7 @@ function FormSteps({
       {formData.cache_file_loaded && (
         <div className="cache-info-section">
           <h3>Cached Model</h3>
-          <p>Loaded cache file: <strong>{formData.cache_file.name}</strong></p>
+          <p>Loaded model file: <strong>{formData.cache_file.name}</strong></p>
         </div>
       )}
 
