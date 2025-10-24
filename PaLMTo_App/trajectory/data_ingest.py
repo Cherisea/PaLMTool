@@ -13,13 +13,12 @@ Sources of sample data files include:
     Link to dataset: https://zenodo.org/records/15769359
 """
 import csv
-from ntpath import isdir
 import os
 from pathlib import Path
-from re import A 
+from tqdm import tqdm
 
 HOME = Path.home()
-DATA_DIR = HOME / "Downloads" / "T-drive" / "taxi"
+DATA_DIR = HOME / "Downloads" / "T-drive" / "taxi_traj"
 
 def ingest_from_dir(dir_path, output_csv):
     """Collect data from a given directory and loads them into a 
@@ -34,7 +33,8 @@ def ingest_from_dir(dir_path, output_csv):
     
     # Load individual points into a sequence of points
     all_trips =[]
-    for file_name in os.listdir(dir_path):
+    total_points = 0
+    for file_name in tqdm(os.listdir(dir_path)):
         if file_name.endswith('txt'):
             trip = []
             trip_id = int(file_name.split(".")[0])
@@ -47,8 +47,11 @@ def ingest_from_dir(dir_path, output_csv):
                 parts = line.strip().split(',')
                 if len(parts) >= 4:
                     lon, lat = float(parts[2]), float(parts[3])
-                    if -180 <= lon <= 180 and 0 <= lat <= 90:
-                        trip.append([lon, lat])
+                    if not (-180 <= lon <= 180) or not (0 <= lat <= 90):
+                        continue
+                        
+                    trip.append([lon, lat])
+                    total_points += 1
             
             if len(trip) >= 3:
                 all_trips.append({
@@ -56,13 +59,14 @@ def ingest_from_dir(dir_path, output_csv):
                     'geometry': trip 
                 })
     
+    print(f"Total points processed: {total_points:,}")
     # Write trips to csv file
     with open(output_csv, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=["trip_id", "geometry"])
         writer.writeheader()
         writer.writerows(all_trips)     
     
-ingest_from_dir(DATA_DIR, "demo.csv")
+ingest_from_dir(DATA_DIR, "tdrive_17m.csv")
 
 
 
