@@ -774,8 +774,55 @@ class NgramGenerationView(APIView):
 
         return ngrams, start_end_points, grid, sentence_df, study_area
 
-    def _filter_trajectories_by_area_dask(self):
-        pass
+    def _filter_trajectories_by_area_dask(self, ddf, north, south, east, west):
+        """ A Dasks version of filter_trajectory_by_area method.
+        
+        Returns:
+            Dask DataFrame: a filtered version of original ddf
+        """
+        print(f"Rows before filtering: {len(ddf)}")
+
+        def filter_partition(partition):
+            """Filter a Dask dataframe partition
+            """
+            filtered_rows = []
+
+            for row in partition.itertuples():
+                trip = row.geometry
+
+                if isinstance(trip, str):
+                    trip = ast.literal_eval(trip)
+                
+                filtered_trip = [
+                    point for point in trip 
+                    if (south <= point[1] <= north and
+                        west <= point[0] <= east)
+                ]
+
+                if len(filtered_trip) >= 2:
+                    filtered_rows.append({
+                        'trip_id': row.trip_id,
+                        'geometry': filtered_trip
+                    })
+
+            if filtered_rows:
+                return pd.DataFrame(filtered_rows)
+            else:
+                return pd.DataFrame(columns=['trip_id', 'geometry'])
+        
+        # Apply filtering to each partition
+        filtered_ddf = ddf.map_partitions(
+            filter_partition,
+            meta=pd.DataFrame(columns=['trip_id', 'geometry'])
+        )
+
+        row_count = len(filtered_ddf)
+        print(f"Rows after filtering: {row_count}")
+
+        if row_count == 0:
+            raise ValueError("No trajectories found within selected area.")
+        
+        return filtered_ddf
 
 class Trajectory3DView(APIView):
     """
