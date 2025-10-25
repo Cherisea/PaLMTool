@@ -27,6 +27,8 @@ import pickle
 import json
 import threading
 import pandas as pd
+import dask.dataframe as dd
+from dask.distributed import Client
 from queue import Queue, Empty
 from datetime import datetime, timedelta
 from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
@@ -409,6 +411,10 @@ class GenerationConfigView(APIView):
 
 class NgramGenerationView(APIView):
     parser_classes = [MultiPartParser, FormParser]
+
+    def __init__(self):
+        # Initialize a local Dask cluster
+        self.client = Client()
 
     def post(self, request):
         """Handler for building ngram dictionary with live updates posted to a client.
