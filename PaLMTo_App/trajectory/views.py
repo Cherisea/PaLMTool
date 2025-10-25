@@ -417,6 +417,26 @@ class NgramGenerationView(APIView):
         # Initialize a local Dask cluster
         self.client = Client()
 
+    def config_dask(self):
+        """Let Dask auto-configure Dask client
+        """
+
+        self.client = Client(dashboard_address=':8888')
+
+        worker_info = self.client.scheduler_info()['workers']
+
+        print(f"\nDask configured with {len(worker_info)} workers")
+        print(f"Dashboard: http://localhost:8888")
+
+        # Summary of first worker
+        first_worker = next(iter(worker_info.values()))
+        memory_gb = first_worker['memory_limit'] / (1024 ** 3)
+        threads = first_worker['nthreads']
+
+        print(f"Per worker: {memory_gb:.2f} GB memory, {threads} threads\n")
+        return self.client
+
+
     def post(self, request):
         """Handler for building ngram dictionary with live updates posted to a client.
 
