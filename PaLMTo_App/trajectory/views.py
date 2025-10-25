@@ -772,7 +772,7 @@ class NgramGenerationView(APIView):
         STATS["cellsCreated"] = int(content.strip().split(":")[1])
 
         # Calculate total pairs with Dask
-        total_pairs = ddf['geometry'].apply(len).sum().compute
+        total_pairs = ddf['geometry'].apply(len, meta=('geometry', 'float32')).sum().compute()
         STATS['totalPairs'] = int(total_pairs)
 
         queue.put({
