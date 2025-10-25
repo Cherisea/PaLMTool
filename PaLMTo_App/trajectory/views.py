@@ -637,9 +637,9 @@ class NgramGenerationView(APIView):
         print(f"Rows before Filtering: {len(df)}")
         filtered_rows = []
 
-        for _, row in df.iterrows():
+        for row in df.itertuples():
             # Creates a copy of original trip
-            trip = row['geometry']
+            trip = row.geometry
 
             # Evaluate a string representation of list to list
             if isinstance(trip, str):
@@ -654,7 +654,7 @@ class NgramGenerationView(APIView):
             # Only keep trips that have at least 3 coord pairs left
             if len(filtered_trip) >= 2:
                 filtered_rows.append({
-                    'trip_id': row['trip_id'],
+                    'trip_id': row.trip_id,
                     'geometry': filtered_trip
                 })
         
