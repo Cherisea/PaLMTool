@@ -504,7 +504,7 @@ class NgramGenerationView(APIView):
             
             start_time = time.perf_counter()
             cell_size = int(data['cell_size'])
-            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams_dask(
                     data, queue, uploaded_file_path, is_area_filtered)
 
             cached_data = {
@@ -721,13 +721,20 @@ class NgramGenerationView(APIView):
         # Read file by leveraging Dask's parallel computing power
         ddf = dd.read_csv(uploaded_file_path)
 
+        # Define Dask dataframe metadata explicitly
+        meta = pd.DataFrame({
+            'trip_id': pd.Series(dtype='object'),
+            'timestamp': pd.Series(dtype='object'),
+            'geometry': pd.Series(dtype='object')
+        })
+
         # An compact inner function used for casting geometry column to list
         def parse_geometry(partition):
-            partition['geometry'] = partition['geometry'].apply(ast.literal_eval)
+            partition['geometry'] = [ast.literal_eval(x) for x in partition['geometry']]
             return partition
         
         # Transform geometry column of every partition
-        ddf = ddf.map_partitions(parse_geometry, meta=ddf._meta)
+        ddf = ddf.map_partitions(parse_geometry, meta=meta)
 
         if filtered:
             # Filter trajectories with Dask
