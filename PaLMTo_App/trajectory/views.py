@@ -1,4 +1,5 @@
 # REST API
+from multiprocessing import Value
 from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -675,6 +676,106 @@ class NgramGenerationView(APIView):
         print("========================Ngram System Performance Report======================")
         print(f"Coord points processed: {points:,}")
         print(f"Time elapsed: {duration:.3f} seconds\n")
+
+    def _process_to_ngrams_dask(self, data, queue, uploaded_file_path, filtered):
+        """ A supercharged version of _process_to_ngrams with Dask.
+        """
+        global STATS
+        
+        queue.put({
+        'type': 'progress',
+        'message': 'Reading trajectory file with Dask',
+        'progress': 20
+        })
+    
+        cell_size = int(data['cell_size'])
+
+        if filtered:
+            north = float(data.get('north'))
+            south = float(data.get('south'))
+            east = float(data.get('east'))
+            west = float(data.get('west'))
+        
+        # Read file by leveraging Dask's parallel computing power
+        ddf = dd.read_csv(uploaded_file_path)
+
+        # An compact inner function used for casting geometry column to list
+        def parse_geometry(partition):
+            partition['geometry'] = partition['geometry'].apply(ast.literal_eval)
+            return partition
+        
+        # Transform geometry column of every partition
+        ddf = ddf.map_partitions(parse_geometry, meta=ddf._meta)
+
+        if filtered:
+            # Filter trajectories with Dask
+            filtered_ddf = self._filter_trajectories_by_area_dask(ddf, north, south, east, west)
+
+            # Pool result from workers 
+            filtered_ddf_computed = filtered_ddf.compute()
+
+            if len(filtered_ddf_computed) == 0:
+                raise ValueError("No trajectories found in the selected area.")
+            
+            queue.put({
+                'type': 'progress',
+                'message': f"Found {len(filtered_ddf_computed)} trajectories in selected area",
+                'progress': 30
+            })
+            ddf = filtered_ddf
+            time.sleep(2)
+        
+        #TODO: refactor extract boundary function with Dask
+        ddf_computed = ddf.compute()
+        study_area = extract_boundary(ddf_computed)
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Creating tokens and grid',
+            'progress': 40
+        })
+
+        # Use computed Dataframe for toke creation
+        TokenCreator = ConvertToToken(ddf_computed, study_area, cell_size=cell_size)
+
+        # Capture stdout from create_tokens method
+        f = StringIO()
+        with redirect_stdout(f):
+            grid, sentence_df = TokenCreator.create_tokens()
+        content = f.getvalue()
+        STATS["cellsCreated"] = int(content.strip().split(":")[1])
+
+        # Calculate total pairs with Dask
+        total_pairs = ddf['geometry'].apply(len).sum().compute
+        STATS['totalPairs'] = int(total_pairs)
+
+        queue.put({
+        'type': 'progress',
+        'message': 'Generating ngrams',
+        'progress': 70
+        })
+
+        ngram_model = NgramGenerator(sentence_df)
+
+        # Capture stdout from create_ngrams method
+        f.seek(0)
+        with redirect_stdout(f):
+            ngrams, start_end_points = ngram_model.create_ngrams()
+        content = f.getvalue()
+        STATS["uniqueBigrams"] = int(content.split("\n")[1].split(":")[1])
+        STATS["uniqueTrigrams"] = int(content.split("\n")[2].split(":")[1])
+
+        queue.put({
+            'type': 'progress',
+            'message': 'Ngrams generation completed',
+            'progress': 85
+        })
+        time.sleep(1)
+
+        return ngrams, start_end_points, grid, sentence_df, study_area
+
+    def _filter_trajectories_by_area_dask(self):
+        pass
 
 class Trajectory3DView(APIView):
     """
