@@ -711,15 +711,12 @@ class NgramGenerationView(APIView):
             # Filter trajectories with Dask
             filtered_ddf = self._filter_trajectories_by_area_dask(ddf, north, south, east, west)
 
-            # Pool result from workers 
-            filtered_ddf_computed = filtered_ddf.compute()
-
-            if len(filtered_ddf_computed) == 0:
+            if len(filtered_ddf) == 0:
                 raise ValueError("No trajectories found in the selected area.")
             
             queue.put({
                 'type': 'progress',
-                'message': f"Found {len(filtered_ddf_computed)} trajectories in selected area",
+                'message': f"Found {len(filtered_ddf)} trajectories in selected area",
                 'progress': 30
             })
             ddf = filtered_ddf
