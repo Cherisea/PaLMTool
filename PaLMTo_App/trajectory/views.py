@@ -815,9 +815,6 @@ class NgramGenerationView(APIView):
 
         row_count = len(filtered_ddf)
         print(f"Rows after filtering: {row_count}")
-
-        if row_count == 0:
-            raise ValueError("No trajectories found within selected area.")
         
         return filtered_ddf
 
