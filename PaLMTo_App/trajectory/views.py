@@ -415,7 +415,7 @@ class NgramGenerationView(APIView):
 
     def __init__(self):
         # Initialize a local Dask cluster
-        self.client = Client()
+        self.client = None
 
     def config_dask(self):
         """Let Dask auto-configure Dask client
@@ -435,7 +435,6 @@ class NgramGenerationView(APIView):
 
         print(f"Per worker: {memory_gb:.2f} GB memory, {threads} threads\n")
         return self.client
-
 
     def post(self, request):
         """Handler for building ngram dictionary with live updates posted to a client.
@@ -700,6 +699,9 @@ class NgramGenerationView(APIView):
     def _process_to_ngrams_dask(self, data, queue, uploaded_file_path, filtered):
         """ A supercharged version of _process_to_ngrams with Dask.
         """
+        if not self.client:
+            self.config_dask()
+
         global STATS
         
         queue.put({
