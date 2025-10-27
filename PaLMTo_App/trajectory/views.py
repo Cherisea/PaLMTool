@@ -37,7 +37,7 @@ from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 # Local imports
 from .models import GeneratedTrajectory
 from .serializers import GenerationConfigSerializer
-from .geo_process import extract_boundary, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
+from .geo_process import extract_boundary_dask, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
 
 # Holds statistics related to trajectory generation
 STATS = {}
@@ -747,9 +747,7 @@ class NgramGenerationView(APIView):
             ddf = filtered_ddf
             time.sleep(2)
         
-        #TODO: refactor extract boundary function with Dask
-        ddf_computed = ddf.compute()
-        study_area = extract_boundary(ddf_computed)
+        study_area = extract_boundary_dask(ddf)
 
         queue.put({
             'type': 'progress',
@@ -757,6 +755,7 @@ class NgramGenerationView(APIView):
             'progress': 40
         })
 
+        ddf_computed = ddf.compute()
         # Use computed Dataframe for toke creation
         TokenCreator = ConvertToToken(ddf_computed, study_area, cell_size=cell_size)
 
