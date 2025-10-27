@@ -453,6 +453,22 @@ class NgramGenerationView(APIView):
         uploaded_file = data['file']
         file_name = uploaded_file.name
 
+        # Get file size for monitoring
+        file_size_mb = uploaded_file.size / (1024 ** 2)
+
+        # Start performance monitoring session
+        dataset_info = {
+            'file_name': file_name,
+            'file_size_mb': file_size_mb,
+            'cell_size': int(data['cell_size']),
+            'is_area_filtered': is_area_filtered
+        }
+
+        self.performance_monitor.start_session(
+            f"ngram_generation_{file_name.replace('.csv', '')}",
+            dataset_info
+        )
+
         # Save uploaded file to disk 
         cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
         os.makedirs(cache_dir, exist_ok=True)
