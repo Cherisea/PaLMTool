@@ -37,6 +37,7 @@ from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 # Local imports
 from .models import GeneratedTrajectory
 from .serializers import GenerationConfigSerializer
+from .performance_monitor import PerformanceMonitor
 from .geo_process import traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
 from .geo_process import extract_boundary_dask, extract_boundary
 
@@ -417,6 +418,7 @@ class NgramGenerationView(APIView):
     def __init__(self):
         # Initialize a local Dask cluster
         self.client = None
+        self.performance_monitor = PerformanceMonitor()
 
     def config_dask(self):
         """Let Dask auto-configure Dask client
@@ -505,7 +507,7 @@ class NgramGenerationView(APIView):
             
             start_time = time.perf_counter()
             cell_size = int(data['cell_size'])
-            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams_dask(
+            ngrams, start_end_points, grid, sentence_df, study_area = self._process_to_ngrams(
                     data, queue, uploaded_file_path, is_area_filtered)
 
             cached_data = {
