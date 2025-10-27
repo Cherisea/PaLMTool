@@ -37,7 +37,8 @@ from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 # Local imports
 from .models import GeneratedTrajectory
 from .serializers import GenerationConfigSerializer
-from .geo_process import extract_boundary_dask, traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
+from .geo_process import traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
+from .geo_process import extract_boundary_dask, extract_boundary
 
 # Holds statistics related to trajectory generation
 STATS = {}
@@ -684,18 +685,6 @@ class NgramGenerationView(APIView):
         else:
             return df.iloc[0:0].copy()
 
-    def report_perform(self, points, duration):
-        """Display execution info to compare system performance on datasets 
-           of different sizes. 
-        
-        Args:
-            num_points: total number of points processed in file 
-            duration: execution time of ngram generation process with input data 
-        """
-        print("========================Ngram System Performance Report======================")
-        print(f"Coord points processed: {points:,}")
-        print(f"Time elapsed: {duration:.3f} seconds\n")
-
     def _process_to_ngrams_dask(self, data, queue, uploaded_file_path, filtered):
         """ A supercharged version of _process_to_ngrams with Dask.
         """
@@ -841,6 +830,18 @@ class NgramGenerationView(APIView):
         print(f"Rows after filtering: {row_count}")
         
         return filtered_ddf
+
+    def report_perform(self, points, duration):
+        """Display execution info to compare system performance on datasets 
+            of different sizes. 
+        
+        Args:
+            num_points: total number of points processed in file 
+            duration: execution time of ngram generation process with input data 
+        """
+        print("========================Ngram System Performance Report======================")
+        print(f"Coord points processed: {points:,}")
+        print(f"Time elapsed: {duration:.3f} seconds\n")
 
 class Trajectory3DView(APIView):
     """
