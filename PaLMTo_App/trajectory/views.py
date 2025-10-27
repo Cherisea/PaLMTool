@@ -37,7 +37,6 @@ from Palmto_gen import ConvertToToken, NgramGenerator, TrajGenerator
 # Local imports
 from .models import GeneratedTrajectory
 from .serializers import GenerationConfigSerializer
-from .performance_monitor import PerformanceMonitor
 from .geo_process import traj_to_geojson, extract_area_center, heatmap_geojson, convert_time
 from .geo_process import extract_boundary_dask, extract_boundary
 
@@ -418,7 +417,6 @@ class NgramGenerationView(APIView):
     def __init__(self):
         # Initialize a local Dask cluster
         self.client = None
-        self.performance_monitor = PerformanceMonitor()
 
     def config_dask(self):
         """Let Dask auto-configure Dask client
@@ -452,22 +450,6 @@ class NgramGenerationView(APIView):
         is_area_filtered = any(key in data for key in ['north', 'south', 'east', 'west'])
         uploaded_file = data['file']
         file_name = uploaded_file.name
-
-        # Get file size for monitoring
-        file_size_mb = uploaded_file.size / (1024 ** 2)
-
-        # Start performance monitoring session
-        dataset_info = {
-            'file_name': file_name,
-            'file_size_mb': file_size_mb,
-            'cell_size': int(data['cell_size']),
-            'is_area_filtered': is_area_filtered
-        }
-
-        self.performance_monitor.start_session(
-            f"ngram_generation_{file_name.replace('.csv', '')}",
-            dataset_info
-        )
 
         # Save uploaded file to disk 
         cache_dir = os.path.join(settings.MEDIA_ROOT, "cache", "uploaded")
