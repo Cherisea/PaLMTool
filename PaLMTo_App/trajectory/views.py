@@ -721,6 +721,7 @@ class NgramGenerationView(APIView):
         # Read file by leveraging Dask's parallel computing power
         ddf = dd.read_csv(uploaded_file_path)
 
+        # Extract metadata of input dataframe
         meta = ddf.head().dtypes.to_dict()
 
         # An compact inner function used for casting geometry column to list

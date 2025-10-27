@@ -161,5 +161,45 @@ def convert_time(df, lon, lat):
 
     return df
 
+def extract_boundary_dask(ddf):
+    """Extract geographical boundary from a collection of trajectories
+    by leveraging the power of parallel computing.
+
+    Args:
+        ddf(Dask.DataFrame): input dataframe
+    
+    Returns:
+        GeoDataFrame:
+            geographical boundary encoded as a Polygon.
+    """
+
+    # Function that extract all coord pairs from geometry column
+    def extract_coords(partition):
+        coord_lists = []
+        for coords in partition['geometry']:
+            coord_lists.extend(coords)
+        return pd.DataFrame(coord_lists, columns=['lon', 'lat'])
+    
+    # Apply transformation to all partitions
+    coords_meta = pd.DataFrame([{'lon': 0.0, 'lat': 0.0}])
+    all_coords = ddf.map_partitions(extract_coords, meta=coords_meta)
+
+    # Compute bounds using Dask operations
+    min_lon = all_coords['lon'].min().compute()
+    max_lon = all_coords['lon'].max().compute()
+    min_lat = all_coords['lat'].min().compute()
+    max_lat = all_coords['lat'].max().compute()
+
+    sw_coords = [min_lon, min_lat]
+    ne_coords = [max_lon, max_lat]
+    nw_coords = [min_lon, max_lat]
+    se_coords = [max_lon, min_lat]
+
+    boundary = [sw_coords, nw_coords,ne_coords, se_coords, sw_coords]
+    poly = Polygon(boundary)
+
+    return gpd.GeoDataFrame(pd.DataFrame([{'geometry': poly}]), geometry='geometry')
+
+
 
 
