@@ -22,3 +22,7 @@ Note that value of this field applies to generated trajectories only. Value of t
 
 [^1]: Mohammed, Hayat & Nascimento, Mario & Barbosa, Denilson. (2024). Effective Trajectory Imputation using Simple Probabilistic Language Models. 51-60. 10.1109/MDM61037.2024.00027. 
 [^2]: Mohammed, Hayat & Nascimento, Mario. (2024). Realistic Trajectory Generation using Simple Probabilistic Language Models. 21-24. 10.1145/3681770.3698572. 
+
+## Limitations
+### Limited computer memory(RAM)
+### Browser memory limit
