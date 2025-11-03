@@ -24,7 +24,7 @@ Note that value of this field applies to generated trajectories only. Value of t
 [^2]: Mohammed, Hayat & Nascimento, Mario. (2024). Realistic Trajectory Generation using Simple Probabilistic Language Models. 21-24. 10.1145/3681770.3698572. 
 
 ## Data constraints
-- Can't span mulitiple cities
+- Trajectories should be sampled from a single city: a "malloc out of space" error may be thrown at the first step of generating ngram models if data file contains trajectories sampled from a large geographical area. For comparison, it takes around 72 seconds for the app to process our sample file containing trajectories from San Francisco that extends 0.42 and 0.43 degress over longitude and latitude respectively on a machine with 16 GB RAM. 
 
 ## Limitations
 ### Limited computer memory(RAM)
