@@ -5,6 +5,20 @@ PaLMTo[^1] uses simple probalistic language models in order to complete missing 
 
 The main idea behind the trajectory generation is to (1) tesselate the trajectory space, (2) assign unique identifiers to each partition on the tesselated space and (3) substitute each trajectory point within a partition by the partition's identifier. Once that is done, the trajectories will no longer be a set of finely granulated observations, e.g., GPS points, but rather be a sentence in the space of grid identifiers. That allows to learn a probabilistic model, as simple as N-grams, that can be used for various NLP-like tasks, such as sentence completion, but for trajectories. 
 
+## Table of Content
+- [Overview]
+- [Features]
+- [Prerequisites]
+- [Installation]
+- [Project Structure]
+- [Configuration]
+- [Usage]
+- [API Documentation]
+- [Development]
+- [Troubleshooting]
+- [Limitations](#limitations)
+- [Credits & Reference]
+
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
 
@@ -28,6 +42,3 @@ Note that value of this field applies to generated trajectories only. Value of t
 
 ## Limitations
 ### Limited computer memory(RAM)
-
-## Future directions
-### Replacing actual ngrams with ngram count
