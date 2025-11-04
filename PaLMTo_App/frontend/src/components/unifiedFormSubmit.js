@@ -48,7 +48,8 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'X-CSRFToken': csrftoken
-            }
+            }, 
+            withCredentials: true
         });
     };
 
@@ -72,7 +73,7 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                 formData.append('new_name', newName)
 
                 try {
-                    const response = await submitFormData('trajectory/rename-cache/', formData, csrftoken);
+                    const response = await submitFormData('/trajectory/rename-cache/', formData, csrftoken);
 
                     if (response.status === 200) {
                         setNotification({
