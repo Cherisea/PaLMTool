@@ -7,6 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 # Django libraries
 from django.views import View
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 from django.core.files import File
 from django.http import FileResponse, HttpResponse, StreamingHttpResponse
@@ -840,6 +841,7 @@ def download_files(request, filename):
     else:
         return HttpResponse("File not found", status=404)
 
+@csrf_exempt
 def rename_cache(request):
     """Rename a cache file in the cache subdir.
 

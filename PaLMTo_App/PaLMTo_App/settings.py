@@ -144,5 +144,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # URL for accessing files stored on server
 MEDIA_URL = '/media/'
 
-# Size limit of uploaded files set at 500MB. Default 2.5MB
+# Size limit of uploaded files set at 700MB. Default 2.5MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 700 * 1024 * 1024
