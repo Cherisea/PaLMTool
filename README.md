@@ -37,6 +37,15 @@ The trajectory generation process involves two main steps:
 
 2. **Generate Trajectory**: using the generated N-gram models, the system creates new synthetic trajectories based on user-specified parameters.
 
+## Features
+- **Interactive Map Visualization**: view original and generated trajectories on interactive Leaflet maps
+- **Heatmap Comparison**: compare trajectory density patterns between original and generated trajectories
+- **Area Filtering**: filter trajectories to a sub-area on maps
+- **3D Visualization**: explore trajectories in a 3D spatial-temporal space and discover hidden patterns 
+- **Cache Management**: save and reuse N-gram model to avoid reprocessing
+- **Real-time Progress Tracking**: monitor generation process via Server-Sent Events (SSE)
+- **Data Export**: download generateted trajectories as CSV files
+
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
 
