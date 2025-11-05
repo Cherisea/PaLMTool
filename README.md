@@ -6,7 +6,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration]
+- [Initialization](#initialization)
 - [Usage]
 - [API Documentation]
 - [Development]
@@ -98,6 +98,20 @@ Create a `.env` file in `frontend/` directory and define the following variable:
 ```
 REACT_APP_API_URL=http://localhost:8000
 ```
+
+## Initialization
+After finishing installing all required libraries, navigate back to project root folder, then run
+```
+python manage.py runserver
+```
+The backend will be served at "http://localhost:8000".
+
+Open a second terminal, start frontend server by running
+```
+cd frontend
+npm start
+```
+The frontend will automatically open at "http://localhost:3000"
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
