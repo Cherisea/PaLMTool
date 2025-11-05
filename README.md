@@ -7,7 +7,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Initialization](#initialization)
-- [Usage]
+- [Usage](#usage)
 - [API Documentation]
 - [Development]
 - [Troubleshooting]
@@ -39,7 +39,7 @@ The trajectory generation process involves two main steps:
 ## Features
 - **Interactive Map Visualization**: view original and generated trajectories on interactive Leaflet maps
 - **Heatmap Comparison**: compare trajectory density patterns between original and generated trajectories
-- **Area Filtering**: filter trajectories to a sub-area on maps
+- **Area Filtering**: filter data to a sub-area on maps and generate trajectories from filtered data
 - **3D Visualization**: explore trajectories in a 3D spatial-temporal space and discover hidden patterns 
 - **Cache Management**: save and reuse N-gram model to avoid reprocessing
 - **Real-time Progress Tracking**: monitor generation process via Server-Sent Events (SSE)
@@ -104,14 +104,40 @@ After finishing installing all required libraries, navigate back to project root
 ```
 python manage.py runserver
 ```
-The backend will be served at "http://localhost:8000".
+The backend will be served at `http://localhost:8000`.
 
 Open a second terminal, start frontend server by running
 ```
 cd frontend
 npm start
 ```
-The frontend will automatically open at "http://localhost:3000"
+The frontend will automatically open at `http://localhost:3000`
+
+## Usage
+The web application follows a two-step workflow(you can skip directly to step 2):
+
+### Upload a trajectory file or ngram model file
+1. Trajectory file must be a csv file with at least two columns:
+    - `trip_id`: unique numerical identifier for reach row of trajectory
+    - `geometry`: a list of cooridnate pairs formatted as `[[lon1, lat1], [lon2, lat2], ...]`(note longitude must come first)
+2. Ngram model file is a custom pickle file with an extension of `.pkl`. It can be obtained after running this step. Users may refer to sample trajectory file and ngram file below the upload field. 
+3. Specify **Cell Size** (in meters):
+    - Smaller values = finer granularity with more cells
+    - Larger values = coarser granularity with fewer cells
+4. Click "Train/Load".
+5. (Optional) Save the generated pickle file. If you want to save the ngram model for future use or share it with someone else, save it with a custom file name ending with .pkl.
+
+### Generate trajectories
+1. Configure generation parameters: 
+    - **Number of Trajectories** total number of synthetic trajectories to generate
+    - **Generation Method**: Point-to-Point or Length-contrained
+    - **Trajectory Length** (valid only for length-contrained method): number of points per trajectory
+2. Click "Generate".
+3. View and analyze results:
+    - **Trajectory View**: side-by-side comparison of original and generated trajectories. Users may also refine the input data by filtering it with a built-in drawing tool, from which new synthetic trajectores can be generated.
+    - **Heatmap View**: density comparison between original and generated data.
+    - **3D View**(experimental): 3D visualization with an additional temporal dimension.  
+4. Download generated trajectories as CSV files.
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
