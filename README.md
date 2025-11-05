@@ -5,8 +5,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Overview](#overview)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [Installation]
-- [Project Structure]
+- [Installation](#installation)
 - [Configuration]
 - [Usage]
 - [API Documentation]
@@ -61,6 +60,38 @@ Before you start, ensure the following requirements are met:
 ### System 
 - Minimum 4GB RAM (8GB+ recommended)
 - Modern web browser
+
+## Installation
+
+### 1. Clone the repository
+```
+git clone <repository-url>
+cd PaLMTool
+```
+
+### 2. Create and activate virtual environment
+```
+pipenv install
+pipenv shell
+```
+
+### 3. Install backend dependencies
+```
+pipenv install -r requirements.txt
+```
+
+### 4. Set up default database
+```
+cd PaLMTo_App
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 5. Install frontend dependencies
+```
+cd frontend
+npm install
+```
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
