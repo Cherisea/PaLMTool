@@ -3,8 +3,8 @@ A web-based application for generating synthetic spatical trajectories using pro
 
 ## Table of Content
 - [Overview](#overview)
-- [Features]
-- [Prerequisites]
+- [Features](#features)
+- [Prerequisites](#prerequisites)
 - [Installation]
 - [Project Structure]
 - [Configuration]
@@ -45,6 +45,22 @@ The trajectory generation process involves two main steps:
 - **Cache Management**: save and reuse N-gram model to avoid reprocessing
 - **Real-time Progress Tracking**: monitor generation process via Server-Sent Events (SSE)
 - **Data Export**: download generateted trajectories as CSV files
+
+## Prerequisites
+Before you start, ensure the following requirements are met:
+
+### Backend
+- Python 3.8 or higher
+- pip 
+- pipenv 
+
+### Frontend
+- Node.js 14.x or higher
+- npm 6.x or higher
+
+### System 
+- Minimum 4GB RAM (8GB+ recommended)
+- Modern web browser
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
