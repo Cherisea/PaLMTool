@@ -146,20 +146,24 @@ All API endpoints are prefixed with `trajectory/`
 
 #### POST `generate/ngrams`
 Genrate N-gram models from trajectory data.
+
 **Request**
+```
 - Method: POST
 - Content-Type: multipart/form-data
 - Parameters:
     - file: CSV file containing trajectory data
     - cell_size: integer, side length of grid cells in meters
     - north, south, east, west(optional): floats for area filtering
+```
 
 **Response**
+```
 {
     task_id: uuid-string,
     message: string
 }
-
+```
 
 
 
