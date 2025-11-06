@@ -146,7 +146,6 @@ All API endpoints are prefixed with `trajectory/`
 
 #### POST `generate/ngrams`
 Genrate N-gram models from trajectory data.
-```
 **Request**
 - Method: POST
 - Content-Type: multipart/form-data
@@ -160,7 +159,7 @@ Genrate N-gram models from trajectory data.
     task_id: uuid-string,
     message: string
 }
-```
+
 
 
 
