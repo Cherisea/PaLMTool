@@ -4,6 +4,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 ## Table of Content
 - [Overview](#overview)
 - [Features](#features)
+- [Demo](#demo)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Initialization](#initialization)
@@ -43,6 +44,9 @@ The trajectory generation process involves two main steps:
 - **Cache Management**: save and reuse N-gram model to avoid reprocessing
 - **Real-time Progress Tracking**: monitor generation process via Server-Sent Events (SSE)
 - **Data Export**: download generateted trajectories as CSV files
+
+## Demo
+
 
 ## Prerequisites
 Before you start, ensure the following requirements are met:
