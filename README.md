@@ -163,7 +163,51 @@ Genrate N-gram models from trajectory data.
 }
 ```
 
+### POST `generate/`
+Generate synthetic trajectories using N-gram model.
 
+**Request**
+```
+- Method: POST
+- Content-type: multipart/form-data
+- Parameters:
+    - cache_file: string, filename of cached model
+    - num_trajectories: integer, number of trajectories to generate
+    - generation_method: string, either "point_to_point" or "length_constrained"
+    - trajectory_len: integer, required if choosing "length_contrained"
+    - delete_cache_after(optional): boolean flag
+```
+
+**Response**
+```
+{
+    task_id: uuid_string,
+    message: string
+}
+```
+
+### GET `download/{filename}`
+Download generated trajectory files.
+
+### GET `3d-view/`
+Visualize demo trajectories in a 3D space and experiment with interactive filtering in real-time.
+
+### POST `rename-cache/`
+Rename a cached N-gram model file.
+
+**Request**
+- Method: POST
+- Parameters:
+    - old_name: string, current filename
+    - name_name: string, new filename (must end with ".pkl")
+
+### POST `get-stats-from-cache/`
+Retrieve statistics from a cached model.
+
+**Request**
+- Method: POST
+- Parameters: 
+    - cache_file: string, filename of cached N-gram model
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
