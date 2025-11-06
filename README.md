@@ -8,7 +8,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Installation](#installation)
 - [Initialization](#initialization)
 - [Usage](#usage)
-- [API Documentation]
+- [API Documentation](#api-documentation)
 - [Development]
 - [Troubleshooting]
 - [Limitations](#limitations)
@@ -100,7 +100,7 @@ REACT_APP_API_URL=http://localhost:8000
 ```
 
 ## Initialization
-After finishing installing all required libraries, navigate back to project root folder, then run
+After installing all required libraries, navigate back to project root folder, then run
 ```
 python manage.py runserver
 ```
@@ -138,6 +138,31 @@ The web application follows a two-step workflow(you can skip directly to step 2)
     - **Heatmap View**: density comparison between original and generated data.
     - **3D View**(experimental): 3D visualization with an additional temporal dimension.  
 4. Download generated trajectories as CSV files.
+
+## API Documentation
+
+### Endpoints
+All API endpoints are prefixed with `trajectory/`
+
+#### POST `generate/ngrams`
+Genrate N-gram models from trajectory data.
+```
+**Request**
+- Method: POST
+- Content-Type: multipart/form-data
+- Parameters:
+    - file: CSV file containing trajectory data
+    - cell_size: integer, side length of grid cells in meters
+    - north, south, east, west(optional): floats for area filtering
+
+**Response**
+{
+    task_id: uuid-string,
+    message: string
+}
+```
+
+
 
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
