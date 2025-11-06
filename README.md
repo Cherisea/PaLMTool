@@ -10,7 +10,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Troubleshooting](#troubleshooting)
-- [Limitations]
+- [Limitations](#limitations)
 - [Glossary](#glossary)
 
 ## Overview
@@ -232,6 +232,21 @@ Retrieve statistics from a cached model.
 - Verify Leaflet CSS is imported
 - Check browser console for errors
 - Ensure coordinates are in [longitude, latitude] format
+
+## Limitations
+
+### Memory Constraints
+
+- **Limited RAM**: Processing very large datasets (>10 million points) may require 16GB+ RAM
+- **Browser Memory**: Large visualization datasets may impact browser performance
+- **Recommendation**: For datasets exceeding available memory, consider:
+  - Filtering to smaller geographical areas
+  - Using larger cell sizes
+
+### Browser Compatibility
+
+- Modern browsers (Chrome, Firefox, Safari, Edge) are fully supported
+- Mobile browsers have limited support for 3D visualization
 
 
 ## Glossary
