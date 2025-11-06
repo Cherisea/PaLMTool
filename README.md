@@ -215,27 +215,19 @@ Retrieve statistics from a cached model.
 ## Troubleshooting
 
 1. "CSRF cookie not set" error
-
-**Solution**
 - Ensure "django-cors-headers" is installed
 - Check that "CORS_ORIGIN_WHITELIST" includes your frontend URL
 - Verify cookies are enabeld in your browser
 
 2. "python (malloc) out of space" error
-
-**Solution**
 - Filter input data to a smaller geographical area
 - Increase system RAM or use a machine with more memory
 - Use a larger cell size to reduce the number of grid cells
 
 3. File upload size limit
-
-**Solution**
 - Frontend and backend file size limit: 700MB (adjust as needed)
 
 4. Leafleft map not displaying
-
-**Solution**
 - Check Internet connection (tiles are loaded from OpenStreetMap)
 - Verify Leaflet CSS is imported
 - Check browser console for errors
