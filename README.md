@@ -140,11 +140,9 @@ The web application follows a two-step workflow(you can skip directly to step 2)
 4. Download generated trajectories as CSV files.
 
 ## API Documentation
-
-### Endpoints
 All API endpoints are prefixed with `trajectory/`
 
-#### POST `generate/ngrams`
+### POST `generate/ngrams`
 Genrate N-gram models from trajectory data.
 
 **Request**
