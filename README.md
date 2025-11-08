@@ -5,11 +5,12 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Overview](#overview)
 - [Features](#features)
 - [Demo](#demo)
-- [Getting Started]
+- [Project Structure]
+- [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Initialization](#initialization)
-- [Usage](#usage)
+    - [Usage](#how-to-use-the-app)
 - [API Documentation](#api-documentation)
 - [Troubleshooting](#troubleshooting)
 - [Limitations](#limitations)
@@ -47,6 +48,14 @@ The trajectory generation process involves two main steps:
 - **Data Export**: download generateted trajectories as CSV files
 
 ## Demo
+
+## Project Structure
+- `PaLMTo_App/`: top-level application folder
+- `PaLMTo_App/frontend/`: react frontend 
+- `PaLMTo_App/media/`: user-uploaded and app generated files
+- `PaLMTo_App/PaLMTo_App/`: Django project setting folder
+- `PaLMTo_App/trajectory/`: Django backend 
+- `asset/`: images and videos files referenced in README
 
 ## Getting Started
 ### Prerequisites
