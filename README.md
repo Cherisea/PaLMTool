@@ -4,7 +4,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 ## Table of Content
 - [Overview](#overview)
 - [Features](#features)
-- [Demo](#demo)
+- [Sample](#sample-visualization)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -49,11 +49,12 @@ The trajectory generation process involves two main steps:
 - **Real-time Progress Tracking**: monitor generation process via Server-Sent Events (SSE)
 - **Data Export**: download generateted trajectories as CSV files
 
-## Demo
-<p align="center">
+## Sample Visualization
+<figure align="center">
+    <figcaption><b>Porto</b></figcaption>
     <img src="asset/Porto_trajectory.png" height="300px">
     <img src="asset/Porto_heatmap.png" height="300px">
-</p>
+</figure>
 
 
 ## Project Structure
