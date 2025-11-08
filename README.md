@@ -5,9 +5,10 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Overview](#overview)
 - [Features](#features)
 - [Demo](#demo)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Initialization](#initialization)
+- [Getting Started]
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Initialization](#initialization)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Troubleshooting](#troubleshooting)
@@ -47,62 +48,62 @@ The trajectory generation process involves two main steps:
 
 ## Demo
 
-
-## Prerequisites
+## Getting Started
+### Prerequisites
 Before you start, ensure the following requirements are met:
 
-### Backend
+#### Backend
 - Python 3.8 or higher
 - pip 
 - pipenv 
 
-### Frontend
+#### Frontend
 - Node.js 14.x or higher
 - npm 6.x or higher
 
-### System 
+#### System 
 - Minimum 4GB RAM (8GB+ recommended)
 - Modern web browser
 
-## Installation
+### Installation
 
-### 1. Clone the repository
+#### 1. Clone the repository
 ```
 git clone <repository-url>
 cd PaLMTool
 ```
 
-### 2. Create and activate virtual environment
+#### 2. Create and activate virtual environment
 ```
 pipenv install
 pipenv shell
 ```
 
-### 3. Install backend dependencies
+#### 3. Install backend dependencies
 ```
 pipenv install -r requirements.txt
 ```
 
-### 4. Set up default database
+#### 4. Set up default database
 ```
 cd PaLMTo_App
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5. Install frontend dependencies
+#### 5. Install frontend dependencies
 ```
 cd frontend
 npm install
 ```
 
-### 6. Create environment variables
+#### 6. Create environment variables
 Create a `.env` file in `frontend/` directory and define the following variable:
 ```
 REACT_APP_API_URL=http://localhost:8000
 ```
 
-## Initialization
+### Initialization
 After installing all required libraries, navigate back to project root folder, then run
 ```
 python manage.py runserver
@@ -116,10 +117,10 @@ npm start
 ```
 The frontend will automatically open at `http://localhost:3000`
 
-## Usage
+### How to use the app
 The web application follows a two-step workflow(you can skip directly to step 2):
 
-### Upload a trajectory file or ngram model file
+#### Upload a trajectory file or ngram model file
 1. Trajectory file must be a csv file with at least two columns:
     - `trip_id`: unique numerical identifier for reach row of trajectory
     - `geometry`: a list of cooridnate pairs formatted as `[[lon1, lat1], [lon2, lat2], ...]`(note longitude must come first)
@@ -130,7 +131,7 @@ The web application follows a two-step workflow(you can skip directly to step 2)
 4. Click "Train/Load".
 5. (Optional) Save the generated pickle file. If you want to save the ngram model for future use or share it with someone else, save it with a custom file name ending with .pkl.
 
-### Generate trajectories
+#### Generate trajectories
 1. Configure generation parameters: 
     - **Number of Trajectories** total number of synthetic trajectories to generate
     - **Generation Method**: Point-to-Point or Length-contrained
