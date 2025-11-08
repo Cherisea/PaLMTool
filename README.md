@@ -56,6 +56,11 @@ The trajectory generation process involves two main steps:
     <img src="asset/Porto_heatmap.png" height="300px">
 </p>
 
+<p align="center">Beijing</p>
+<p align="center">
+    <img src="asset/Beijing_trajectory.png" height="300px">
+    <img src="asset/Beijing_heatmap.png" height="300px">
+</p>
 
 ## Project Structure
 - `PaLMTo_App/`: top-level application folder
