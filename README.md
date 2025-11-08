@@ -12,6 +12,8 @@ A web-based application for generating synthetic spatical trajectories using pro
     - [Initialization](#initialization)
     - [Usage](#how-to-use-the-app)
 - [API Documentation](#api-documentation)
+- [Datasets](#datasets)
+- [Tech Stack](#technologies-used)
 - [Troubleshooting](#troubleshooting)
 - [Limitations](#limitations)
 - [Glossary](#glossary)
@@ -225,6 +227,22 @@ Retrieve statistics from a cached model.
 - Parameters: 
     - cache_file: string, filename of cached N-gram model
 ```
+
+## Datasets
+- **Porto**: Kaggle - one year's trajectories for all the 442 taxis running in the city of Porto, Portugal. 
+    - Link: https://www.kaggle.com/datasets/crailtap/taxi-trajectory
+- **Geolife**: Microsoft Research - collected from 182 users over a period of over three years. It contains a total distace 
+    of 1.2 million kilometers with around 25 million points. 
+    - Link: https://www.microsoft.com/en-us/research/publication/geolife-gps-trajectory-dataset-user-guide/
+- **T-drive**: Microsoft Research - one-week trajectories of 10,357 taxis. Total number of points sums to 17 million with
+    a total distance of 9 million kilometers.
+    - Link: https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/
+
+## Technologies used
+- **Backend**: Django 5.2, Django REST Framework, GeoPandas, Shapely
+- **Frontend**: React 19, Leaflet, Three.js. React Three Fiber
+- **Visualization**: OpenStreetMap, Leafleft Draw, Drei
+- **Communication**: Server-Sent Events(SSE), Axios
 
 ## Troubleshooting
 
