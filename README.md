@@ -50,11 +50,11 @@ The trajectory generation process involves two main steps:
 - **Data Export**: download generateted trajectories as CSV files
 
 ## Sample Visualization
-<figure align="center">
-    <figcaption><b>Porto</b></figcaption>
+<p align="center">Porto</p>
+<p align="center">
     <img src="asset/Porto_trajectory.png" height="300px">
     <img src="asset/Porto_heatmap.png" height="300px">
-</figure>
+</p>
 
 
 ## Project Structure
