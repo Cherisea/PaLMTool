@@ -51,8 +51,8 @@ The trajectory generation process involves two main steps:
 
 ## Demo
 <p align="center">
-    <img src="asset/Porto_trajectory.png" width="45%">
-    <img src="asset/Porto_heatmap.png" width="45%">
+    <img src="asset/Porto_trajectory.png" height="200p">
+    <img src="asset/Porto_heatmap.png" height="200p">
 </p>
 
 
