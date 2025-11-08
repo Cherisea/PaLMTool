@@ -5,7 +5,7 @@ A web-based application for generating synthetic spatical trajectories using pro
 - [Overview](#overview)
 - [Features](#features)
 - [Demo](#demo)
-- [Project Structure]
+- [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
