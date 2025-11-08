@@ -50,6 +50,11 @@ The trajectory generation process involves two main steps:
 - **Data Export**: download generateted trajectories as CSV files
 
 ## Demo
+<p align="center">
+    <img src="asset/Porto_trajectory.png" width="45%">
+    <img src="asset/Porto_heatmap.png" width="45%">
+</p>
+
 
 ## Project Structure
 - `PaLMTo_App/`: top-level application folder
