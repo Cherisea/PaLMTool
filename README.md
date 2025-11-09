@@ -56,10 +56,22 @@ The trajectory generation process involves two main steps:
     <img src="asset/Porto_heatmap.png" height="500px">
 </p>
 
-<p align="center">Beijing</p>
+<p align="center">San Francisco</p>
+<p align="center">
+    <img src="asset/SanFran_trajectory.png" height="500px">
+    <img src="asset/SanFran_heatmap.png" height="500px">
+</p>
+
+<p align="center">Beijing 1</p>
 <p align="center">
     <img src="asset/Beijing_trajectory.png" height="500px">
     <img src="asset/Beijing_heatmap.png" height="500px">
+</p>
+
+<p align="center">Beijing 2</p>
+<p align="center">
+    <img src="asset/Beijing2_trajectory.png" height="500px">
+    <img src="asset/Beijing2_heatmap.png" height="500px">
 </p>
 
 ## Project Structure
@@ -242,6 +254,7 @@ Retrieve statistics from a cached model.
 ## Datasets
 - **Porto**: Kaggle - one year's trajectories for all the 442 taxis running in the city of Porto, Portugal. 
     - Link: https://www.kaggle.com/datasets/crailtap/taxi-trajectory
+- **San Francisco**: Figshare -- tax trajectories recorded over 25 days in the San Francisco Bay area.
 - **Geolife**: Microsoft Research - collected from 182 users over a period of over three years. It contains a total distace 
     of 1.2 million kilometers with around 25 million points. 
     - Link: https://www.microsoft.com/en-us/research/publication/geolife-gps-trajectory-dataset-user-guide/
