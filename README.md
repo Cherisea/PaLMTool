@@ -52,14 +52,14 @@ The trajectory generation process involves two main steps:
 ## Sample Visualization
 <p align="center">Porto</p>
 <p align="center">
-    <img src="asset/Porto_trajectory.png" height="300px">
-    <img src="asset/Porto_heatmap.png" height="300px">
+    <img src="asset/Porto_trajectory.png" height="500px">
+    <img src="asset/Porto_heatmap.png" height="500px">
 </p>
 
 <p align="center">Beijing</p>
 <p align="center">
-    <img src="asset/Beijing_trajectory.png" height="300px">
-    <img src="asset/Beijing_heatmap.png" height="300px">
+    <img src="asset/Beijing_trajectory.png" height="500px">
+    <img src="asset/Beijing_heatmap.png" height="500px">
 </p>
 
 ## Project Structure
