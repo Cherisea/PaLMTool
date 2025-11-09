@@ -255,6 +255,7 @@ Retrieve statistics from a cached model.
 - **Porto**: Kaggle - one year's trajectories for all the 442 taxis running in the city of Porto, Portugal. 
     - Link: https://www.kaggle.com/datasets/crailtap/taxi-trajectory
 - **San Francisco**: Figshare -- tax trajectories recorded over 25 days in the San Francisco Bay area.
+    - Link: https://figshare.com/articles/dataset/San_Francisco_taxi_trajectories/12302243?file=22678217
 - **Geolife**: Microsoft Research - collected from 182 users over a period of over three years. It contains a total distace 
     of 1.2 million kilometers with around 25 million points. 
     - Link: https://www.microsoft.com/en-us/research/publication/geolife-gps-trajectory-dataset-user-guide/
