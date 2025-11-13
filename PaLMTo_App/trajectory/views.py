@@ -117,7 +117,7 @@ class GenerationConfigView(APIView):
             # Step 1: Extract cached data once and reuse it
             queue.put({
                 'type': 'progress',
-                'message': 'Loading cached data',
+                'message': 'Loading model',
                 'progress': 15
             })
             cached_data = self._process_cache(data)
@@ -497,7 +497,7 @@ class NgramGenerationView(APIView):
 
             queue.put({
                 'type': 'progress',
-                'message': 'Saving cache file',
+                'message': 'Saving model',
                 'progress': 90
             })
 
