@@ -109,7 +109,6 @@ cd PaLMTool
 
 #### 2. Create and activate virtual environment
 ```
-pipenv install
 pipenv shell
 ```
 
