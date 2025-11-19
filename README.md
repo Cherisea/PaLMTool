@@ -65,10 +65,10 @@ The trajectory generation process involves two main steps:
 </p>
 
 <p align="center">Beijing (T-drive)</p>
-<p align="center">Region Area: billion(square meter), Total Points: 13 million, Heatmap Cell Side: (meters)</p>
+<p align="center">Region Area: 2.4 billion(square meter), Total Points: 12.5 million, Heatmap Cell Side: 4886(meters)</p>
 <p align="center">
-    <img src="asset/Beijing_trajectory.png" height="500px">
-    <img src="asset/Beijing_heatmap.png" height="500px">
+    <img src="asset/Beijing_tdrive_trajectory.png" height="500px">
+    <img src="asset/Beijing_tdrive_heatmap.png" height="500px">
 </p>
 
 <p align="center">Beijing (Geolife)</p>
