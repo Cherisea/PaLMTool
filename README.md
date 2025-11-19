@@ -312,7 +312,7 @@ Retrieve statistics from a cached model.
 ## Glossary
 **Cell Side**: side length of a square cell within a grid overlay in a geographical region where trajectories are recorded. When modeling a trajectory as a sentence, we need a way to uniquely identify each loaction indicated by a coordinate pair, which in our case invovles assigning a cell id to any location within that cell. 
 
-Note that value of this field applies to generated trajectories only. Value of the same parameter in creating a matching heatmap, which defaults to 500, can be found in [geo_process](PaLMTo_App/trajectory/geo_process.py).
+Note that value of this field applies to generated trajectories only. Value of the same parameter in creating a matching heatmap is calculated by taking the square root of 1% of total area covered by the entire region. This ratio is choosen based on empirical data. You may adjust it in `compare_trajectory_heatmap` of `GenerationConfigView` class in [views](PaLMTo_App/trajectory/views.py).
 
 | ![Earth](asset/earth.png) | ![Cell Size](asset/cell_side.png) |
 |:---:|:---:|
