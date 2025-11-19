@@ -23,7 +23,9 @@ from contextlib import redirect_stdout
 
 # Third-party libraries
 import ast
+import geopy
 import time
+import math
 import pickle
 import json
 import threading
@@ -377,8 +379,25 @@ class GenerationConfigView(APIView):
             Return a dictionary containg heatmap data for original and generated trajectories, center of study
             area and its bounds
         """
-        original_heatmap = heatmap_geojson(df.sample(sample), study_area)
-        generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area)
+        area_arr = [float(coord) for coord in study_area.total_bounds]
+        max_lon, min_lon = area_arr[2], area_arr[0]
+        max_lat, min_lat = area_arr[3], area_arr[1]
+        
+        # Calculate distance using default WGS-84 ellipsoidal model
+        sw = (min_lat, min_lon)
+        nw = (max_lat, min_lon)
+        se = (min_lat, max_lon)
+        width = geopy.distance.distance(sw, se).km * 1000
+        height = geopy.distance.distance(sw, nw).km * 1000
+        cell_size = math.sqrt(width * height * 0.03)
+
+        print("=" * 25 + "DEBUG" + "=" * 25)
+        print(f"Study_area width: {width} km")
+        print(f"Study_area height: {height} km")
+        print(f"Heatmap cell size: {int(cell_size)}")
+
+        original_heatmap = heatmap_geojson(df.sample(sample), study_area, int(cell_size))
+        generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area, int(cell_size))
 
         bounds = study_area.total_bounds.tolist()
         center = extract_area_center(study_area)
