@@ -383,12 +383,14 @@ class GenerationConfigView(APIView):
         max_lon, min_lon = area_arr[2], area_arr[0]
         max_lat, min_lat = area_arr[3], area_arr[1]
         
-        # Calculate distance using default WGS-84 ellipsoidal model
+        # Calculate width and height of region using default WGS-84 ellipsoidal model
         sw = (min_lat, min_lon)
         nw = (max_lat, min_lon)
         se = (min_lat, max_lon)
         width = geopy.distance.distance(sw, se).km * 1000
         height = geopy.distance.distance(sw, nw).km * 1000
+
+        # Empirically set cell size of heatmap to be the square root of 1% of total area
         cell_size = math.sqrt(width * height * 0.01)
 
         original_heatmap = heatmap_geojson(df.sample(sample), study_area, int(cell_size))
