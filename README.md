@@ -51,31 +51,31 @@ The trajectory generation process involves two main steps:
 
 ## Sample Visualization
 <p align="center">Porto</p>
-<p align="center">Region Area: 58 million(squre meter), Total Points: 1.2 million, Heatmap Cell Side: 763(meters)</p>
+<p align="center">Region Area: 58 million(square meter), Total Points: 1.2 million, Heatmap Cell Side: 763(meters)</p>
 <p align="center">
     <img src="asset/Porto_trajectory.png" height="500px">
     <img src="asset/Porto_heatmap.png" height="500px">
 </p>
 
 <p align="center">San Francisco</p>
-<p align="center">Region Area: 1.8 billion(squre meter), Total Points: 5 million, Heatmap Cell Side: 4254(meters)</p>
+<p align="center">Region Area: 1.8 billion(square meter), Total Points: 5 million, Heatmap Cell Side: 4254(meters)</p>
 <p align="center">
     <img src="asset/SanFran_trajectory.png" height="500px">
     <img src="asset/SanFran_heatmap.png" height="500px">
 </p>
 
-<p align="center">Beijing 1</p>
-<p align="center">Region Area: (squre meter), Total Points: 1.2 million, Heatmap Cell Side: 763(meters)</p>
+<p align="center">Beijing (T-drive)</p>
+<p align="center">Region Area: billion(square meter), Total Points: 13 million, Heatmap Cell Side: (meters)</p>
 <p align="center">
     <img src="asset/Beijing_trajectory.png" height="500px">
     <img src="asset/Beijing_heatmap.png" height="500px">
 </p>
 
-<p align="center">Beijing 2</p>
-<p align="center">Region Area: 58 million(squre meter), Total Points: 1.2 million, Heatmap Cell Side: 763(meters)</p>
+<p align="center">Beijing (Geolife)</p>
+<p align="center">Region Area: 2.4 billion(square meter), Total Points: 2.6 million, Heatmap Cell Side: 4886(meters)</p>
 <p align="center">
-    <img src="asset/Beijing2_trajectory.png" height="500px">
-    <img src="asset/Beijing2_heatmap.png" height="500px">
+    <img src="asset/Beijing_geolife_trajectory.png" height="500px">
+    <img src="asset/Beijing_geolife_heatmap.png" height="500px">
 </p>
 
 ## Project Structure
