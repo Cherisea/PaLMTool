@@ -257,8 +257,8 @@ function FormSteps({
           type="number" 
           value={formData.num_trajectories} 
           onChange={handleChange}
-          step="100"
-          min="100"
+          step="50"
+          min="50"
           required 
         />
       </div>
