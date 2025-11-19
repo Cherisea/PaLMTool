@@ -391,10 +391,6 @@ class GenerationConfigView(APIView):
         height = geopy.distance.distance(sw, nw).km * 1000
         cell_size = math.sqrt(width * height * 0.01)
 
-        print("=" * 25 + "DEBUG" + "=" * 25)
-        print(f"Study area: {width * height} m^2")
-        print(f"Heatmap cell size: {int(cell_size)}")
-
         original_heatmap = heatmap_geojson(df.sample(sample), study_area, int(cell_size))
         generated_heatmap = heatmap_geojson(new_trajs_gdf.sample(sample), study_area, int(cell_size))
 
