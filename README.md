@@ -36,7 +36,7 @@ Once that is done, the trajectories will no longer be a set of finely granulated
 ### How it works
 The trajectory generation process involves two main steps:
 
-1. **Build N-gram Model**: the system processes input trajectory data, creates an overlay over the geographical region from which trajectories are sampled from, converts trajecotries into token sequence, and builds probabilistic N-gram models (bigrams and trigrams);
+1. **Build N-gram Model**: the system processes input trajectory data, creates an overlay over the geographical region from which trajectories are sampled from, converts trajecotries into token sequence, and builds probabilistic N-gram models (bigrams and trigrams). Users have the option of saving generated model to local disk after this step to speed up future processing. Note models are saved to `PaLMTo_App/media/` directory by default.
 
 2. **Generate Trajectory**: using the generated N-gram models, the system creates new synthetic trajectories based on user-specified parameters.
 
