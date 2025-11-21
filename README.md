@@ -91,7 +91,7 @@ The trajectory generation process involves two main steps:
 Before you start, ensure the following requirements are met:
 
 #### Backend
-- Python 3.8 or higher
+- Python 3.11 or higher
 - pip 
 - pipenv 
 
@@ -113,6 +113,7 @@ cd PaLMTool
 
 #### 2. Create and activate virtual environment
 ```
+pipenv install --python 3.11 
 pipenv shell
 ```
 
