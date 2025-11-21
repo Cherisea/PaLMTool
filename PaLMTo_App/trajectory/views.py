@@ -522,9 +522,9 @@ class NgramGenerationView(APIView):
                 south = float(data.get('south'))
                 east = float(data.get('east'))
                 west = float(data.get('west'))
-                filename = f'cache_{cell_size}_filtered_{north}_{south}_{east}_{west}.pkl'
+                filename = f'model_{cell_size}_filtered_{north}_{south}_{east}_{west}.pkl'
             else:
-                filename = f'cache_{cell_size}_unfiltered.pkl'
+                filename = f'model_{cell_size}_unfiltered.pkl'
 
             subdir = os.path.join(settings.MEDIA_ROOT, "cache")
             os.makedirs(subdir, exist_ok=True)
