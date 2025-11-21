@@ -129,9 +129,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # React static files
-STATICFILES_DIRS = [
-    BASE_DIR / 'frontend/build/static', 
-]
+STATICFILES_DIRS = []
+frontend_static =  BASE_DIR / 'frontend/build/static'
+if frontend_static.exists():
+    STATICFILES_DIRS.append(frontend_static)
 
 # CORS whitelist for frontend and backend communication
 CORS_ORIGIN_WHITELIST = [
