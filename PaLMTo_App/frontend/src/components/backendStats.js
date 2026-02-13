@@ -40,7 +40,7 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
             </>
           ) : (
             <p className="stat-message">
-              Statistics can't be loaded. The model file may not reside in default folder (media/cache). Plese Move 
+              Statistics can't be loaded. The model file may not reside in default folder (media/cache). Plese move 
               your file first.
             </p>
           )}
