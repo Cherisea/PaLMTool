@@ -228,11 +228,13 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
 
                         if (statsResponse.status === 200) {
                             setStatsData(statsResponse.data.stats);
+                            setCurrentStep(3);
+                            setShowStats(true);
                         }
                     } catch (error) {
                         setNotification({
                             type: 'error',
-                            message: 'Failed to extract stats data from cache'
+                            message: "Can't process files not in /media/cache folder."
                         });
                     }
 
@@ -241,8 +243,6 @@ function UnifiedFormSubmit(formData, setCurrentStep, setShowStats, setStatsData,
                         cache_file_loaded: true
                     }))
 
-                    setCurrentStep(3);
-                    setShowStats(true);
                     setIsLoading(false);
                     return;
                 } else {      
