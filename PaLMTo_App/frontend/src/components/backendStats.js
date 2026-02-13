@@ -3,6 +3,9 @@ import { FiX } from "react-icons/fi";
 function StatisticsPopup({ isOpen, onClose, stats }) {
   if (!isOpen) return null;
 
+  // Retrieve stats status
+  const hasStats = stats && typeof stats.cellsCreated !== "undefined";
+
   return (
     <div className="popup-overlay">
       <div className="popup-content">
@@ -13,25 +16,36 @@ function StatisticsPopup({ isOpen, onClose, stats }) {
         </div>
 
         <div className="popup-body">
-          <div className="stat-item">
-            <span className="stat-label">Cells Created:</span>
-            <span className="stat-value">{stats.cellsCreated.toLocaleString()}</span>
-          </div>
+          {hasStats ? (
+            <>
+              <div className="stat-item">
+                <span className="stat-label">Cells Created:</span>
+                <span className="stat-value">{stats.cellsCreated.toLocaleString()}</span>
+              </div>
 
-          <div className="stat-item">
-            <span className="stat-label">Unique Bigrams:</span>
-            <span className="stat-value">{stats.uniqueBigrams.toLocaleString()}</span>
-          </div>
+              <div className="stat-item">
+                <span className="stat-label">Unique Bigrams:</span>
+                <span className="stat-value">{stats.uniqueBigrams.toLocaleString()}</span>
+              </div>
 
-          <div className="stat-item">
-            <span className="stat-label">Unique Trigrams:</span>
-            <span className="stat-value">{stats.uniqueTrigrams.toLocaleString()}</span>
-          </div>
+              <div className="stat-item">
+                <span className="stat-label">Unique Trigrams:</span>
+                <span className="stat-value">{stats.uniqueTrigrams.toLocaleString()}</span>
+              </div>
 
-          <div className="stat-item">
-            <span className="stat-label">Coordinate Points Processed:</span>
-            <span className="stat-value">{stats.totalPairs.toLocaleString()}</span>
-          </div>
+              <div className="stat-item">
+                <span className="stat-label">Coordinate Points Processed:</span>
+                <span className="stat-value">{stats.totalPairs.toLocaleString()}</span>
+              </div>
+            </>
+          ) : (
+            <p className="stat-message">
+              Statistics can't be loaded. The model file may not reside in default folder (media/cache). Plese Move 
+              your file first.
+            </p>
+          )}
+          
+
         </div>
       </div>
     </div>
